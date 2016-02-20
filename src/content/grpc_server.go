@@ -10,16 +10,11 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type catalogGrpcServer struct {
+type contentGrpcServer struct {
 	server *Server
 }
 
-func (w *catalogGrpcServer) Pull(ctx context.Context, in *apipb.CatalogPullRequest) (*apipb.Catalog, error) {
-	logrus.Infof("grpc_server.go: pull %+v", in)
-	return w.server.Current()
-}
-
-func (w *catalogGrpcServer) Push(ctx context.Context, in *apipb.Catalog) (*apipb.Response, error) {
+func (w *contentGrpcServer) Push(ctx context.Context, in *apipb.Content) (*apipb.Response, error) {
 	jwt, err := getJWTToken(ctx)
 	if err != nil {
 		logrus.Errorf("grpc_server.go: failed to get jwt %+v", err)
@@ -41,7 +36,7 @@ func (w *catalogGrpcServer) Push(ctx context.Context, in *apipb.Catalog) (*apipb
 	return &apipb.Response{Type: 0, Message: "success"}, nil
 }
 
-func (w *catalogGrpcServer) Approve(ctx context.Context, in *apipb.CatalogApproveRequest) (*apipb.Response, error) {
+func (w *contentGrpcServer) Approve(ctx context.Context, in *apipb.ContentApproveRequest) (*apipb.Response, error) {
 	jwt, err := getJWTToken(ctx)
 	if err != nil {
 		logrus.Errorf("grpc_server.go: failed to get jwt %+v", err)
@@ -52,14 +47,14 @@ func (w *catalogGrpcServer) Approve(ctx context.Context, in *apipb.CatalogApprov
 		logrus.Errorf("grpc_server.go: failed to authorize user %+v", err)
 		return nil, errors.New("unauthorized user")
 	}
-	err = w.server.Approve(in.Title)
+	err = w.server.Approve(in.Slug)
 	if err != nil {
 		return nil, err
 	}
 	return &apipb.Response{Type: 0, Message: "success"}, nil
 }
 
-func (w *catalogGrpcServer) List(ctx context.Context, query *apipb.CatalogListRequest) (*apipb.CatalogListResponse, error) {
+func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRequest) (*apipb.ContentListResponse, error) {
 	res, err := w.server.Storage.List(*query)
 	if err != nil {
 		return nil, err
@@ -67,11 +62,7 @@ func (w *catalogGrpcServer) List(ctx context.Context, query *apipb.CatalogListRe
 	if len(res) == 0 {
 		return nil, models.ErrorNotFound
 	}
-	result := make([]*apipb.Catalog, len(res))
-	for i, p := range res {
-		result[i] = p.ToProto()
-	}
-	return &apipb.CatalogListResponse{
-		Catalogs: result,
+	return &apipb.ContentListResponse{
+		Contents: res,
 	}, nil
 }

@@ -47,11 +47,11 @@ func (s *Server) ListenGRPC() {
 	}
 	grpcServer := grpc.NewServer(opts...)
 
-	catalogGrpc := &catalogGrpcServer{
+	contentGrpc := &contentGrpcServer{
 		server: s,
 	}
 
-	pb.RegisterCatalogServiceServer(grpcServer, catalogGrpc)
+	pb.RegisterContentServiceServer(grpcServer, contentGrpc)
 	log.Infof("server.go: Binding %s for grpc", grpcPort)
 	//Serve
 	grpcServer.Serve(lis)
@@ -71,46 +71,26 @@ func NewServer(config *Config, driver storage.Driver) *Server {
 	return server
 }
 
-func (s *Server) Insert(c *pb.Catalog, email string, id bson.ObjectId) error {
+func (s *Server) Insert(c *pb.Content, email string, id bson.ObjectId) error {
 	if c == nil {
-		return errors.New("catalog is null")
+		return errors.New("content is null")
 	}
-	mc, err := models.NewCatalogModel(c, email, id)
-	if err != nil {
-		return err
-	}
-	old, err := s.Storage.GetByTitle(mc.Title)
+
+	old, err := s.Storage.GetBySlug(c.Slug)
 	if err != models.ErrorNotFound {
 		if err == nil {
-			if old.Status == pb.CatalogStatus_APPROVED {
+			if old.Status == pb.Content_APPROVED {
 				return fmt.Errorf("cannot update approved catalog")
 			}
-			old.Sync(mc)
-			old.Status = pb.CatalogStatus_DRAFT
+			old.Status = pb.Content_DRAFT
 			return s.Storage.Update(old)
 		}
 		return err
 	}
-	mc.Status = pb.CatalogStatus_DRAFT
-	return s.Storage.Put(mc)
+	c.Status = pb.Content_DRAFT
+	return s.Storage.Put(c)
 }
 
-func (s *Server) Approve(title string) error {
-	return s.Storage.ChangeStatus(title, pb.CatalogStatus_APPROVED)
-}
-
-func (s *Server) Current() (*pb.Catalog, error) {
-	query := pb.CatalogListRequest{
-		Limit:  1,
-		Status: pb.CatalogListRequest_ONLY_APPROVED,
-		Time:   models.MillisecondsNow(),
-	}
-	res, err := s.Storage.List(query)
-	if err != nil {
-		return nil, err
-	}
-	if len(res) == 0 {
-		return nil, models.ErrorNotFound
-	}
-	return res[0].ToProto(), nil
+func (s *Server) Approve(slug string) error {
+	return s.Storage.ChangeStatus(slug, pb.Content_APPROVED)
 }

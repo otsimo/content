@@ -50,9 +50,10 @@ func (d *MongoDBDriver) ChangeStatus(title string, stat apipb.Content_Status) er
 }
 
 func (d *MongoDBDriver) List(q apipb.ContentListRequest) ([]*apipb.Content, error) {
-	c := d.Session.DB("").C(ContentCollection)
 	var result []*apipb.Content
-	/*
+
+	/*	c := d.Session.DB("").C(ContentCollection)
+
 		query := bson.M{}
 		if q.Limit == 0 {
 			q.Limit = 100

@@ -47,7 +47,7 @@ func RunAction(c *cli.Context) {
 		log.Fatal("main.go: error while creating new storage driver:", err, s)
 	}
 
-	server := catalog.NewServer(config, s)
+	server := content.NewServer(config, s)
 
 	ch := server.Oidc.SyncProviderConfig(config.AuthDiscovery)
 	defer func() {
@@ -87,7 +87,7 @@ func main() {
 	var flags []cli.Flag
 
 	flags = []cli.Flag{
-		cli.IntFlag{Name: "grpc-port", Value: catalog.DefaultGrpcPort, Usage: "grpc server port"},
+		cli.IntFlag{Name: "grpc-port", Value: content.DefaultGrpcPort, Usage: "grpc server port"},
 		cli.StringFlag{Name: "storage, s", Value: "none", Usage: fmt.Sprintf("the storage driver. Available drivers: %s", strings.Join(dnames, ", "))},
 		cli.StringFlag{Name: "tls-cert-file", Value: "", Usage: "the server's certificate file for TLS connection"},
 		cli.StringFlag{Name: "tls-key-file", Value: "", Usage: "the server's private key file for TLS connection"},

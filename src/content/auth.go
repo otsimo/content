@@ -68,7 +68,7 @@ func getJWTToken(ctx context.Context) (jose.JWT, error) {
 	return jose.ParseJWT(val)
 }
 
-func (s *catalogGrpcServer) authToken(jwt jose.JWT, mustBeAdmin bool) (string, string, error) {
+func (s *contentGrpcServer) authToken(jwt jose.JWT, mustBeAdmin bool) (string, string, error) {
 	claims, err := jwt.Claims()
 	if err != nil {
 		return "", "", fmt.Errorf("auth.go: failed to get claims %v", err)
