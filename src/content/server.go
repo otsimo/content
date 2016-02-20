@@ -1,25 +1,18 @@
 package content
 
 import (
-	"errors"
-	"fmt"
-	"models"
 	"net"
 	"os"
-	"storage"
 
 	log "github.com/Sirupsen/logrus"
 	pb "github.com/otsimo/api/apipb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type Server struct {
-	Config  *Config
-	Storage storage.Driver
-	Oidc    *Client
+	Config *Config
 }
 
 func (s *Server) ListenGRPC() {
@@ -57,40 +50,10 @@ func (s *Server) ListenGRPC() {
 	grpcServer.Serve(lis)
 }
 
-func NewServer(config *Config, driver storage.Driver) *Server {
+func NewServer(config *Config) *Server {
 	server := &Server{
-		Config:  config,
-		Storage: driver,
+		Config: config,
 	}
 	log.Debugln("Creating new oidc client discovery=", config.AuthDiscovery)
-	c, err := NewOIDCClient(config.ClientID, config.ClientSecret, config.AuthDiscovery)
-	if err != nil {
-		log.Fatal("Unable to create Oidc client", err)
-	}
-	server.Oidc = c
 	return server
-}
-
-func (s *Server) Insert(c *pb.Content, email string, id bson.ObjectId) error {
-	if c == nil {
-		return errors.New("content is null")
-	}
-
-	old, err := s.Storage.GetBySlug(c.Slug)
-	if err != models.ErrorNotFound {
-		if err == nil {
-			if old.Status == pb.Content_APPROVED {
-				return fmt.Errorf("cannot update approved catalog")
-			}
-			old.Status = pb.Content_DRAFT
-			return s.Storage.Update(old)
-		}
-		return err
-	}
-	c.Status = pb.Content_DRAFT
-	return s.Storage.Put(c)
-}
-
-func (s *Server) Approve(slug string) error {
-	return s.Storage.ChangeStatus(slug, pb.Content_APPROVED)
 }

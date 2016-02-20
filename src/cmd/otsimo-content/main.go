@@ -4,8 +4,6 @@ import (
 	"content"
 	"fmt"
 	"os"
-	"storage"
-	_ "storage/mongodb"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
@@ -35,25 +33,7 @@ func RunAction(c *cli.Context) {
 		return
 	}
 
-	//get driver
-	driver := storage.GetDriver(sname)
-	if driver == nil {
-		log.Fatalf("main.go: storage driver '%s' not found\n", sname)
-	}
-
-	//load storage driver
-	s, err := driver.New(c)
-	if err != nil {
-		log.Fatal("main.go: error while creating new storage driver:", err, s)
-	}
-
-	server := content.NewServer(config, s)
-
-	ch := server.Oidc.SyncProviderConfig(config.AuthDiscovery)
-	defer func() {
-		// stop the background process
-		ch <- struct{}{}
-	}()
+	server := content.NewServer(config)
 	server.ListenGRPC()
 }
 
@@ -83,12 +63,10 @@ func main() {
 	app.Version = Version
 	app.Usage = "Otsimo Content Service"
 	app.Author = "Sercan Degirmenci <sercan@otsimo.com>"
-	dnames := storage.GetDriverNames()
 	var flags []cli.Flag
 
 	flags = []cli.Flag{
 		cli.IntFlag{Name: "grpc-port", Value: content.DefaultGrpcPort, Usage: "grpc server port"},
-		cli.StringFlag{Name: "storage, s", Value: "none", Usage: fmt.Sprintf("the storage driver. Available drivers: %s", strings.Join(dnames, ", "))},
 		cli.StringFlag{Name: "tls-cert-file", Value: "", Usage: "the server's certificate file for TLS connection"},
 		cli.StringFlag{Name: "tls-key-file", Value: "", Usage: "the server's private key file for TLS connection"},
 		cli.StringFlag{Name: "client-id", Value: "", Usage: "client id"},
@@ -96,9 +74,6 @@ func main() {
 		cli.StringFlag{Name: "discovery", Value: "https://connect.otsimo.com", Usage: "auth discovery url"},
 	}
 	flags = withEnvs("OTSIMO_CONTENT", flags)
-	for _, d := range dnames {
-		flags = append(flags, storage.GetDriver(d).Flags...)
-	}
 
 	flags = append(flags, cli.BoolFlag{Name: "debug, d", Usage: "enable verbose log", EnvVar: "OTSIMO_CONTENT_DEBUG"})
 	app.Flags = flags

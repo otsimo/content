@@ -20,26 +20,6 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-type Content_Status int32
-
-const (
-	Content_DRAFT    Content_Status = 0
-	Content_APPROVED Content_Status = 1
-)
-
-var Content_Status_name = map[int32]string{
-	0: "DRAFT",
-	1: "APPROVED",
-}
-var Content_Status_value = map[string]int32{
-	"DRAFT":    0,
-	"APPROVED": 1,
-}
-
-func (x Content_Status) String() string {
-	return proto.EnumName(Content_Status_name, int32(x))
-}
-
 type ContentListRequest_ListStatus int32
 
 const (
@@ -84,18 +64,17 @@ func (x ContentListRequest_SortBy) String() string {
 }
 
 type Content struct {
-	Slug     string         `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
-	Title    string         `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Language string         `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
-	Created  int64          `protobuf:"varint,4,opt,name=created,proto3" json:"created,omitempty"`
-	Updated  int64          `protobuf:"varint,5,opt,name=updated,proto3" json:"updated,omitempty"`
-	Status   Content_Status `protobuf:"varint,6,opt,name=status,proto3,enum=apipb.Content_Status" json:"status,omitempty"`
-	Author   string         `protobuf:"bytes,7,opt,name=author,proto3" json:"author,omitempty"`
-	Category string         `protobuf:"bytes,8,opt,name=category,proto3" json:"category,omitempty"`
-	Url      string         `protobuf:"bytes,9,opt,name=url,proto3" json:"url,omitempty"`
-	Weight   int32          `protobuf:"varint,10,opt,name=weight,proto3" json:"weight,omitempty"`
-	Keywords []string       `protobuf:"bytes,11,rep,name=keywords" json:"keywords,omitempty"`
-	Markdown []byte         `protobuf:"bytes,13,opt,name=markdown,proto3" json:"markdown,omitempty"`
+	Slug     string   `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
+	Title    string   `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Language string   `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
+	Created  int64    `protobuf:"varint,4,opt,name=created,proto3" json:"created,omitempty"`
+	Updated  int64    `protobuf:"varint,5,opt,name=updated,proto3" json:"updated,omitempty"`
+	Author   string   `protobuf:"bytes,7,opt,name=author,proto3" json:"author,omitempty"`
+	Category string   `protobuf:"bytes,8,opt,name=category,proto3" json:"category,omitempty"`
+	Url      string   `protobuf:"bytes,9,opt,name=url,proto3" json:"url,omitempty"`
+	Weight   int32    `protobuf:"varint,10,opt,name=weight,proto3" json:"weight,omitempty"`
+	Keywords []string `protobuf:"bytes,11,rep,name=keywords" json:"keywords,omitempty"`
+	Markdown []byte   `protobuf:"bytes,13,opt,name=markdown,proto3" json:"markdown,omitempty"`
 }
 
 func (m *Content) Reset()         { *m = Content{} }
@@ -109,9 +88,9 @@ type ContentListRequest struct {
 	Offset        int32                         `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
 	Language      string                        `protobuf:"bytes,5,opt,name=language,proto3" json:"language,omitempty"`
 	OnlyHtmlUrl   bool                          `protobuf:"varint,6,opt,name=only_html_url,proto3" json:"only_html_url,omitempty"`
-	ProfileId     string                        `protobuf:"bytes,7,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
-	ClientVersion string                        `protobuf:"bytes,8,opt,name=client_version,proto3" json:"client_version,omitempty"`
-	Sort          ContentListRequest_SortBy     `protobuf:"varint,9,opt,name=sort,proto3,enum=apipb.ContentListRequest_SortBy" json:"sort,omitempty"`
+	Sort          ContentListRequest_SortBy     `protobuf:"varint,7,opt,name=sort,proto3,enum=apipb.ContentListRequest_SortBy" json:"sort,omitempty"`
+	ProfileId     string                        `protobuf:"bytes,10,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
+	ClientVersion string                        `protobuf:"bytes,11,opt,name=client_version,proto3" json:"client_version,omitempty"`
 }
 
 func (m *ContentListRequest) Reset()         { *m = ContentListRequest{} }
@@ -133,16 +112,7 @@ func (m *ContentListResponse) GetContents() []*Content {
 	return nil
 }
 
-type ContentApproveRequest struct {
-	Slug string `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
-}
-
-func (m *ContentApproveRequest) Reset()         { *m = ContentApproveRequest{} }
-func (m *ContentApproveRequest) String() string { return proto.CompactTextString(m) }
-func (*ContentApproveRequest) ProtoMessage()    {}
-
 func init() {
-	proto.RegisterEnum("apipb.Content_Status", Content_Status_name, Content_Status_value)
 	proto.RegisterEnum("apipb.ContentListRequest_ListStatus", ContentListRequest_ListStatus_name, ContentListRequest_ListStatus_value)
 	proto.RegisterEnum("apipb.ContentListRequest_SortBy", ContentListRequest_SortBy_name, ContentListRequest_SortBy_value)
 }
@@ -154,9 +124,7 @@ var _ grpc.ClientConn
 // Client API for ContentService service
 
 type ContentServiceClient interface {
-	Push(ctx context.Context, in *Content, opts ...grpc.CallOption) (*Response, error)
 	List(ctx context.Context, in *ContentListRequest, opts ...grpc.CallOption) (*ContentListResponse, error)
-	Approve(ctx context.Context, in *ContentApproveRequest, opts ...grpc.CallOption) (*Response, error)
 }
 
 type contentServiceClient struct {
@@ -165,15 +133,6 @@ type contentServiceClient struct {
 
 func NewContentServiceClient(cc *grpc.ClientConn) ContentServiceClient {
 	return &contentServiceClient{cc}
-}
-
-func (c *contentServiceClient) Push(ctx context.Context, in *Content, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := grpc.Invoke(ctx, "/apipb.ContentService/Push", in, out, c.cc, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *contentServiceClient) List(ctx context.Context, in *ContentListRequest, opts ...grpc.CallOption) (*ContentListResponse, error) {
@@ -185,37 +144,14 @@ func (c *contentServiceClient) List(ctx context.Context, in *ContentListRequest,
 	return out, nil
 }
 
-func (c *contentServiceClient) Approve(ctx context.Context, in *ContentApproveRequest, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := grpc.Invoke(ctx, "/apipb.ContentService/Approve", in, out, c.cc, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // Server API for ContentService service
 
 type ContentServiceServer interface {
-	Push(context.Context, *Content) (*Response, error)
 	List(context.Context, *ContentListRequest) (*ContentListResponse, error)
-	Approve(context.Context, *ContentApproveRequest) (*Response, error)
 }
 
 func RegisterContentServiceServer(s *grpc.Server, srv ContentServiceServer) {
 	s.RegisterService(&_ContentService_serviceDesc, srv)
-}
-
-func _ContentService_Push_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
-	in := new(Content)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	out, err := srv.(ContentServiceServer).Push(ctx, in)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func _ContentService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
@@ -230,33 +166,13 @@ func _ContentService_List_Handler(srv interface{}, ctx context.Context, dec func
 	return out, nil
 }
 
-func _ContentService_Approve_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
-	in := new(ContentApproveRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	out, err := srv.(ContentServiceServer).Approve(ctx, in)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 var _ContentService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "apipb.ContentService",
 	HandlerType: (*ContentServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Push",
-			Handler:    _ContentService_Push_Handler,
-		},
-		{
 			MethodName: "List",
 			Handler:    _ContentService_List_Handler,
-		},
-		{
-			MethodName: "Approve",
-			Handler:    _ContentService_Approve_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{},
@@ -304,11 +220,6 @@ func (m *Content) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x28
 		i++
 		i = encodeVarintContent(data, i, uint64(m.Updated))
-	}
-	if m.Status != 0 {
-		data[i] = 0x30
-		i++
-		i = encodeVarintContent(data, i, uint64(m.Status))
 	}
 	if len(m.Author) > 0 {
 		data[i] = 0x3a
@@ -411,22 +322,22 @@ func (m *ContentListRequest) MarshalTo(data []byte) (int, error) {
 		}
 		i++
 	}
+	if m.Sort != 0 {
+		data[i] = 0x38
+		i++
+		i = encodeVarintContent(data, i, uint64(m.Sort))
+	}
 	if len(m.ProfileId) > 0 {
-		data[i] = 0x3a
+		data[i] = 0x52
 		i++
 		i = encodeVarintContent(data, i, uint64(len(m.ProfileId)))
 		i += copy(data[i:], m.ProfileId)
 	}
 	if len(m.ClientVersion) > 0 {
-		data[i] = 0x42
+		data[i] = 0x5a
 		i++
 		i = encodeVarintContent(data, i, uint64(len(m.ClientVersion)))
 		i += copy(data[i:], m.ClientVersion)
-	}
-	if m.Sort != 0 {
-		data[i] = 0x48
-		i++
-		i = encodeVarintContent(data, i, uint64(m.Sort))
 	}
 	return i, nil
 }
@@ -457,30 +368,6 @@ func (m *ContentListResponse) MarshalTo(data []byte) (int, error) {
 			}
 			i += n
 		}
-	}
-	return i, nil
-}
-
-func (m *ContentApproveRequest) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *ContentApproveRequest) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Slug) > 0 {
-		data[i] = 0xa
-		i++
-		i = encodeVarintContent(data, i, uint64(len(m.Slug)))
-		i += copy(data[i:], m.Slug)
 	}
 	return i, nil
 }
@@ -532,9 +419,6 @@ func (m *Content) Size() (n int) {
 	}
 	if m.Updated != 0 {
 		n += 1 + sovContent(uint64(m.Updated))
-	}
-	if m.Status != 0 {
-		n += 1 + sovContent(uint64(m.Status))
 	}
 	l = len(m.Author)
 	if l > 0 {
@@ -589,6 +473,9 @@ func (m *ContentListRequest) Size() (n int) {
 	if m.OnlyHtmlUrl {
 		n += 2
 	}
+	if m.Sort != 0 {
+		n += 1 + sovContent(uint64(m.Sort))
+	}
 	l = len(m.ProfileId)
 	if l > 0 {
 		n += 1 + l + sovContent(uint64(l))
@@ -596,9 +483,6 @@ func (m *ContentListRequest) Size() (n int) {
 	l = len(m.ClientVersion)
 	if l > 0 {
 		n += 1 + l + sovContent(uint64(l))
-	}
-	if m.Sort != 0 {
-		n += 1 + sovContent(uint64(m.Sort))
 	}
 	return n
 }
@@ -611,16 +495,6 @@ func (m *ContentListResponse) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovContent(uint64(l))
 		}
-	}
-	return n
-}
-
-func (m *ContentApproveRequest) Size() (n int) {
-	var l int
-	_ = l
-	l = len(m.Slug)
-	if l > 0 {
-		n += 1 + l + sovContent(uint64(l))
 	}
 	return n
 }
@@ -788,25 +662,6 @@ func (m *Content) Unmarshal(data []byte) error {
 				b := data[iNdEx]
 				iNdEx++
 				m.Updated |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 6:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
-			}
-			m.Status = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowContent
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				m.Status |= (Content_Status(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1160,6 +1015,25 @@ func (m *ContentListRequest) Unmarshal(data []byte) error {
 			}
 			m.OnlyHtmlUrl = bool(v != 0)
 		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sort", wireType)
+			}
+			m.Sort = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowContent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Sort |= (ContentListRequest_SortBy(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProfileId", wireType)
 			}
@@ -1188,7 +1062,7 @@ func (m *ContentListRequest) Unmarshal(data []byte) error {
 			}
 			m.ProfileId = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 8:
+		case 11:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ClientVersion", wireType)
 			}
@@ -1217,25 +1091,6 @@ func (m *ContentListRequest) Unmarshal(data []byte) error {
 			}
 			m.ClientVersion = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 9:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Sort", wireType)
-			}
-			m.Sort = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowContent
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				m.Sort |= (ContentListRequest_SortBy(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipContent(data[iNdEx:])
@@ -1316,85 +1171,6 @@ func (m *ContentListResponse) Unmarshal(data []byte) error {
 			if err := m.Contents[len(m.Contents)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipContent(data[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthContent
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ContentApproveRequest) Unmarshal(data []byte) error {
-	l := len(data)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowContent
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ContentApproveRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ContentApproveRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Slug", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowContent
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthContent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Slug = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

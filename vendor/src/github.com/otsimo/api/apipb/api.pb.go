@@ -25,7 +25,6 @@
 		Content
 		ContentListRequest
 		ContentListResponse
-		ContentApproveRequest
 		DeviceInfo
 		Event
 		AppEventData
