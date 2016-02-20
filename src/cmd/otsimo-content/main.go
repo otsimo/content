@@ -15,12 +15,17 @@ var config *content.Config = content.NewConfig()
 
 func RunAction(c *cli.Context) {
 	config.Debug = c.Bool("debug")
+	config.NoRedis = c.Bool("no-redis")
+	config.GitUrl = c.String("git-url")
+	config.GitFolder = c.String("git-path")
+
+	config.RedisAddr = c.String("redis-addr")
+	config.RedisDB = int64(c.Int("redis-db"))
+	config.RedisPassword = c.String("redis-password")
+
 	config.GrpcPort = c.Int("grpc-port")
 	config.TlsCertFile = c.String("tls-cert-file")
 	config.TlsKeyFile = c.String("tls-key-file")
-	config.ClientID = c.String("client-id")
-	config.ClientSecret = c.String("client-secret")
-	config.AuthDiscovery = c.String("discovery")
 
 	if config.Debug {
 		log.SetLevel(log.DebugLevel)
@@ -34,7 +39,7 @@ func RunAction(c *cli.Context) {
 	}
 
 	server := content.NewServer(config)
-	server.ListenGRPC()
+	server.Start()
 }
 
 func withEnvs(prefix string, flags []cli.Flag) []cli.Flag {
@@ -66,16 +71,20 @@ func main() {
 	var flags []cli.Flag
 
 	flags = []cli.Flag{
+		cli.IntFlag{Name: "http-port", Value: content.DefaultHttpPort, Usage: "http server port"},
 		cli.IntFlag{Name: "grpc-port", Value: content.DefaultGrpcPort, Usage: "grpc server port"},
+		cli.StringFlag{Name: "git-url", Value: "https://github.com/otsimo/wiki.git", Usage: "The content wiki git project url"},
+		cli.StringFlag{Name: "git-path", Value: "./project", Usage: "where to put git project"},
 		cli.StringFlag{Name: "tls-cert-file", Value: "", Usage: "the server's certificate file for TLS connection"},
 		cli.StringFlag{Name: "tls-key-file", Value: "", Usage: "the server's private key file for TLS connection"},
-		cli.StringFlag{Name: "client-id", Value: "", Usage: "client id"},
-		cli.StringFlag{Name: "client-secret", Value: "", Usage: "client secret"},
-		cli.StringFlag{Name: "discovery", Value: "https://connect.otsimo.com", Usage: "auth discovery url"},
+		cli.StringFlag{Name: "redis-addr", Value: "localhost:6379", Usage: "redis address"},
+		cli.StringFlag{Name: "redis-password", Value: "", Usage: "redis password"},
+		cli.IntFlag{Name: "redis-db", Value: 0, Usage: "redis db"},
+		cli.BoolFlag{Name: "no-redis", Usage: "don't use redis"},
+		cli.BoolFlag{Name: "debug, d", Usage: "enable verbose log"},
 	}
 	flags = withEnvs("OTSIMO_CONTENT", flags)
 
-	flags = append(flags, cli.BoolFlag{Name: "debug, d", Usage: "enable verbose log", EnvVar: "OTSIMO_CONTENT_DEBUG"})
 	app.Flags = flags
 	app.Action = RunAction
 	app.Run(os.Args)

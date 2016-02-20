@@ -13,6 +13,7 @@ import (
 
 type Server struct {
 	Config *Config
+	Git    *GitClient
 }
 
 func (s *Server) ListenGRPC() {
@@ -53,7 +54,19 @@ func (s *Server) ListenGRPC() {
 func NewServer(config *Config) *Server {
 	server := &Server{
 		Config: config,
+		Git:    NewGitClient(config.GitFolder, config.GitUrl),
 	}
-	log.Debugln("Creating new oidc client discovery=", config.AuthDiscovery)
 	return server
+}
+
+func (s *Server) Start() {
+
+	s.Git.Clone()
+
+	if !s.Config.NoRedis {
+
+	}
+
+	//s.ListenHTTP()
+	s.ListenGRPC()
 }

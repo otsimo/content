@@ -4,6 +4,7 @@ import "fmt"
 
 const (
 	DefaultGrpcPort = 18859
+	DefaultHttpPort = 18860
 )
 
 type Config struct {
@@ -11,9 +12,12 @@ type Config struct {
 	GrpcPort      int
 	TlsCertFile   string
 	TlsKeyFile    string
-	ClientID      string
-	ClientSecret  string
-	AuthDiscovery string
+	NoRedis       bool
+	GitUrl        string
+	GitFolder     string
+	RedisAddr     string
+	RedisPassword string
+	RedisDB       int64
 }
 
 func (c *Config) GetGrpcPortString() string {

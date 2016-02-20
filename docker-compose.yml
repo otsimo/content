@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  content:
+    build: .
+    ports:
+    - '18859:18859'
+    - '18860:18860'
+    environment:
+    -  OTSIMO_CONTENT_REDIS_ADDR="redis:6379"
+    -  OTSIMO_CONTENT_DEBUG= true
+    depends_on:
+      - redis
+  redis:
+    image: redis:3
+    ports: ["6379:6379"]
