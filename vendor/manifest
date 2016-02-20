@@ -1,0 +1,216 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/BurntSushi/toml",
+			"repository": "https://github.com/BurntSushi/toml",
+			"revision": "f772cd89eb0b33743387f826d1918df67f99cc7a",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/Sirupsen/logrus",
+			"repository": "https://github.com/Sirupsen/logrus",
+			"revision": "57cce1ed6103dce7791881d3e69e55f90d986aa5",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/bgentry/speakeasy",
+			"repository": "https://github.com/bgentry/speakeasy",
+			"revision": "36e9cfdd690967f4f690c6edcc9ffacd006014a0",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/codegangsta/cli",
+			"repository": "https://github.com/codegangsta/cli",
+			"revision": "5db74198dee1cfe60cf06a611d03a420361baad6",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/coreos/go-oidc/http",
+			"repository": "https://github.com/coreos/go-oidc",
+			"revision": "6039032c0b15517897116d333ead8edf38792437",
+			"branch": "master",
+			"path": "/http"
+		},
+		{
+			"importpath": "github.com/coreos/go-oidc/jose",
+			"repository": "https://github.com/coreos/go-oidc",
+			"revision": "6039032c0b15517897116d333ead8edf38792437",
+			"branch": "master",
+			"path": "/jose"
+		},
+		{
+			"importpath": "github.com/coreos/go-oidc/key",
+			"repository": "https://github.com/coreos/go-oidc",
+			"revision": "6039032c0b15517897116d333ead8edf38792437",
+			"branch": "master",
+			"path": "/key"
+		},
+		{
+			"importpath": "github.com/coreos/go-oidc/oauth2",
+			"repository": "https://github.com/coreos/go-oidc",
+			"revision": "6039032c0b15517897116d333ead8edf38792437",
+			"branch": "master",
+			"path": "/oauth2"
+		},
+		{
+			"importpath": "github.com/coreos/go-oidc/oidc",
+			"repository": "https://github.com/coreos/go-oidc",
+			"revision": "6039032c0b15517897116d333ead8edf38792437",
+			"branch": "master",
+			"path": "/oidc"
+		},
+		{
+			"importpath": "github.com/coreos/go-systemd/journal",
+			"repository": "https://github.com/coreos/go-systemd",
+			"revision": "7b2428fec40033549c68f54e26e89e7ca9a9ce31",
+			"branch": "master",
+			"path": "/journal"
+		},
+		{
+			"importpath": "github.com/coreos/pkg/capnslog",
+			"repository": "https://github.com/coreos/pkg",
+			"revision": "8e29e900973a26d5a2f0851a35908f724c18650d",
+			"branch": "master",
+			"path": "/capnslog"
+		},
+		{
+			"importpath": "github.com/coreos/pkg/health",
+			"repository": "https://github.com/coreos/pkg",
+			"revision": "8e29e900973a26d5a2f0851a35908f724c18650d",
+			"branch": "master",
+			"path": "/health"
+		},
+		{
+			"importpath": "github.com/coreos/pkg/httputil",
+			"repository": "https://github.com/coreos/pkg",
+			"revision": "8e29e900973a26d5a2f0851a35908f724c18650d",
+			"branch": "master",
+			"path": "/httputil"
+		},
+		{
+			"importpath": "github.com/coreos/pkg/timeutil",
+			"repository": "https://github.com/coreos/pkg",
+			"revision": "8e29e900973a26d5a2f0851a35908f724c18650d",
+			"branch": "master",
+			"path": "/timeutil"
+		},
+		{
+			"importpath": "github.com/golang/glog",
+			"repository": "https://github.com/golang/glog",
+			"revision": "23def4e6c14b4da8ac2ed8007337bc5eb5007998",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/golang/protobuf/proto",
+			"repository": "https://github.com/golang/protobuf",
+			"revision": "127091107ff5f822298f1faa7487ffcf578adcf6",
+			"branch": "master",
+			"path": "/proto"
+		},
+		{
+			"importpath": "github.com/jonboulle/clockwork",
+			"repository": "https://github.com/jonboulle/clockwork",
+			"revision": "ed104f61ea4877bea08af6f759805674861e968d",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mitchellh/go-homedir",
+			"repository": "https://github.com/mitchellh/go-homedir",
+			"revision": "d682a8f0cf139663a984ff12528da460ca963de9",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/otsimo/api/apipb",
+			"repository": "https://github.com/otsimo/api",
+			"revision": "341970cdd07cc849a6cad3c2dcb4e94b797af1da",
+			"branch": "master",
+			"path": "/apipb"
+		},
+		{
+			"importpath": "golang.org/x/net/context",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "b6d7b1396ec874c3b00f6c84cd4301a17c56c8ed",
+			"branch": "master",
+			"path": "/context"
+		},
+		{
+			"importpath": "golang.org/x/net/http2",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "b6d7b1396ec874c3b00f6c84cd4301a17c56c8ed",
+			"branch": "master",
+			"path": "/http2"
+		},
+		{
+			"importpath": "golang.org/x/net/internal/timeseries",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "b6d7b1396ec874c3b00f6c84cd4301a17c56c8ed",
+			"branch": "master",
+			"path": "/internal/timeseries"
+		},
+		{
+			"importpath": "golang.org/x/net/trace",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "b6d7b1396ec874c3b00f6c84cd4301a17c56c8ed",
+			"branch": "master",
+			"path": "/trace"
+		},
+		{
+			"importpath": "golang.org/x/oauth2",
+			"repository": "https://go.googlesource.com/oauth2",
+			"revision": "188fb45fbef6ffd967b3a8abcfe176fd473361df",
+			"branch": "master"
+		},
+		{
+			"importpath": "google.golang.org/cloud/compute/metadata",
+			"repository": "https://code.googlesource.com/gocloud",
+			"revision": "872c736f496c2ba12786bedbb8325576bbdb33cf",
+			"branch": "master",
+			"path": "/compute/metadata"
+		},
+		{
+			"importpath": "google.golang.org/cloud/internal",
+			"repository": "https://code.googlesource.com/gocloud",
+			"revision": "872c736f496c2ba12786bedbb8325576bbdb33cf",
+			"branch": "master",
+			"path": "/internal"
+		},
+		{
+			"importpath": "google.golang.org/grpc",
+			"repository": "https://github.com/grpc/grpc-go",
+			"revision": "178b68e2819d3ed711040301c12f3f97b6c270ce",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/airbrake/gobrake.v2",
+			"repository": "https://gopkg.in/airbrake/gobrake.v2",
+			"revision": "c9d51adc624b5cc4c1bf8de730a09af4878ffe2d",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/gemnasium/logrus-airbrake-hook.v2",
+			"repository": "https://gopkg.in/gemnasium/logrus-airbrake-hook.v2",
+			"revision": "31e6fd4bd5a98d8ee7673d24bc54ec73c31810dd",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/mgo.v2",
+			"repository": "https://gopkg.in/mgo.v2",
+			"revision": "d90005c5262a3463800497ea5a89aed5fe22c886",
+			"branch": "v2"
+		},
+		{
+			"importpath": "gopkg.in/mgo.v2/bson",
+			"repository": "https://gopkg.in/mgo.v2",
+			"revision": "d90005c5262a3463800497ea5a89aed5fe22c886",
+			"branch": "v2",
+			"path": "/bson"
+		},
+		{
+			"importpath": "gopkg.in/tomb.v2",
+			"repository": "https://gopkg.in/tomb.v2",
+			"revision": "14b3d72120e8d10ea6e6b7f87f7175734b1faab8",
+			"branch": "v2"
+		}
+	]
+}
