@@ -30,13 +30,6 @@ func RunAction(c *cli.Context) {
 	if config.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
-	//find driver name
-	sname := c.String("storage")
-	if sname == "" || sname == "none" {
-		log.Errorln("main.go: storage flag is missing or it cannot be 'none'")
-		cli.ShowAppHelp(c)
-		return
-	}
 
 	server := content.NewServer(config)
 	server.Start()
