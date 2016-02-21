@@ -67,7 +67,7 @@ func main() {
 		cli.IntFlag{Name: "http-port", Value: content.DefaultHttpPort, Usage: "http server port"},
 		cli.IntFlag{Name: "grpc-port", Value: content.DefaultGrpcPort, Usage: "grpc server port"},
 		cli.StringFlag{Name: "git-url", Value: "https://github.com/otsimo/wiki.git", Usage: "The content wiki git project url"},
-		cli.StringFlag{Name: "git-path", Value: "./project", Usage: "where to put git project"},
+		cli.StringFlag{Name: "git-path", Value: "/opt/otsimo/project", Usage: "where to put git project"},
 		cli.StringFlag{Name: "tls-cert-file", Value: "", Usage: "the server's certificate file for TLS connection"},
 		cli.StringFlag{Name: "tls-key-file", Value: "", Usage: "the server's private key file for TLS connection"},
 		cli.StringFlag{Name: "redis-addr", Value: "localhost:6379", Usage: "redis address"},
@@ -80,6 +80,9 @@ func main() {
 
 	app.Flags = flags
 	app.Action = RunAction
+
+	log.Infoln("running", app.Name, "version:", app.Version)
+
 	app.Run(os.Args)
 }
 

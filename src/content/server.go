@@ -14,6 +14,7 @@ import (
 type Server struct {
 	Config *Config
 	Git    *GitClient
+	Redis  *RedisClient
 }
 
 func (s *Server) ListenGRPC() {
@@ -61,10 +62,16 @@ func NewServer(config *Config) *Server {
 
 func (s *Server) Start() {
 
-	s.Git.Clone()
+	err := s.Git.Clone()
+
+	log.Errorln("clone error", err)
+
+	ch, err := s.Git.CommitHash()
+
+	log.Infof("Git.CommitHash '%s', '%v'", ch, err)
 
 	if !s.Config.NoRedis {
-
+		s.Redis = NewRedisClient(s.Config)
 	}
 
 	//s.ListenHTTP()

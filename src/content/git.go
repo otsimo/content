@@ -2,7 +2,6 @@ package content
 
 import (
 	"os/exec"
-	"fmt"
 	"os"
 )
 
@@ -14,11 +13,7 @@ type GitClient struct {
 func (gc GitClient) Clone() error {
 	cmd := exec.Command("/usr/bin/git", "clone", gc.GitUrl, gc.Path)
 	cmd.Stdout = os.Stdout
-	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-	return nil
+	return cmd.Run()
 }
 
 func (gc GitClient) Fetch() {
@@ -32,10 +27,6 @@ func (gc GitClient) Pull() {
 func (gc GitClient) CommitHash() (string, error) {
 	cmd := exec.Command("/usr/bin/git", "rev-parse", "HEAD")
 	cmd.Dir = gc.Path
-	err := cmd.Run()
-	if err != nil {
-		return "", err
-	}
 	b, err := cmd.Output()
 	if err != nil {
 		return "", err
