@@ -3,6 +3,7 @@ package content
 import (
 	"os/exec"
 	"os"
+	"strings"
 )
 
 type GitClient struct {
@@ -31,7 +32,11 @@ func (gc GitClient) CommitHash() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(b), nil
+	str := string(b)
+	if strings.HasSuffix(str, "\\n") {
+		str = str[:(len(str) - 2)]
+	}
+	return str, nil
 }
 
 func (gc GitClient) HasCommitHash(sha1 string) bool {
