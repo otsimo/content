@@ -12,9 +12,9 @@ import (
 )
 
 type Server struct {
-	Config *Config
-	Git    *GitClient
-	Redis  *RedisClient
+	Config  *Config
+	Content *ContentManager
+	Redis   *RedisClient
 }
 
 func (s *Server) ListenGRPC() {
@@ -54,24 +54,21 @@ func (s *Server) ListenGRPC() {
 
 func NewServer(config *Config) *Server {
 	server := &Server{
-		Config: config,
-		Git:    NewGitClient(config.GitFolder, config.GitUrl),
+		Config:  config,
+		Content: NewContentManager(config),
 	}
 	return server
 }
 
 func (s *Server) Start() {
+	err := s.Content.Init()
 
-	err := s.Git.Clone()
-
-	log.Errorln("clone error", err)
-
-	ch, err := s.Git.CommitHash()
-
-	log.Infof("Git.CommitHash '%s', '%v'", ch, err)
+	if err != nil {
+		panic(err)
+	}
 
 	if !s.Config.NoRedis {
-		s.Redis = NewRedisClient(s.Config)
+		s.Redis = NewRedisClient(s.Config, s.Content)
 	}
 
 	//s.ListenHTTP()

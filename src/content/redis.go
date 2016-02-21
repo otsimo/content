@@ -5,10 +5,11 @@ import (
 )
 
 type RedisClient struct {
-	client *redis.Client
+	client  *redis.Client
+	content *ContentManager
 }
 
-func NewRedisClient(config *Config) *RedisClient {
+func NewRedisClient(config *Config, content *ContentManager) *RedisClient {
 	client := redis.NewClient(&redis.Options{
 		Addr:     config.RedisAddr,
 		Password: config.RedisPassword,
@@ -16,6 +17,7 @@ func NewRedisClient(config *Config) *RedisClient {
 	})
 
 	return &RedisClient{
-		client: client,
+		client:  client,
+		content: content,
 	}
 }
