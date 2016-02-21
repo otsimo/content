@@ -1,9 +1,10 @@
 package content
 
 import (
-	"os/exec"
 	"os"
+	"os/exec"
 	"strings"
+	"fmt"
 )
 
 type GitClient struct {
@@ -33,8 +34,8 @@ func (gc GitClient) CommitHash() (string, error) {
 		return "", err
 	}
 	str := string(b)
-	if strings.HasSuffix(str, "\\n") {
-		str = str[:(len(str) - 2)]
+	if strings.HasSuffix(str, "\n") {
+		str = str[:(len(str) - 1)]
 	}
 	return str, nil
 }
