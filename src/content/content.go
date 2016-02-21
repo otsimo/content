@@ -1,9 +1,22 @@
 package content
 
 import (
-	log "github.com/Sirupsen/logrus"
 	"errors"
+
+	"encoding/json"
+	"os"
+	"path"
+	"path/filepath"
+
+	"fmt"
+	"strings"
+
+	log "github.com/Sirupsen/logrus"
 )
+
+type ContentConfig struct {
+	Folders []string
+}
 
 type ContentManager struct {
 	Git           *GitClient
@@ -34,7 +47,7 @@ func (cm *ContentManager) Init() error {
 			log.Errorf("content.go: failed to pull repository")
 			return err
 		}
-	}else {
+	} else {
 		err := cm.Git.Clone()
 		if err != nil {
 			log.Errorf("content.go: failed to clone repository")
@@ -45,9 +58,51 @@ func (cm *ContentManager) Init() error {
 	ch, err := cm.Git.CommitHash()
 	if err == nil {
 		cm.CurrentCommit = ch
+	} else {
+		return err
 	}
 
 	log.Infof("content.go: Git.CommitHash '%s', '%v'", ch, err)
+	return cm.ReadContent()
+}
 
-	return err
+func NewContentConfig(configPath string) (*ContentConfig, error) {
+	config := ContentConfig{}
+
+	configFile, err := os.Open(configPath)
+	if err != nil {
+		log.Errorf("failed to open file, error:%v", err)
+		return nil, err
+	}
+
+	jsonParser := json.NewDecoder(configFile)
+	if err = jsonParser.Decode(&config); err != nil {
+		log.Errorf("failed to decode json file, error:%v", err)
+		return nil, err
+	}
+	return &config, nil
+}
+
+func readDirectory(dir string) {
+	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() && strings.ToLower(filepath.Ext(path)) == ".md" {
+			fmt.Printf("%s %v\n", path, err)
+		}
+		return nil
+	})
+}
+
+func (cm *ContentManager) ReadContent() error {
+	configPath := filepath.Join(cm.Git.Path, "config.json")
+	config, err := NewContentConfig(configPath)
+
+	if err != nil {
+		return err
+	}
+
+	for _, v := range config.Folders {
+		dp := path.Join(cm.Git.Path, v)
+		readDirectory(dp)
+	}
+	return nil
 }
