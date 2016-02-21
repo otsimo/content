@@ -1,17 +1,16 @@
 package content
 
 import (
-	"errors"
-
 	"encoding/json"
+	"errors"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
-
-	"fmt"
 	"strings"
-
+	"github.com/russross/blackfriday"
 	log "github.com/Sirupsen/logrus"
+	"io/ioutil"
 )
 
 type ContentConfig struct {
@@ -83,10 +82,23 @@ func NewContentConfig(configPath string) (*ContentConfig, error) {
 	return &config, nil
 }
 
+func readMarkdown(mp string) {
+	dat, err := ioutil.ReadFile(mp)
+	if err != nil {
+		log.Errorf("failed to read file %s error:%v", mp, err)
+		return
+	}
+	//todo(sercan) read header
+	//todo(sercan) split header with content
+	//todo(only parse content)
+	out := blackfriday.MarkdownCommon(dat)
+	fmt.Println(string(out))
+}
+
 func readDirectory(dir string) {
 	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && strings.ToLower(filepath.Ext(path)) == ".md" {
-			fmt.Printf("%s %v\n", path, err)
+			readMarkdown(path)
 		}
 		return nil
 	})
