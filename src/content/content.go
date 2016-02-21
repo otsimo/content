@@ -3,18 +3,20 @@ package content
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
-	"github.com/russross/blackfriday"
-	log "github.com/Sirupsen/logrus"
+	"text/template"
+
 	"io/ioutil"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 type ContentConfig struct {
-	Folders []string
+	Folders  []string
+	Template string
 }
 
 type ContentManager struct {
@@ -82,23 +84,10 @@ func NewContentConfig(configPath string) (*ContentConfig, error) {
 	return &config, nil
 }
 
-func readMarkdown(mp string) {
-	dat, err := ioutil.ReadFile(mp)
-	if err != nil {
-		log.Errorf("failed to read file %s error:%v", mp, err)
-		return
-	}
-	//todo(sercan) read header
-	//todo(sercan) split header with content
-	//todo(only parse content)
-	out := blackfriday.MarkdownCommon(dat)
-	fmt.Println(string(out))
-}
-
-func readDirectory(dir string) {
+func readDirectory(dir string, tpl *template.Template) {
 	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && strings.ToLower(filepath.Ext(path)) == ".md" {
-			readMarkdown(path)
+			parseMarkdownFile(path, "./static", tpl)
 		}
 		return nil
 	})
@@ -111,10 +100,19 @@ func (cm *ContentManager) ReadContent() error {
 	if err != nil {
 		return err
 	}
-
+	tpl, err := ioutil.ReadFile(filepath.Join(cm.Git.Path, config.Template))
+	if err != nil {
+		log.Errorf("failed to read template")
+		return err
+	}
+	templ, err := template.New("webpage").Parse(string(tpl))
+	if err != nil {
+		log.Errorf("failed to parse template")
+		return err
+	}
 	for _, v := range config.Folders {
 		dp := path.Join(cm.Git.Path, v)
-		readDirectory(dp)
+		readDirectory(dp, templ)
 	}
 	return nil
 }
