@@ -6,17 +6,7 @@ install:
 - go get github.com/constabulary/gb/...
 script:
 - make test
-services:
-- mongodb
-addons:
-  apt:
-    sources:
-    - mongodb-3.2-precise
-    packages:
-    - mongodb-org-server
 notifications:
   email: false
   slack:
-    secure: t6CaK1jvyvSfzKqHy1RhFhYZFGMQdXDG5a3iJ4gZ14Ikqw5AVziJBn3hWYxAUdeLv0e0DraXImfywZBYDCA0VY+BP6Z1pfmT5vGwv4FmKiE8Xzi1M8oxQO4A4IprVpQSLYn54G1g8u56HfzB2rPy1o6mETB3uq9e7z30KiFzsjN94OV9ZKb7TAg4jr0Uo+tN4dJpIy//C1AraudRRkSMRSTRTUSDCgbouCrJ1/1+QJ0xqLKu1QItGyfSfnECkmd0MNDooKpcTh8OGGjImClmjZFe9P1fMhydGR2+VmPCF4VkA5J/wUb8IrMtn3Wc+nMwAfoDoHSesmS+MngIRZzMxfY+n/nTHjwCGi7ieA3pIqvEC8Z35QGF9Eur4hJ6IdC2Ez0jYeyzg+g5P+0jF/VFKj+pCYTynKEuaUP1l+Qrq7KjIJXT0xs7Wyat8nd57cQpzB+B+AWePDBg0VA9/1sHht9piCvi6s28Ls2F2dJokNAa4ETDPKILYHseibBRf9HmTeCwrSxEY5M1iHLUCVdqZvukr8UeQ1JnXXnbUwZnS97w4gUIOndp4BS8pH6VC5JLsVHF8HJ8oaxf8FI8VxfD6cT8NJOAD8jNf1fr39nw1BdMHQINIo6MNvjM1K/yrqr+pQTiRrwYZMiBOne53GRanHdlxO9zMvrppjbDEPLhjeE=
-before_script:
-- until nc -z localhost 27017; do echo Waiting for MongoDB; sleep 1; done
+    secure: m5u4F6qpUh358wHL2FmH0Vst6aFIOLJLCRwPMFduBxrDG6ZorztfcSCMXVYin19/h0yLS5eY1l9ldeG7je3uQpKMMEA0T1SgOLp/0VlSS6PI/yn8nxvTZV8YojJoEMfPOlrwj0jGUygxx9hie5ob/1JRMTz+ORtfvOuSR2yZH6EiDct2tJJm2FduA/q4pmuNowW5pSZ7YdrlV5f14+Uq0yWZ4Ks1SZWAXNqvPWF+uMNiI+5/xouwadF5Z44vHqKnGDiUbW47XXDN5VkwMWBApMbXqeGDV44dErXamHXYy/yGaitUBehpc29KSFkdEvH55vocUWnydILkZhloG41l1M73FlJDVtl91kLo94ARTj9rwV18NR2j/w0Y4eMORFF+Nq4T6ELWbGTKm2Lutha+wdmcfNg0O772JcN/X743ISCJ1dDMYaE3dudltip24cluzaY8zRtTt7Qj+33vENCmwX9B2FXsYUpAN9d9b46MWjLFo9Q1dkzZBPbmqx3XilSZhSNZGdoWK+BYQYFx2dRloF/FmTOUnH8aHP3d8EUclC9a8gEsHrFAafsMZBXCiypGI8VYExyoRMXA4P53qNCnVdxnjel113ACV22zJGJtH1m2qel9ZF5B6RP0hZOEE82EQIAFQNv/b1+dcqawBO7rzRl6VxT/Z0+kAN8TMl/O4no=
