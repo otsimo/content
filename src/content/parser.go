@@ -44,10 +44,11 @@ func parseMarkdownFile(filep string, outdir string, tpl *template.Template) (*ap
 	}
 
 	t1, e := time.Parse(
-		time.RFC3339,
-		fmt.Sprintf("%s:00+00:00", content.WrittenAt))
+		"2006-01-02",
+		content.WrittenAt)
 
 	if e != nil {
+		log.Errorf("failed to parse date, error=%v", e)
 		return nil, fmt.Errorf("invalid time format:%v", e)
 	}
 
@@ -62,7 +63,7 @@ func parseMarkdownFile(filep string, outdir string, tpl *template.Template) (*ap
 		Title:   content.Title,
 		Content: string(out),
 	}
-	outfilepath := filepath.Join(outdir, contentHtmlFilename(content))
+	outfilepath := filepath.Join(outdir, contentHtmlFilename(&content))
 	ofile, err := os.Create(outfilepath)
 	if err != nil {
 		log.Errorf("failed create to output file, path=%s, err=%v", outfilepath, err)

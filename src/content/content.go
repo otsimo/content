@@ -24,7 +24,7 @@ type PublicDirEntry struct {
 	//Path is shown on http url
 	Path string
 	//Dir is real path where folder is located
-	Dir  string
+	Dir string
 }
 
 type ContentManager struct {
@@ -103,7 +103,11 @@ func NewContentConfig(configPath string) (*ContentConfig, error) {
 func (cm *ContentManager) readDirectory(dir string, tpl *template.Template) {
 	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && strings.ToLower(filepath.Ext(path)) == ".md" {
-			content, _ := parseMarkdownFile(path, cm.publicDir, tpl)
+			content, err := parseMarkdownFile(path, cm.publicDir, tpl)
+			if err != nil {
+				log.Errorf("failed to parse markdown file '%s' err=%v", path, err)
+				return nil
+			}
 			if content != nil {
 				cm.AddContent(content)
 			}
