@@ -19,7 +19,7 @@ func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRe
 		if query.Status == apipb.ContentListRequest_ONLY_APPROVED && c.Draft {
 			continue
 		}
-		if query.Status == apipb.CatalogListRequest_ONLY_DRAFT && !c.Draft {
+		if query.Status == apipb.ContentListRequest_ONLY_DRAFT && !c.Draft {
 			continue
 		}
 		if query.Category != "" && query.Category != c.Category {
