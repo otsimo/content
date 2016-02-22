@@ -45,7 +45,7 @@ func parseMarkdownFile(filep string, outdir string, tpl *template.Template) (*ap
 
 	t1, e := time.Parse(
 		time.RFC3339,
-		fmt.Sprintf("%s:00+00:00", m["writtenAt"]))
+		fmt.Sprintf("%s:00+00:00", content.WrittenAt))
 
 	if e != nil {
 		return nil, fmt.Errorf("invalid time format:%v", e)

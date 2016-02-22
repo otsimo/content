@@ -64,17 +64,18 @@ func (x ContentListRequest_SortBy) String() string {
 }
 
 type Content struct {
-	Slug     string   `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
-	Title    string   `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Language string   `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
-	Date     int64    `protobuf:"varint,4,opt,name=date,proto3" json:"date,omitempty"`
-	Draft    bool     `protobuf:"varint,6,opt,name=draft,proto3" json:"draft,omitempty"`
-	Author   string   `protobuf:"bytes,7,opt,name=author,proto3" json:"author,omitempty"`
-	Category string   `protobuf:"bytes,8,opt,name=category,proto3" json:"category,omitempty"`
-	Url      string   `protobuf:"bytes,9,opt,name=url,proto3" json:"url,omitempty"`
-	Weight   int32    `protobuf:"varint,10,opt,name=weight,proto3" json:"weight,omitempty"`
-	Keywords []string `protobuf:"bytes,11,rep,name=keywords" json:"keywords,omitempty"`
-	Markdown []byte   `protobuf:"bytes,13,opt,name=markdown,proto3" json:"markdown,omitempty"`
+	Slug      string   `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
+	Title     string   `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Language  string   `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
+	Date      int64    `protobuf:"varint,4,opt,name=date,proto3" json:"date,omitempty"`
+	Draft     bool     `protobuf:"varint,5,opt,name=draft,proto3" json:"draft,omitempty"`
+	WrittenAt string   `protobuf:"bytes,6,opt,name=written_at,proto3" json:"written_at,omitempty"`
+	Author    string   `protobuf:"bytes,7,opt,name=author,proto3" json:"author,omitempty"`
+	Category  string   `protobuf:"bytes,8,opt,name=category,proto3" json:"category,omitempty"`
+	Url       string   `protobuf:"bytes,9,opt,name=url,proto3" json:"url,omitempty"`
+	Weight    int32    `protobuf:"varint,10,opt,name=weight,proto3" json:"weight,omitempty"`
+	Keywords  []string `protobuf:"bytes,11,rep,name=keywords" json:"keywords,omitempty"`
+	Markdown  []byte   `protobuf:"bytes,13,opt,name=markdown,proto3" json:"markdown,omitempty"`
 }
 
 func (m *Content) Reset()         { *m = Content{} }
@@ -217,7 +218,7 @@ func (m *Content) MarshalTo(data []byte) (int, error) {
 		i = encodeVarintContent(data, i, uint64(m.Date))
 	}
 	if m.Draft {
-		data[i] = 0x30
+		data[i] = 0x28
 		i++
 		if m.Draft {
 			data[i] = 1
@@ -225,6 +226,12 @@ func (m *Content) MarshalTo(data []byte) (int, error) {
 			data[i] = 0
 		}
 		i++
+	}
+	if len(m.WrittenAt) > 0 {
+		data[i] = 0x32
+		i++
+		i = encodeVarintContent(data, i, uint64(len(m.WrittenAt)))
+		i += copy(data[i:], m.WrittenAt)
 	}
 	if len(m.Author) > 0 {
 		data[i] = 0x3a
@@ -424,6 +431,10 @@ func (m *Content) Size() (n int) {
 	}
 	if m.Draft {
 		n += 2
+	}
+	l = len(m.WrittenAt)
+	if l > 0 {
+		n += 1 + l + sovContent(uint64(l))
 	}
 	l = len(m.Author)
 	if l > 0 {
@@ -652,7 +663,7 @@ func (m *Content) Unmarshal(data []byte) error {
 					break
 				}
 			}
-		case 6:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Draft", wireType)
 			}
@@ -672,6 +683,35 @@ func (m *Content) Unmarshal(data []byte) error {
 				}
 			}
 			m.Draft = bool(v != 0)
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WrittenAt", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowContent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthContent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.WrittenAt = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Author", wireType)
