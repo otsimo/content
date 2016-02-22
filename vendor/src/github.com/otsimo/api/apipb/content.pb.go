@@ -67,8 +67,8 @@ type Content struct {
 	Slug     string   `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
 	Title    string   `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Language string   `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
-	Created  int64    `protobuf:"varint,4,opt,name=created,proto3" json:"created,omitempty"`
-	Updated  int64    `protobuf:"varint,5,opt,name=updated,proto3" json:"updated,omitempty"`
+	Date     int64    `protobuf:"varint,4,opt,name=date,proto3" json:"date,omitempty"`
+	Draft    bool     `protobuf:"varint,6,opt,name=draft,proto3" json:"draft,omitempty"`
 	Author   string   `protobuf:"bytes,7,opt,name=author,proto3" json:"author,omitempty"`
 	Category string   `protobuf:"bytes,8,opt,name=category,proto3" json:"category,omitempty"`
 	Url      string   `protobuf:"bytes,9,opt,name=url,proto3" json:"url,omitempty"`
@@ -211,15 +211,20 @@ func (m *Content) MarshalTo(data []byte) (int, error) {
 		i = encodeVarintContent(data, i, uint64(len(m.Language)))
 		i += copy(data[i:], m.Language)
 	}
-	if m.Created != 0 {
+	if m.Date != 0 {
 		data[i] = 0x20
 		i++
-		i = encodeVarintContent(data, i, uint64(m.Created))
+		i = encodeVarintContent(data, i, uint64(m.Date))
 	}
-	if m.Updated != 0 {
-		data[i] = 0x28
+	if m.Draft {
+		data[i] = 0x30
 		i++
-		i = encodeVarintContent(data, i, uint64(m.Updated))
+		if m.Draft {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
 	}
 	if len(m.Author) > 0 {
 		data[i] = 0x3a
@@ -414,11 +419,11 @@ func (m *Content) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovContent(uint64(l))
 	}
-	if m.Created != 0 {
-		n += 1 + sovContent(uint64(m.Created))
+	if m.Date != 0 {
+		n += 1 + sovContent(uint64(m.Date))
 	}
-	if m.Updated != 0 {
-		n += 1 + sovContent(uint64(m.Updated))
+	if m.Draft {
+		n += 2
 	}
 	l = len(m.Author)
 	if l > 0 {
@@ -630,9 +635,9 @@ func (m *Content) Unmarshal(data []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Created", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Date", wireType)
 			}
-			m.Created = 0
+			m.Date = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowContent
@@ -642,16 +647,16 @@ func (m *Content) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Created |= (int64(b) & 0x7F) << shift
+				m.Date |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 5:
+		case 6:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Updated", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Draft", wireType)
 			}
-			m.Updated = 0
+			var v int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowContent
@@ -661,11 +666,12 @@ func (m *Content) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Updated |= (int64(b) & 0x7F) << shift
+				v |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			m.Draft = bool(v != 0)
 		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Author", wireType)

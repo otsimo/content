@@ -115,6 +115,38 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/labstack/echo",
+			"repository": "https://github.com/labstack/echo",
+			"revision": "c782b3fc755dd875907c832ca9402808091b726c",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/labstack/gommon/color",
+			"repository": "https://github.com/labstack/gommon",
+			"revision": "bfff5bf04688a4048a5cb4dd3b3f0697caaad19c",
+			"branch": "master",
+			"path": "/color"
+		},
+		{
+			"importpath": "github.com/labstack/gommon/log",
+			"repository": "https://github.com/labstack/gommon",
+			"revision": "bfff5bf04688a4048a5cb4dd3b3f0697caaad19c",
+			"branch": "master",
+			"path": "/log"
+		},
+		{
+			"importpath": "github.com/mattn/go-colorable",
+			"repository": "https://github.com/mattn/go-colorable",
+			"revision": "9cbef7c35391cca05f15f8181dc0b18bc9736dbb",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mattn/go-isatty",
+			"repository": "https://github.com/mattn/go-isatty",
+			"revision": "56b76bdf51f7708750eac80fa38b952bb9f32639",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/mitchellh/go-homedir",
 			"repository": "https://github.com/mitchellh/go-homedir",
 			"revision": "d682a8f0cf139663a984ff12528da460ca963de9",
@@ -123,7 +155,7 @@
 		{
 			"importpath": "github.com/otsimo/api/apipb",
 			"repository": "https://github.com/otsimo/api",
-			"revision": "caf32b1f201a5feebe46dd1b9424f4d56536a33d",
+			"revision": "9d4537611652dc60616b75e273f6640b9707c75d",
 			"branch": "master",
 			"path": "/apipb"
 		},
@@ -137,6 +169,12 @@
 			"importpath": "github.com/shurcooL/sanitized_anchor_name",
 			"repository": "https://github.com/shurcooL/sanitized_anchor_name",
 			"revision": "10ef21a441db47d8b13ebcc5fd2310f636973c77",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/soheilhy/cmux",
+			"repository": "https://github.com/soheilhy/cmux",
+			"revision": "b5e73ea3817a23f58d08eb0c98e4af6840eb5d11",
 			"branch": "master"
 		},
 		{
@@ -166,6 +204,13 @@
 			"revision": "b6d7b1396ec874c3b00f6c84cd4301a17c56c8ed",
 			"branch": "master",
 			"path": "/trace"
+		},
+		{
+			"importpath": "golang.org/x/net/websocket",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "b6d7b1396ec874c3b00f6c84cd4301a17c56c8ed",
+			"branch": "master",
+			"path": "/websocket"
 		},
 		{
 			"importpath": "golang.org/x/oauth2",

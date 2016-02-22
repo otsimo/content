@@ -18,12 +18,15 @@ func RunAction(c *cli.Context) {
 	config.NoRedis = c.Bool("no-redis")
 	config.GitUrl = c.String("git-url")
 	config.GitFolder = c.String("git-path")
+	config.PublicDir = c.String("public-dir")
+	config.Host = c.String("host")
 
 	config.RedisAddr = c.String("redis-addr")
 	config.RedisDB = int64(c.Int("redis-db"))
 	config.RedisPassword = c.String("redis-password")
 
-	config.GrpcPort = c.Int("grpc-port")
+	config.Port = c.Int("port")
+
 	config.TlsCertFile = c.String("tls-cert-file")
 	config.TlsKeyFile = c.String("tls-key-file")
 
@@ -64,9 +67,9 @@ func main() {
 	var flags []cli.Flag
 
 	flags = []cli.Flag{
-		cli.IntFlag{Name: "http-port", Value: content.DefaultHttpPort, Usage: "http server port"},
-		cli.IntFlag{Name: "grpc-port", Value: content.DefaultGrpcPort, Usage: "grpc server port"},
-		cli.StringFlag{Name: "git-url", Value: "https://github.com/otsimo/wiki.git", Usage: "The content wiki git project url"},
+		cli.IntFlag{Name: "port", Value: content.DefaultPort, Usage: "server port"},
+		cli.StringFlag{Name: "git-url", Value: "https://github.com/otsimo/wiki.git", Usage: "the content wiki git project url"},
+		cli.StringFlag{Name: "host", Value: "https://content.otsimo.com", Usage: "services' host url"},
 		cli.StringFlag{Name: "git-path", Value: "/opt/otsimo/project", Usage: "where to put git project"},
 		cli.StringFlag{Name: "tls-cert-file", Value: "", Usage: "the server's certificate file for TLS connection"},
 		cli.StringFlag{Name: "tls-key-file", Value: "", Usage: "the server's private key file for TLS connection"},
@@ -75,6 +78,7 @@ func main() {
 		cli.IntFlag{Name: "redis-db", Value: 0, Usage: "redis db"},
 		cli.BoolFlag{Name: "no-redis", Usage: "don't use redis"},
 		cli.BoolFlag{Name: "debug, d", Usage: "enable verbose log"},
+		cli.StringFlag{Name: "public-dir", Value: "public", Usage: "public directory where parsed markdown files will put"},
 	}
 	flags = withEnvs("OTSIMO_CONTENT", flags)
 

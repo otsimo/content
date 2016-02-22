@@ -3,13 +3,12 @@ package content
 import "fmt"
 
 const (
-	DefaultGrpcPort = 18859
-	DefaultHttpPort = 18860
+	DefaultPort = 18859
 )
 
 type Config struct {
 	Debug         bool
-	GrpcPort      int
+	Port          int
 	TlsCertFile   string
 	TlsKeyFile    string
 	NoRedis       bool
@@ -18,12 +17,14 @@ type Config struct {
 	RedisAddr     string
 	RedisPassword string
 	RedisDB       int64
+	PublicDir     string
+	Host          string
 }
 
-func (c *Config) GetGrpcPortString() string {
-	return fmt.Sprintf(":%d", c.GrpcPort)
+func (c *Config) GetPortString() string {
+	return fmt.Sprintf(":%d", c.Port)
 }
 
 func NewConfig() *Config {
-	return &Config{GrpcPort: DefaultGrpcPort}
+	return &Config{Port: DefaultPort}
 }

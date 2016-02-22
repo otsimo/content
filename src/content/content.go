@@ -3,32 +3,48 @@ package content
 import (
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
 
-	"io/ioutil"
-
 	log "github.com/Sirupsen/logrus"
+	"github.com/otsimo/api/apipb"
 )
 
 type ContentConfig struct {
-	Folders  []string
-	Template string
+	Folders    []string
+	Template   string
+	PublicDirs map[string]string
+}
+
+type PublicDirEntry struct {
+	//Path is shown on http url
+	Path string
+	//Dir is real path where folder is located
+	Dir  string
 }
 
 type ContentManager struct {
 	Git           *GitClient
 	CurrentCommit string
+	GitPublicDirs []PublicDirEntry
+	publicDir     string
+	host          string
+	contents      []*apipb.Content
 }
 
 func NewContentManager(config *Config) *ContentManager {
 	git := NewGitClient(config.GitFolder, config.GitUrl)
 
 	return &ContentManager{
-		Git: git,
+		Git:           git,
+		publicDir:     config.PublicDir,
+		GitPublicDirs: []PublicDirEntry{},
+		host:          config.Host,
+		contents:      []*apipb.Content{},
 	}
 }
 
@@ -84,22 +100,43 @@ func NewContentConfig(configPath string) (*ContentConfig, error) {
 	return &config, nil
 }
 
-func readDirectory(dir string, tpl *template.Template) {
+func (cm *ContentManager) readDirectory(dir string, tpl *template.Template) {
 	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && strings.ToLower(filepath.Ext(path)) == ".md" {
-			parseMarkdownFile(path, "./static", tpl)
+			content, _ := parseMarkdownFile(path, cm.publicDir, tpl)
+			if content != nil {
+				cm.AddContent(content)
+			}
 		}
 		return nil
 	})
 }
 
+func contentHtmlFilename(content *apipb.Content) string {
+	return content.Slug + "." + content.Language + ".html"
+}
+
+func (cm *ContentManager) ClearPublicDir() {
+	if ex, _ := pathExists(cm.publicDir); ex {
+		os.RemoveAll(cm.publicDir)
+	}
+	os.Mkdir(cm.publicDir, os.ModePerm)
+}
+
 func (cm *ContentManager) ReadContent() error {
 	configPath := filepath.Join(cm.Git.Path, "config.json")
 	config, err := NewContentConfig(configPath)
-
 	if err != nil {
 		return err
 	}
+
+	for k, v := range config.PublicDirs {
+		cm.GitPublicDirs = append(cm.GitPublicDirs, PublicDirEntry{
+			Dir:  filepath.Join(cm.Git.Path, v),
+			Path: k,
+		})
+	}
+
 	tpl, err := ioutil.ReadFile(filepath.Join(cm.Git.Path, config.Template))
 	if err != nil {
 		log.Errorf("failed to read template")
@@ -110,9 +147,18 @@ func (cm *ContentManager) ReadContent() error {
 		log.Errorf("failed to parse template")
 		return err
 	}
+	cm.ClearPublicDir()
 	for _, v := range config.Folders {
 		dp := path.Join(cm.Git.Path, v)
-		readDirectory(dp, templ)
+		cm.readDirectory(dp, templ)
 	}
+	return nil
+}
+
+func (cm *ContentManager) AddContent(content *apipb.Content) error {
+	content.Url = cm.host + WikiEndpoint + "/" + contentHtmlFilename(content)
+
+	cm.contents = append(cm.contents, content)
+
 	return nil
 }
