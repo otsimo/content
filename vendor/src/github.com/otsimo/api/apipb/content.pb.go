@@ -113,6 +113,14 @@ func (m *ContentListResponse) GetContents() []*Content {
 	return nil
 }
 
+type ContentGetRequest struct {
+	Slug string `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
+}
+
+func (m *ContentGetRequest) Reset()         { *m = ContentGetRequest{} }
+func (m *ContentGetRequest) String() string { return proto.CompactTextString(m) }
+func (*ContentGetRequest) ProtoMessage()    {}
+
 func init() {
 	proto.RegisterEnum("apipb.ContentListRequest_ListStatus", ContentListRequest_ListStatus_name, ContentListRequest_ListStatus_value)
 	proto.RegisterEnum("apipb.ContentListRequest_SortBy", ContentListRequest_SortBy_name, ContentListRequest_SortBy_value)
@@ -126,6 +134,7 @@ var _ grpc.ClientConn
 
 type ContentServiceClient interface {
 	List(ctx context.Context, in *ContentListRequest, opts ...grpc.CallOption) (*ContentListResponse, error)
+	Get(ctx context.Context, in *ContentGetRequest, opts ...grpc.CallOption) (*Content, error)
 }
 
 type contentServiceClient struct {
@@ -145,10 +154,20 @@ func (c *contentServiceClient) List(ctx context.Context, in *ContentListRequest,
 	return out, nil
 }
 
+func (c *contentServiceClient) Get(ctx context.Context, in *ContentGetRequest, opts ...grpc.CallOption) (*Content, error) {
+	out := new(Content)
+	err := grpc.Invoke(ctx, "/apipb.ContentService/Get", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for ContentService service
 
 type ContentServiceServer interface {
 	List(context.Context, *ContentListRequest) (*ContentListResponse, error)
+	Get(context.Context, *ContentGetRequest) (*Content, error)
 }
 
 func RegisterContentServiceServer(s *grpc.Server, srv ContentServiceServer) {
@@ -167,6 +186,18 @@ func _ContentService_List_Handler(srv interface{}, ctx context.Context, dec func
 	return out, nil
 }
 
+func _ContentService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+	in := new(ContentGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	out, err := srv.(ContentServiceServer).Get(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 var _ContentService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "apipb.ContentService",
 	HandlerType: (*ContentServiceServer)(nil),
@@ -174,6 +205,10 @@ var _ContentService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _ContentService_List_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _ContentService_Get_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{},
@@ -384,6 +419,30 @@ func (m *ContentListResponse) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
+func (m *ContentGetRequest) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ContentGetRequest) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Slug) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintContent(data, i, uint64(len(m.Slug)))
+		i += copy(data[i:], m.Slug)
+	}
+	return i, nil
+}
+
 func encodeFixed64Content(data []byte, offset int, v uint64) int {
 	data[offset] = uint8(v)
 	data[offset+1] = uint8(v >> 8)
@@ -511,6 +570,16 @@ func (m *ContentListResponse) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovContent(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *ContentGetRequest) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Slug)
+	if l > 0 {
+		n += 1 + l + sovContent(uint64(l))
 	}
 	return n
 }
@@ -1217,6 +1286,85 @@ func (m *ContentListResponse) Unmarshal(data []byte) error {
 			if err := m.Contents[len(m.Contents)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipContent(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthContent
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ContentGetRequest) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowContent
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ContentGetRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ContentGetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Slug", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowContent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthContent
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Slug = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

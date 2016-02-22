@@ -240,6 +240,8 @@ type GameMetadata struct {
 	Keywords []string `protobuf:"bytes,7,rep,name=keywords" json:"keywords,omitempty" bson:"keywords,omitempty"`
 	// Images are image files that show on market
 	Images []string `protobuf:"bytes,8,rep,name=images" json:"images,omitempty" bson:"images,omitempty"`
+	// InfoSlug is the id of the content which describes how to play this game
+	InfoSlug string `protobuf:"bytes,9,opt,name=info_slug,proto3" json:"info_slug,omitempty" bson:"info_slug,omitempty"`
 }
 
 func (m *GameMetadata) Reset()         { *m = GameMetadata{} }
@@ -893,6 +895,12 @@ func (m *GameMetadata) MarshalTo(data []byte) (int, error) {
 			i++
 			i += copy(data[i:], s)
 		}
+	}
+	if len(m.InfoSlug) > 0 {
+		data[i] = 0x4a
+		i++
+		i = encodeVarintMessages(data, i, uint64(len(m.InfoSlug)))
+		i += copy(data[i:], m.InfoSlug)
 	}
 	return i, nil
 }
@@ -2106,6 +2114,10 @@ func (m *GameMetadata) Size() (n int) {
 			l = len(s)
 			n += 1 + l + sovMessages(uint64(l))
 		}
+	}
+	l = len(m.InfoSlug)
+	if l > 0 {
+		n += 1 + l + sovMessages(uint64(l))
 	}
 	return n
 }
@@ -3922,6 +3934,35 @@ func (m *GameMetadata) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Images = append(m.Images, string(data[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InfoSlug", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessages
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.InfoSlug = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -25,6 +25,7 @@
 		Content
 		ContentListRequest
 		ContentListResponse
+		ContentGetRequest
 		DeviceInfo
 		Event
 		AppEventData

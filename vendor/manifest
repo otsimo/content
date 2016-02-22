@@ -155,7 +155,7 @@
 		{
 			"importpath": "github.com/otsimo/api/apipb",
 			"repository": "https://github.com/otsimo/api",
-			"revision": "8313f29d76a2d41d0f26965b509681a09d9d0317",
+			"revision": "cf8da3074318fccafdddbd67a75e5e5f8a642a98",
 			"branch": "master",
 			"path": "/apipb"
 		},

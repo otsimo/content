@@ -3,6 +3,7 @@ package content
 import (
 	"github.com/otsimo/api/apipb"
 	"golang.org/x/net/context"
+	"errors"
 )
 
 type contentGrpcServer struct {
@@ -32,4 +33,13 @@ func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRe
 	return &apipb.ContentListResponse{
 		Contents: contents,
 	}, nil
+}
+
+func (w *contentGrpcServer) Get(ctx context.Context, in *apipb.ContentGetRequest) (*apipb.Content, error) {
+	for _, c := range w.server.Content.contents {
+		if c.Slug == in.Slug {
+			return c, nil
+		}
+	}
+	return nil, errors.New("not found")
 }
