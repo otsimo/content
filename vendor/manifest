@@ -20,6 +20,18 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/bmatsuo/go-jsontree",
+			"repository": "https://github.com/bmatsuo/go-jsontree",
+			"revision": "8a1cc1e88d44390691f69163f6bc597aac267cc3",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/bmatsuo/go-lexer",
+			"repository": "https://github.com/bmatsuo/go-lexer",
+			"revision": "77992e8b5ae71dd3447fb9be3158385c4c2abb4d",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/codegangsta/cli",
 			"repository": "https://github.com/codegangsta/cli",
 			"revision": "5db74198dee1cfe60cf06a611d03a420361baad6",
