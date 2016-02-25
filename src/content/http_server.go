@@ -50,10 +50,6 @@ func httpErrorHandler(err error, c *echo.Context) {
 	logrus.Errorln(err)
 }
 
-func (s *Server) webhookHandler(ctx *echo.Context) error {
-	return nil
-}
-
 func (s *Server) HttpServer() *echo.Echo {
 	// Echo instance
 	e := echo.New()

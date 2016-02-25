@@ -20,7 +20,7 @@ func RunAction(c *cli.Context) {
 	config.GitFolder = c.String("git-path")
 	config.PublicDir = c.String("public-dir")
 	config.Host = c.String("host")
-
+	config.Secret = c.String("webhook-secret")
 	config.RedisAddr = c.String("redis-addr")
 	config.RedisDB = int64(c.Int("redis-db"))
 	config.RedisPassword = c.String("redis-password")
@@ -75,6 +75,8 @@ func main() {
 		cli.StringFlag{Name: "tls-key-file", Value: "", Usage: "the server's private key file for TLS connection"},
 		cli.StringFlag{Name: "redis-addr", Value: "localhost:6379", Usage: "redis address"},
 		cli.StringFlag{Name: "redis-password", Value: "", Usage: "redis password"},
+		cli.StringFlag{Name: "webhook-secret", Value: "", Usage: "the webhook secret"},
+
 		cli.IntFlag{Name: "redis-db", Value: 0, Usage: "redis db"},
 		cli.BoolFlag{Name: "no-redis", Usage: "don't use redis"},
 		cli.BoolFlag{Name: "debug, d", Usage: "enable verbose log"},

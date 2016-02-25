@@ -19,6 +19,7 @@ type Config struct {
 	RedisDB       int64
 	PublicDir     string
 	Host          string
+	Secret        string
 }
 
 func (c *Config) GetPortString() string {

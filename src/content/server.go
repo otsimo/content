@@ -17,6 +17,10 @@ type Server struct {
 	Config  *Config
 	Content *ContentManager
 	Redis   *RedisClient
+
+	Secret     string     // Option secret key for authenticating via HMAC
+	IgnoreTags bool       // If set to false, also execute command if tag is pushed
+	Events     chan Event // Channel of events. Read from this channel to get push events as they happen.
 }
 
 func (s *Server) GRPCServer() *grpc.Server {
@@ -49,8 +53,11 @@ func (s *Server) GRPCServer() *grpc.Server {
 
 func NewServer(config *Config) *Server {
 	server := &Server{
-		Config:  config,
-		Content: NewContentManager(config),
+		Config:     config,
+		Content:    NewContentManager(config),
+		IgnoreTags: true,
+		Events:     make(chan Event, 10), // buffered to 10 items
+		Secret:     config.Secret,
 	}
 	return server
 }
@@ -65,7 +72,24 @@ func (s *Server) Start() {
 	if !s.Config.NoRedis {
 		s.Redis = NewRedisClient(s.Config, s.Content)
 	}
+
+	go s.TrackEvent()
 	s.Listen()
+}
+
+func (s *Server) TrackEvent() {
+	for {
+		select {
+		case e, ok := <-s.Events:
+			log.Debugf("server.go: event: %v", e)
+			if !ok {
+				return
+			}
+			//todo(sercan) check is it valid event
+			//todo(sercan) pull repo and recreate html files
+			//todo(sercan) publish to redis
+		}
+	}
 }
 
 func (s *Server) Listen() {

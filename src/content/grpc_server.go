@@ -1,9 +1,10 @@
 package content
 
 import (
+	"errors"
+
 	"github.com/otsimo/api/apipb"
 	"golang.org/x/net/context"
-	"errors"
 )
 
 type contentGrpcServer struct {
