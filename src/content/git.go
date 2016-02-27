@@ -60,6 +60,12 @@ func (gc GitClient) HasCommitHash(sha1 string) bool {
 	err := cmd.Run()
 	return err == nil
 }
+func (gc GitClient) Checkout(arg ...string) error {
+	log.Debugf("git.go: starting to checkout %s to %s", gc.GitUrl, gc.Path, arg)
+	cmd := exec.Command(gitPath, "checkout", arg...)
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
+}
 
 func (gc GitClient) RemoteUrl(path string) (string, error) {
 	cmd := exec.Command(gitPath, "config", "--get", "remote.origin.url")

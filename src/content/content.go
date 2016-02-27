@@ -24,7 +24,7 @@ type PublicDirEntry struct {
 	//Path is shown on http url
 	Path string
 	//Dir is real path where folder is located
-	Dir string
+	Dir  string
 }
 
 type ContentManager struct {
@@ -34,6 +34,7 @@ type ContentManager struct {
 	publicDir     string
 	host          string
 	contents      []*apipb.Content
+	tempContents  []*apipb.Content
 }
 
 func NewContentManager(config *Config) *ContentManager {
@@ -45,6 +46,7 @@ func NewContentManager(config *Config) *ContentManager {
 		GitPublicDirs: []PublicDirEntry{},
 		host:          config.Host,
 		contents:      []*apipb.Content{},
+		tempContents:      []*apipb.Content{},
 	}
 }
 
@@ -78,6 +80,7 @@ func (cm *ContentManager) Init() error {
 	} else {
 		return err
 	}
+	//cm.ClearPublicDir()
 
 	log.Infof("content.go: Git.CommitHash '%s', '%v'", ch, err)
 	return cm.ReadContent()
@@ -151,18 +154,37 @@ func (cm *ContentManager) ReadContent() error {
 		log.Errorf("failed to parse template")
 		return err
 	}
-	cm.ClearPublicDir()
 	for _, v := range config.Folders {
 		dp := path.Join(cm.Git.Path, v)
 		cm.readDirectory(dp, templ)
 	}
+	cm.contents = cm.tempContents
+	cm.tempContents = []*Content{}
 	return nil
 }
 
 func (cm *ContentManager) AddContent(content *apipb.Content) error {
 	content.Url = cm.host + WikiEndpoint + "/" + contentHtmlFilename(content)
 
-	cm.contents = append(cm.contents, content)
+	cm.tempContents = append(cm.tempContents, content)
 
 	return nil
+}
+
+func (cm *ContentManager) Update(commit string) error {
+	err := cm.Git.Checkout(commit)
+	if err != nil {
+		log.Errorf("content.go: failed to checkout repository")
+		return err
+	}
+
+	ch, err := cm.Git.CommitHash()
+	if err == nil {
+		cm.CurrentCommit = ch
+	} else {
+		return err
+	}
+
+	log.Infof("content.go: Git.CommitHash '%s', '%v'", ch, err)
+	return cm.ReadContent()
 }

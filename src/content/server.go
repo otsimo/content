@@ -14,9 +14,9 @@ import (
 )
 
 type Server struct {
-	Config  *Config
-	Content *ContentManager
-	Redis   *RedisClient
+	Config     *Config
+	Content    *ContentManager
+	Redis      *RedisClient
 
 	Secret     string     // Option secret key for authenticating via HMAC
 	IgnoreTags bool       // If set to false, also execute command if tag is pushed
@@ -85,9 +85,20 @@ func (s *Server) TrackEvent() {
 			if !ok {
 				return
 			}
-			//todo(sercan) check is it valid event
-			//todo(sercan) pull repo and recreate html files
-			//todo(sercan) publish to redis
+			if e.Type != "push" {
+				continue
+			}
+		//todo(sercan) check repo
+			log.Infof("updating repo by event %+v", e)
+
+			err := s.Content.Update(e.Commit)
+			if err != nil {
+				log.Errorf("failed to update repository")
+				continue
+			}
+			if !s.Config.NoRedis {
+				//todo(sercan) publish to redis
+			}
 		}
 	}
 }
