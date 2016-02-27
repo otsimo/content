@@ -4,7 +4,7 @@
 
 package apipb
 
-import proto "github.com/golang/protobuf/proto"
+import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
@@ -99,7 +99,8 @@ func (m *ContentListRequest) String() string { return proto.CompactTextString(m)
 func (*ContentListRequest) ProtoMessage()    {}
 
 type ContentListResponse struct {
-	Contents []*Content `protobuf:"bytes,1,rep,name=contents" json:"contents,omitempty"`
+	Contents     []*Content `protobuf:"bytes,1,rep,name=contents" json:"contents,omitempty"`
+	AssetVersion int32      `protobuf:"varint,2,opt,name=asset_version,proto3" json:"asset_version,omitempty"`
 }
 
 func (m *ContentListResponse) Reset()         { *m = ContentListResponse{} }
@@ -416,6 +417,11 @@ func (m *ContentListResponse) MarshalTo(data []byte) (int, error) {
 			i += n
 		}
 	}
+	if m.AssetVersion != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintContent(data, i, uint64(m.AssetVersion))
+	}
 	return i, nil
 }
 
@@ -570,6 +576,9 @@ func (m *ContentListResponse) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovContent(uint64(l))
 		}
+	}
+	if m.AssetVersion != 0 {
+		n += 1 + sovContent(uint64(m.AssetVersion))
 	}
 	return n
 }
@@ -1287,6 +1296,25 @@ func (m *ContentListResponse) Unmarshal(data []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetVersion", wireType)
+			}
+			m.AssetVersion = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowContent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.AssetVersion |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipContent(data[iNdEx:])

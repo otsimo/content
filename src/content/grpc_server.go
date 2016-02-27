@@ -32,7 +32,8 @@ func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRe
 	}
 
 	return &apipb.ContentListResponse{
-		Contents: contents,
+		AssetVersion: w.server.Content.assetVersion,
+		Contents:     contents,
 	}, nil
 }
 

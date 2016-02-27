@@ -2,72 +2,9 @@
 // source: api.proto
 // DO NOT EDIT!
 
-/*
-	Package apipb is a generated protocol buffer package.
-
-	It is generated from these files:
-		api.proto
-		catalog.proto
-		content.proto
-		listener.proto
-		messages.proto
-		registry.proto
-		search.proto
-		watch.proto
-
-	It has these top-level messages:
-		CatalogItem
-		Catalog
-		CatalogPullRequest
-		CatalogListRequest
-		CatalogListResponse
-		CatalogApproveRequest
-		Content
-		ContentListRequest
-		ContentListResponse
-		ContentGetRequest
-		DeviceInfo
-		Event
-		AppEventData
-		Address
-		Profile
-		ChildGameEntry
-		Child
-		Author
-		GameMetadata
-		GameManifest
-		Game
-		GameRelease
-		UploadToken
-		GetProfileRequest
-		GetChildRequest
-		GetChildrenFromProfileRequest
-		ChangeChildActivationRequest
-		GetChildrenFromProfileResponse
-		GetGameReleaseRequest
-		GameEntryRequest
-		PublishResponse
-		ValidateRequest
-		GetGameRequest
-		ListGamesRequest
-		ListItem
-		GetLatestVersionsRequest
-		GameAndVersion
-		GameVersionsResponse
-		IndexRequest
-		SearchResult
-		SearchRequest
-		SearchResponse
-		Response
-		EmitRequest
-		EmitResponse
-		WatchRequest
-		WatchEvent
-		WatchResponse
-*/
 package apipb
 
-import proto "github.com/golang/protobuf/proto"
+import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
 import math "math"
 

@@ -15,16 +15,17 @@ import (
 )
 
 type ContentConfig struct {
-	Folders    []string
-	Template   string
-	PublicDirs map[string]string
+	Folders      []string
+	Template     string
+	PublicDirs   map[string]string
+	AssetVersion int32
 }
 
 type PublicDirEntry struct {
 	//Path is shown on http url
 	Path string
 	//Dir is real path where folder is located
-	Dir  string
+	Dir string
 }
 
 type ContentManager struct {
@@ -35,6 +36,7 @@ type ContentManager struct {
 	host          string
 	contents      []*apipb.Content
 	tempContents  []*apipb.Content
+	assetVersion  int32
 }
 
 func NewContentManager(config *Config) *ContentManager {
@@ -46,7 +48,7 @@ func NewContentManager(config *Config) *ContentManager {
 		GitPublicDirs: []PublicDirEntry{},
 		host:          config.Host,
 		contents:      []*apipb.Content{},
-		tempContents:      []*apipb.Content{},
+		tempContents:  []*apipb.Content{},
 	}
 }
 
@@ -158,6 +160,7 @@ func (cm *ContentManager) ReadContent() error {
 		dp := path.Join(cm.Git.Path, v)
 		cm.readDirectory(dp, templ)
 	}
+	cm.assetVersion = config.AssetVersion
 	cm.contents = cm.tempContents
 	cm.tempContents = []*apipb.Content{}
 	return nil
