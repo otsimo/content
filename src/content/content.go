@@ -140,7 +140,7 @@ func (cm *ContentManager) ReadContent() error {
 	if err != nil {
 		return err
 	}
-
+	cm.assetVersion = config.AssetVersion
 	for k, v := range config.PublicDirs {
 		cm.GitPublicDirs = append(cm.GitPublicDirs, PublicDirEntry{
 			Dir:  filepath.Join(cm.Git.Path, v),
@@ -167,7 +167,7 @@ func (cm *ContentManager) ReadContent() error {
 		dp := path.Join(cm.Git.Path, v)
 		cm.readDirectory(dp, templ)
 	}
-	cm.assetVersion = config.AssetVersion
+
 	cm.contents = cm.tempContents
 	cm.tempContents = []*apipb.Content{}
 	return nil
