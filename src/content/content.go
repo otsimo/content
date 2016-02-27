@@ -159,7 +159,7 @@ func (cm *ContentManager) ReadContent() error {
 		cm.readDirectory(dp, templ)
 	}
 	cm.contents = cm.tempContents
-	cm.tempContents = []*Content{}
+	cm.tempContents = []*apipb.Content{}
 	return nil
 }
 
