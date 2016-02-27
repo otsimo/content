@@ -15,7 +15,7 @@ import (
 	"github.com/russross/blackfriday"
 )
 
-func parseMarkdownFile(filep string, outdir string, tpl *template.Template) (*apipb.Content, error) {
+func parseMarkdownFile(filep string, cm *ContentManager, tpl *template.Template) (*apipb.Content, error) {
 	file, err := os.Open(filep)
 	if err != nil {
 		log.Errorf("failed to open file %s error:%v", filep, err)
@@ -63,7 +63,7 @@ func parseMarkdownFile(filep string, outdir string, tpl *template.Template) (*ap
 		Title:   content.Title,
 		Content: string(out),
 	}
-	outfilepath := filepath.Join(outdir, contentHtmlFilename(&content))
+	outfilepath := filepath.Join(cm.publicDir, cm.contentHtmlFilename(&content))
 	ofile, err := os.Create(outfilepath)
 	if err != nil {
 		log.Errorf("failed create to output file, path=%s, err=%v", outfilepath, err)

@@ -10,6 +10,8 @@ import (
 	"strings"
 	"text/template"
 
+	"fmt"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/otsimo/api/apipb"
 )
@@ -108,7 +110,7 @@ func NewContentConfig(configPath string) (*ContentConfig, error) {
 func (cm *ContentManager) readDirectory(dir string, tpl *template.Template) {
 	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && strings.ToLower(filepath.Ext(path)) == ".md" {
-			content, err := parseMarkdownFile(path, cm.publicDir, tpl)
+			content, err := parseMarkdownFile(path, cm, tpl)
 			if err != nil {
 				log.Errorf("failed to parse markdown file '%s' err=%v", path, err)
 				return nil
@@ -121,8 +123,8 @@ func (cm *ContentManager) readDirectory(dir string, tpl *template.Template) {
 	})
 }
 
-func contentHtmlFilename(content *apipb.Content) string {
-	return content.Slug + "." + content.Language + ".html"
+func (cm *ContentManager) contentHtmlFilename(content *apipb.Content) string {
+	return fmt.Sprintf("%s.%s.%d.html", content.Slug, content.Language, cm.assetVersion)
 }
 
 func (cm *ContentManager) ClearPublicDir() {
@@ -156,6 +158,11 @@ func (cm *ContentManager) ReadContent() error {
 		log.Errorf("failed to parse template")
 		return err
 	}
+
+	if ex, _ := pathExists(cm.publicDir); !ex {
+		os.Mkdir(cm.publicDir, os.ModePerm)
+	}
+
 	for _, v := range config.Folders {
 		dp := path.Join(cm.Git.Path, v)
 		cm.readDirectory(dp, templ)
@@ -167,7 +174,7 @@ func (cm *ContentManager) ReadContent() error {
 }
 
 func (cm *ContentManager) AddContent(content *apipb.Content) error {
-	content.Url = cm.host + WikiEndpoint + "/" + contentHtmlFilename(content)
+	content.Url = cm.host + WikiEndpoint + "/" + cm.contentHtmlFilename(content)
 
 	cm.tempContents = append(cm.tempContents, content)
 
