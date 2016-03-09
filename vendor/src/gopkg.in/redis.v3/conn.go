@@ -8,16 +8,17 @@ import (
 
 const defaultBufSize = 4096
 
-var (
-	zeroTime = time.Time{}
-)
+var noTimeout = time.Time{}
+
+// Stubbed in tests.
+var now = time.Now
 
 type conn struct {
 	netcn net.Conn
 	rd    *bufio.Reader
 	buf   []byte
 
-	usedAt       time.Time
+	UsedAt       time.Time
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 }
@@ -32,6 +33,8 @@ func newConnDialer(opt *Options) func() (*conn, error) {
 		cn := &conn{
 			netcn: netcn,
 			buf:   make([]byte, defaultBufSize),
+
+			UsedAt: now(),
 		}
 		cn.rd = bufio.NewReader(cn)
 		return cn, cn.init(opt)
@@ -76,19 +79,21 @@ func (cn *conn) writeCmds(cmds ...Cmder) error {
 }
 
 func (cn *conn) Read(b []byte) (int, error) {
+	cn.UsedAt = now()
 	if cn.ReadTimeout != 0 {
-		cn.netcn.SetReadDeadline(time.Now().Add(cn.ReadTimeout))
+		cn.netcn.SetReadDeadline(cn.UsedAt.Add(cn.ReadTimeout))
 	} else {
-		cn.netcn.SetReadDeadline(zeroTime)
+		cn.netcn.SetReadDeadline(noTimeout)
 	}
 	return cn.netcn.Read(b)
 }
 
 func (cn *conn) Write(b []byte) (int, error) {
+	cn.UsedAt = now()
 	if cn.WriteTimeout != 0 {
-		cn.netcn.SetWriteDeadline(time.Now().Add(cn.WriteTimeout))
+		cn.netcn.SetWriteDeadline(cn.UsedAt.Add(cn.WriteTimeout))
 	} else {
-		cn.netcn.SetWriteDeadline(zeroTime)
+		cn.netcn.SetWriteDeadline(noTimeout)
 	}
 	return cn.netcn.Write(b)
 }

@@ -9,8 +9,10 @@
 		analysis.proto
 		api.proto
 		catalog.proto
+		certman.proto
 		content.proto
 		dashboard.proto
+		discovery.proto
 		listener.proto
 		messages.proto
 		registry.proto
@@ -29,20 +31,32 @@
 		AnalysisMetadata
 		GameWithVersions
 		AvailableAnalysisResult
+		Query
 		AnalyzeRequest
+		AnalyzeResult
+		ActiveUsersRequest
+		ActiveUsersResult
+		RetentionRequest
+		RetentionResult
 		CatalogItem
 		Catalog
 		CatalogPullRequest
 		CatalogListRequest
 		CatalogListResponse
 		CatalogApproveRequest
+		ServiceInfo
+		Certificate
 		Content
 		ContentListRequest
 		ContentListResponse
 		ContentGetRequest
 		Dashboard
 		DashboardGetRequest
+		OtsimoServices
+		DiscoveryRequest
 		DeviceInfo
+		GameInfo
+		Point
 		Event
 		AppEventData
 		Address
@@ -61,6 +75,7 @@
 		ChangeChildActivationRequest
 		GetChildrenFromProfileResponse
 		GetGameReleaseRequest
+		SoundEnableRequest
 		GameEntryRequest
 		PublishResponse
 		ValidateRequest
@@ -129,6 +144,55 @@ var Column_Type_value = map[string]int32{
 
 func (x Column_Type) String() string {
 	return proto.EnumName(Column_Type_name, int32(x))
+}
+
+type ActiveUsersRequest_Type int32
+
+const (
+	ActiveUsersRequest_MONTLY ActiveUsersRequest_Type = 0
+	ActiveUsersRequest_DAILY  ActiveUsersRequest_Type = 1
+	ActiveUsersRequest_NEW    ActiveUsersRequest_Type = 2
+	ActiveUsersRequest_TOTAL  ActiveUsersRequest_Type = 3
+)
+
+var ActiveUsersRequest_Type_name = map[int32]string{
+	0: "MONTLY",
+	1: "DAILY",
+	2: "NEW",
+	3: "TOTAL",
+}
+var ActiveUsersRequest_Type_value = map[string]int32{
+	"MONTLY": 0,
+	"DAILY":  1,
+	"NEW":    2,
+	"TOTAL":  3,
+}
+
+func (x ActiveUsersRequest_Type) String() string {
+	return proto.EnumName(ActiveUsersRequest_Type_name, int32(x))
+}
+
+type RetentionRequest_Type int32
+
+const (
+	RetentionRequest_ONE    RetentionRequest_Type = 0
+	RetentionRequest_SEVEN  RetentionRequest_Type = 1
+	RetentionRequest_THIRTY RetentionRequest_Type = 2
+)
+
+var RetentionRequest_Type_name = map[int32]string{
+	0: "ONE",
+	1: "SEVEN",
+	2: "THIRTY",
+}
+var RetentionRequest_Type_value = map[string]int32{
+	"ONE":    0,
+	"SEVEN":  1,
+	"THIRTY": 2,
+}
+
+func (x RetentionRequest_Type) String() string {
+	return proto.EnumName(RetentionRequest_Type_name, int32(x))
 }
 
 type Column struct {
@@ -381,8 +445,10 @@ func (m *DataSet) GetRows() []*Row {
 }
 
 type TimeRange struct {
+	// From is the unix seconds time
 	From int64 `protobuf:"varint,1,opt,name=from,proto3" json:"from,omitempty"`
-	To   int64 `protobuf:"varint,2,opt,name=to,proto3" json:"to,omitempty"`
+	// To is the unix seconds time
+	To int64 `protobuf:"varint,2,opt,name=to,proto3" json:"to,omitempty"`
 }
 
 func (m *TimeRange) Reset()         { *m = TimeRange{} }
@@ -390,7 +456,9 @@ func (m *TimeRange) String() string { return proto.CompactTextString(m) }
 func (*TimeRange) ProtoMessage()    {}
 
 type ChildAndProfileIds struct {
-	ChildId   string `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
+	// ChildId
+	ChildId string `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
+	// ProfileId
 	ProfileId string `protobuf:"bytes,2,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
 }
 
@@ -399,19 +467,34 @@ func (m *ChildAndProfileIds) String() string { return proto.CompactTextString(m)
 func (*ChildAndProfileIds) ProtoMessage()    {}
 
 type ChildAndTimeRange struct {
-	ChildId   string `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
+	// ChildId
+	ChildId string `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
+	// ProfileId
 	ProfileId string `protobuf:"bytes,2,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
+	// Range is the time range
+	Range *TimeRange `protobuf:"bytes,3,opt,name=range" json:"range,omitempty"`
 }
 
 func (m *ChildAndTimeRange) Reset()         { *m = ChildAndTimeRange{} }
 func (m *ChildAndTimeRange) String() string { return proto.CompactTextString(m) }
 func (*ChildAndTimeRange) ProtoMessage()    {}
 
+func (m *ChildAndTimeRange) GetRange() *TimeRange {
+	if m != nil {
+		return m.Range
+	}
+	return nil
+}
+
 type AnalysisMetadata struct {
-	GameId         string `protobuf:"bytes,1,opt,name=game_id,proto3" json:"game_id,omitempty"`
-	GameVersion    string `protobuf:"bytes,2,opt,name=game_version,proto3" json:"game_version,omitempty"`
+	// GameId
+	GameId string `protobuf:"bytes,1,opt,name=game_id,proto3" json:"game_id,omitempty"`
+	// GameVersion
+	GameVersion string `protobuf:"bytes,2,opt,name=game_version,proto3" json:"game_version,omitempty"`
+	// MinGameVersion
 	MinGameVersion string `protobuf:"bytes,3,opt,name=min_game_version,proto3" json:"min_game_version,omitempty"`
-	AnalysisType   string `protobuf:"bytes,4,opt,name=analysis_type,proto3" json:"analysis_type,omitempty"`
+	// AnalsisType
+	AnalysisType string `protobuf:"bytes,4,opt,name=analysis_type,proto3" json:"analysis_type,omitempty"`
 }
 
 func (m *AnalysisMetadata) Reset()         { *m = AnalysisMetadata{} }
@@ -419,7 +502,9 @@ func (m *AnalysisMetadata) String() string { return proto.CompactTextString(m) }
 func (*AnalysisMetadata) ProtoMessage()    {}
 
 type GameWithVersions struct {
-	GameId   string   `protobuf:"bytes,1,opt,name=game_id,proto3" json:"game_id,omitempty"`
+	// GameId
+	GameId string `protobuf:"bytes,1,opt,name=game_id,proto3" json:"game_id,omitempty"`
+	// Versions
 	Versions []string `protobuf:"bytes,2,rep,name=versions" json:"versions,omitempty"`
 }
 
@@ -428,6 +513,7 @@ func (m *GameWithVersions) String() string { return proto.CompactTextString(m) }
 func (*GameWithVersions) ProtoMessage()    {}
 
 type AvailableAnalysisResult struct {
+	// Analysis
 	Analysis []*AnalysisMetadata `protobuf:"bytes,1,rep,name=analysis" json:"analysis,omitempty"`
 }
 
@@ -442,20 +528,146 @@ func (m *AvailableAnalysisResult) GetAnalysis() []*AnalysisMetadata {
 	return nil
 }
 
+type Query struct {
+	From int64 `protobuf:"varint,1,opt,name=from,proto3" json:"from,omitempty"`
+	To   int64 `protobuf:"varint,2,opt,name=to,proto3" json:"to,omitempty"`
+}
+
+func (m *Query) Reset()         { *m = Query{} }
+func (m *Query) String() string { return proto.CompactTextString(m) }
+func (*Query) ProtoMessage()    {}
+
 type AnalyzeRequest struct {
-	ChildId      string   `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
-	ProfileId    string   `protobuf:"bytes,2,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
-	GameId       string   `protobuf:"bytes,3,opt,name=game_id,proto3" json:"game_id,omitempty"`
+	// ChildId
+	ChildId string `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
+	// ProfileId
+	ProfileId string `protobuf:"bytes,2,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
+	// GameId
+	GameId string `protobuf:"bytes,3,opt,name=game_id,proto3" json:"game_id,omitempty"`
+	// Game Versions
 	GameVersions []string `protobuf:"bytes,4,rep,name=game_versions" json:"game_versions,omitempty"`
-	AnalysisType string   `protobuf:"bytes,5,opt,name=analysis_type,proto3" json:"analysis_type,omitempty"`
+	// AnalysisType
+	AnalysisType string `protobuf:"bytes,5,opt,name=analysis_type,proto3" json:"analysis_type,omitempty"`
+	// Query is calculation query
+	Query *Query `protobuf:"bytes,6,opt,name=query" json:"query,omitempty"`
 }
 
 func (m *AnalyzeRequest) Reset()         { *m = AnalyzeRequest{} }
 func (m *AnalyzeRequest) String() string { return proto.CompactTextString(m) }
 func (*AnalyzeRequest) ProtoMessage()    {}
 
+func (m *AnalyzeRequest) GetQuery() *Query {
+	if m != nil {
+		return m.Query
+	}
+	return nil
+}
+
+type AnalyzeResult struct {
+	// Request
+	Request *AnalyzeRequest `protobuf:"bytes,1,opt,name=request" json:"request,omitempty"`
+	// Data
+	Data *DataSet `protobuf:"bytes,2,opt,name=data" json:"data,omitempty"`
+	// Created At
+	CreatedAt int64 `protobuf:"varint,3,opt,name=created_at,proto3" json:"created_at,omitempty"`
+}
+
+func (m *AnalyzeResult) Reset()         { *m = AnalyzeResult{} }
+func (m *AnalyzeResult) String() string { return proto.CompactTextString(m) }
+func (*AnalyzeResult) ProtoMessage()    {}
+
+func (m *AnalyzeResult) GetRequest() *AnalyzeRequest {
+	if m != nil {
+		return m.Request
+	}
+	return nil
+}
+
+func (m *AnalyzeResult) GetData() *DataSet {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
+// Active Users
+type ActiveUsersRequest struct {
+	Type  ActiveUsersRequest_Type `protobuf:"varint,1,opt,name=type,proto3,enum=apipb.ActiveUsersRequest_Type" json:"type,omitempty"`
+	Dates []int64                 `protobuf:"varint,2,rep,name=dates" json:"dates,omitempty"`
+}
+
+func (m *ActiveUsersRequest) Reset()         { *m = ActiveUsersRequest{} }
+func (m *ActiveUsersRequest) String() string { return proto.CompactTextString(m) }
+func (*ActiveUsersRequest) ProtoMessage()    {}
+
+type ActiveUsersResult struct {
+	// Request
+	Request *ActiveUsersRequest `protobuf:"bytes,1,opt,name=request" json:"request,omitempty"`
+	// Data
+	Data *DataSet `protobuf:"bytes,2,opt,name=data" json:"data,omitempty"`
+	// Created At
+	CreatedAt int64 `protobuf:"varint,3,opt,name=created_at,proto3" json:"created_at,omitempty"`
+}
+
+func (m *ActiveUsersResult) Reset()         { *m = ActiveUsersResult{} }
+func (m *ActiveUsersResult) String() string { return proto.CompactTextString(m) }
+func (*ActiveUsersResult) ProtoMessage()    {}
+
+func (m *ActiveUsersResult) GetRequest() *ActiveUsersRequest {
+	if m != nil {
+		return m.Request
+	}
+	return nil
+}
+
+func (m *ActiveUsersResult) GetData() *DataSet {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
+// Retention
+type RetentionRequest struct {
+	Type  RetentionRequest_Type `protobuf:"varint,1,opt,name=type,proto3,enum=apipb.RetentionRequest_Type" json:"type,omitempty"`
+	Dates []int64               `protobuf:"varint,2,rep,name=dates" json:"dates,omitempty"`
+}
+
+func (m *RetentionRequest) Reset()         { *m = RetentionRequest{} }
+func (m *RetentionRequest) String() string { return proto.CompactTextString(m) }
+func (*RetentionRequest) ProtoMessage()    {}
+
+type RetentionResult struct {
+	// Request
+	Request *RetentionRequest `protobuf:"bytes,1,opt,name=request" json:"request,omitempty"`
+	// Data
+	Data *DataSet `protobuf:"bytes,2,opt,name=data" json:"data,omitempty"`
+	// Created At
+	CreatedAt int64 `protobuf:"varint,3,opt,name=created_at,proto3" json:"created_at,omitempty"`
+}
+
+func (m *RetentionResult) Reset()         { *m = RetentionResult{} }
+func (m *RetentionResult) String() string { return proto.CompactTextString(m) }
+func (*RetentionResult) ProtoMessage()    {}
+
+func (m *RetentionResult) GetRequest() *RetentionRequest {
+	if m != nil {
+		return m.Request
+	}
+	return nil
+}
+
+func (m *RetentionResult) GetData() *DataSet {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterEnum("apipb.Column_Type", Column_Type_name, Column_Type_value)
+	proto.RegisterEnum("apipb.ActiveUsersRequest_Type", ActiveUsersRequest_Type_name, ActiveUsersRequest_Type_value)
+	proto.RegisterEnum("apipb.RetentionRequest_Type", RetentionRequest_Type_name, RetentionRequest_Type_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -465,10 +677,18 @@ var _ grpc.ClientConn
 // Client API for AnalysisService service
 
 type AnalysisServiceClient interface {
+	// ActiveOnRange returns child ids who active given time range
 	ActiveOnRange(ctx context.Context, in *TimeRange, opts ...grpc.CallOption) (AnalysisService_ActiveOnRangeClient, error)
+	// PlayedGames returns games played during given time range
 	PlayedGames(ctx context.Context, in *ChildAndTimeRange, opts ...grpc.CallOption) (*GameWithVersions, error)
+	// AvailableAnalysis returns analysis can be calculated
 	AvailableAnalysis(ctx context.Context, in *GameWithVersions, opts ...grpc.CallOption) (*AvailableAnalysisResult, error)
-	Analyze(ctx context.Context, in *AnalyzeRequest, opts ...grpc.CallOption) (*DataSet, error)
+	// Analyze calculates given request
+	Analyze(ctx context.Context, in *AnalyzeRequest, opts ...grpc.CallOption) (*AnalyzeResult, error)
+	// ActiveUsers calculates MAU, DAU
+	ActiveUsers(ctx context.Context, in *ActiveUsersRequest, opts ...grpc.CallOption) (*ActiveUsersResult, error)
+	// Retention returns retentation
+	Retention(ctx context.Context, in *RetentionRequest, opts ...grpc.CallOption) (*RetentionResult, error)
 }
 
 type analysisServiceClient struct {
@@ -529,9 +749,27 @@ func (c *analysisServiceClient) AvailableAnalysis(ctx context.Context, in *GameW
 	return out, nil
 }
 
-func (c *analysisServiceClient) Analyze(ctx context.Context, in *AnalyzeRequest, opts ...grpc.CallOption) (*DataSet, error) {
-	out := new(DataSet)
+func (c *analysisServiceClient) Analyze(ctx context.Context, in *AnalyzeRequest, opts ...grpc.CallOption) (*AnalyzeResult, error) {
+	out := new(AnalyzeResult)
 	err := grpc.Invoke(ctx, "/apipb.AnalysisService/Analyze", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analysisServiceClient) ActiveUsers(ctx context.Context, in *ActiveUsersRequest, opts ...grpc.CallOption) (*ActiveUsersResult, error) {
+	out := new(ActiveUsersResult)
+	err := grpc.Invoke(ctx, "/apipb.AnalysisService/ActiveUsers", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analysisServiceClient) Retention(ctx context.Context, in *RetentionRequest, opts ...grpc.CallOption) (*RetentionResult, error) {
+	out := new(RetentionResult)
+	err := grpc.Invoke(ctx, "/apipb.AnalysisService/Retention", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -541,10 +779,18 @@ func (c *analysisServiceClient) Analyze(ctx context.Context, in *AnalyzeRequest,
 // Server API for AnalysisService service
 
 type AnalysisServiceServer interface {
+	// ActiveOnRange returns child ids who active given time range
 	ActiveOnRange(*TimeRange, AnalysisService_ActiveOnRangeServer) error
+	// PlayedGames returns games played during given time range
 	PlayedGames(context.Context, *ChildAndTimeRange) (*GameWithVersions, error)
+	// AvailableAnalysis returns analysis can be calculated
 	AvailableAnalysis(context.Context, *GameWithVersions) (*AvailableAnalysisResult, error)
-	Analyze(context.Context, *AnalyzeRequest) (*DataSet, error)
+	// Analyze calculates given request
+	Analyze(context.Context, *AnalyzeRequest) (*AnalyzeResult, error)
+	// ActiveUsers calculates MAU, DAU
+	ActiveUsers(context.Context, *ActiveUsersRequest) (*ActiveUsersResult, error)
+	// Retention returns retentation
+	Retention(context.Context, *RetentionRequest) (*RetentionResult, error)
 }
 
 func RegisterAnalysisServiceServer(s *grpc.Server, srv AnalysisServiceServer) {
@@ -608,6 +854,30 @@ func _AnalysisService_Analyze_Handler(srv interface{}, ctx context.Context, dec 
 	return out, nil
 }
 
+func _AnalysisService_ActiveUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+	in := new(ActiveUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	out, err := srv.(AnalysisServiceServer).ActiveUsers(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func _AnalysisService_Retention_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+	in := new(RetentionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	out, err := srv.(AnalysisServiceServer).Retention(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 var _AnalysisService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "apipb.AnalysisService",
 	HandlerType: (*AnalysisServiceServer)(nil),
@@ -623,6 +893,14 @@ var _AnalysisService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Analyze",
 			Handler:    _AnalysisService_Analyze_Handler,
+		},
+		{
+			MethodName: "ActiveUsers",
+			Handler:    _AnalysisService_ActiveUsers_Handler,
+		},
+		{
+			MethodName: "Retention",
+			Handler:    _AnalysisService_Retention_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
@@ -939,6 +1217,16 @@ func (m *ChildAndTimeRange) MarshalTo(data []byte) (int, error) {
 		i = encodeVarintAnalysis(data, i, uint64(len(m.ProfileId)))
 		i += copy(data[i:], m.ProfileId)
 	}
+	if m.Range != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.Range.Size()))
+		n3, err := m.Range.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n3
+	}
 	return i, nil
 }
 
@@ -1053,6 +1341,34 @@ func (m *AvailableAnalysisResult) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
+func (m *Query) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *Query) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.From != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.From))
+	}
+	if m.To != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.To))
+	}
+	return i, nil
+}
+
 func (m *AnalyzeRequest) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -1106,6 +1422,205 @@ func (m *AnalyzeRequest) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintAnalysis(data, i, uint64(len(m.AnalysisType)))
 		i += copy(data[i:], m.AnalysisType)
+	}
+	if m.Query != nil {
+		data[i] = 0x32
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.Query.Size()))
+		n4, err := m.Query.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n4
+	}
+	return i, nil
+}
+
+func (m *AnalyzeResult) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *AnalyzeResult) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Request != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.Request.Size()))
+		n5, err := m.Request.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n5
+	}
+	if m.Data != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.Data.Size()))
+		n6, err := m.Data.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n6
+	}
+	if m.CreatedAt != 0 {
+		data[i] = 0x18
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.CreatedAt))
+	}
+	return i, nil
+}
+
+func (m *ActiveUsersRequest) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ActiveUsersRequest) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Type != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.Type))
+	}
+	if len(m.Dates) > 0 {
+		for _, num := range m.Dates {
+			data[i] = 0x10
+			i++
+			i = encodeVarintAnalysis(data, i, uint64(num))
+		}
+	}
+	return i, nil
+}
+
+func (m *ActiveUsersResult) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ActiveUsersResult) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Request != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.Request.Size()))
+		n7, err := m.Request.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n7
+	}
+	if m.Data != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.Data.Size()))
+		n8, err := m.Data.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n8
+	}
+	if m.CreatedAt != 0 {
+		data[i] = 0x18
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.CreatedAt))
+	}
+	return i, nil
+}
+
+func (m *RetentionRequest) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RetentionRequest) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Type != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.Type))
+	}
+	if len(m.Dates) > 0 {
+		for _, num := range m.Dates {
+			data[i] = 0x10
+			i++
+			i = encodeVarintAnalysis(data, i, uint64(num))
+		}
+	}
+	return i, nil
+}
+
+func (m *RetentionResult) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RetentionResult) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Request != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.Request.Size()))
+		n9, err := m.Request.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n9
+	}
+	if m.Data != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.Data.Size()))
+		n10, err := m.Data.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n10
+	}
+	if m.CreatedAt != 0 {
+		data[i] = 0x18
+		i++
+		i = encodeVarintAnalysis(data, i, uint64(m.CreatedAt))
 	}
 	return i, nil
 }
@@ -1288,6 +1803,10 @@ func (m *ChildAndTimeRange) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovAnalysis(uint64(l))
 	}
+	if m.Range != nil {
+		l = m.Range.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
 	return n
 }
 
@@ -1341,6 +1860,18 @@ func (m *AvailableAnalysisResult) Size() (n int) {
 	return n
 }
 
+func (m *Query) Size() (n int) {
+	var l int
+	_ = l
+	if m.From != 0 {
+		n += 1 + sovAnalysis(uint64(m.From))
+	}
+	if m.To != 0 {
+		n += 1 + sovAnalysis(uint64(m.To))
+	}
+	return n
+}
+
 func (m *AnalyzeRequest) Size() (n int) {
 	var l int
 	_ = l
@@ -1365,6 +1896,89 @@ func (m *AnalyzeRequest) Size() (n int) {
 	l = len(m.AnalysisType)
 	if l > 0 {
 		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.Query != nil {
+		l = m.Query.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	return n
+}
+
+func (m *AnalyzeResult) Size() (n int) {
+	var l int
+	_ = l
+	if m.Request != nil {
+		l = m.Request.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.Data != nil {
+		l = m.Data.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.CreatedAt != 0 {
+		n += 1 + sovAnalysis(uint64(m.CreatedAt))
+	}
+	return n
+}
+
+func (m *ActiveUsersRequest) Size() (n int) {
+	var l int
+	_ = l
+	if m.Type != 0 {
+		n += 1 + sovAnalysis(uint64(m.Type))
+	}
+	if len(m.Dates) > 0 {
+		for _, e := range m.Dates {
+			n += 1 + sovAnalysis(uint64(e))
+		}
+	}
+	return n
+}
+
+func (m *ActiveUsersResult) Size() (n int) {
+	var l int
+	_ = l
+	if m.Request != nil {
+		l = m.Request.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.Data != nil {
+		l = m.Data.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.CreatedAt != 0 {
+		n += 1 + sovAnalysis(uint64(m.CreatedAt))
+	}
+	return n
+}
+
+func (m *RetentionRequest) Size() (n int) {
+	var l int
+	_ = l
+	if m.Type != 0 {
+		n += 1 + sovAnalysis(uint64(m.Type))
+	}
+	if len(m.Dates) > 0 {
+		for _, e := range m.Dates {
+			n += 1 + sovAnalysis(uint64(e))
+		}
+	}
+	return n
+}
+
+func (m *RetentionResult) Size() (n int) {
+	var l int
+	_ = l
+	if m.Request != nil {
+		l = m.Request.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.Data != nil {
+		l = m.Data.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.CreatedAt != 0 {
+		n += 1 + sovAnalysis(uint64(m.CreatedAt))
 	}
 	return n
 }
@@ -2296,6 +2910,39 @@ func (m *ChildAndTimeRange) Unmarshal(data []byte) error {
 			}
 			m.ProfileId = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Range == nil {
+				m.Range = &TimeRange{}
+			}
+			if err := m.Range.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAnalysis(data[iNdEx:])
@@ -2672,6 +3319,94 @@ func (m *AvailableAnalysisResult) Unmarshal(data []byte) error {
 	}
 	return nil
 }
+func (m *Query) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Query: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Query: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			m.From = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.From |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field To", wireType)
+			}
+			m.To = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.To |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *AnalyzeRequest) Unmarshal(data []byte) error {
 	l := len(data)
 	iNdEx := 0
@@ -2846,6 +3581,622 @@ func (m *AnalyzeRequest) Unmarshal(data []byte) error {
 			}
 			m.AnalysisType = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Query", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Query == nil {
+				m.Query = &Query{}
+			}
+			if err := m.Query.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AnalyzeResult) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AnalyzeResult: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AnalyzeResult: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Request", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Request == nil {
+				m.Request = &AnalyzeRequest{}
+			}
+			if err := m.Request.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Data == nil {
+				m.Data = &DataSet{}
+			}
+			if err := m.Data.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
+			}
+			m.CreatedAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.CreatedAt |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ActiveUsersRequest) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ActiveUsersRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ActiveUsersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+			}
+			m.Type = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Type |= (ActiveUsersRequest_Type(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Dates", wireType)
+			}
+			var v int64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Dates = append(m.Dates, v)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ActiveUsersResult) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ActiveUsersResult: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ActiveUsersResult: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Request", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Request == nil {
+				m.Request = &ActiveUsersRequest{}
+			}
+			if err := m.Request.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Data == nil {
+				m.Data = &DataSet{}
+			}
+			if err := m.Data.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
+			}
+			m.CreatedAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.CreatedAt |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RetentionRequest) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RetentionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RetentionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+			}
+			m.Type = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Type |= (RetentionRequest_Type(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Dates", wireType)
+			}
+			var v int64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Dates = append(m.Dates, v)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RetentionResult) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RetentionResult: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RetentionResult: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Request", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Request == nil {
+				m.Request = &RetentionRequest{}
+			}
+			if err := m.Request.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Data == nil {
+				m.Data = &DataSet{}
+			}
+			if err := m.Data.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
+			}
+			m.CreatedAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.CreatedAt |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAnalysis(data[iNdEx:])

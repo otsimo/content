@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"net/http"
+
 	log "github.com/Sirupsen/logrus"
 	pb "github.com/otsimo/api/apipb"
 	"github.com/soheilhy/cmux"
@@ -14,9 +16,9 @@ import (
 )
 
 type Server struct {
-	Config     *Config
-	Content    *ContentManager
-	Redis      *RedisClient
+	Config  *Config
+	Content *ContentManager
+	Redis   *RedisClient
 
 	Secret     string     // Option secret key for authenticating via HMAC
 	IgnoreTags bool       // If set to false, also execute command if tag is pushed
@@ -88,7 +90,7 @@ func (s *Server) TrackEvent() {
 			if e.Type != "push" {
 				continue
 			}
-		//todo(sercan) check repo
+			//todo(sercan) check repo
 			log.Infof("updating repo by event %+v", e)
 
 			err := s.Content.Update(e.Commit)
@@ -103,29 +105,54 @@ func (s *Server) TrackEvent() {
 	}
 }
 
+func (s *Server) grpcHandlerFunc(rpcServer *grpc.Server, otherHandler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+			rpcServer.ServeHTTP(w, r)
+		} else {
+			otherHandler.ServeHTTP(w, r)
+		}
+	})
+}
+
 func (s *Server) Listen() {
-	// Create the main listener.
-	l, err := net.Listen("tcp", s.Config.GetPortString())
-	if err != nil {
-		log.Fatalf("server.go: failed to listen %v", err)
-	}
+	//Non-TLS
+	if s.Config.TlsCertFile == "" || s.Config.TlsKeyFile == "" {
+		// Create the main listener.
+		l, err := net.Listen("tcp", s.Config.GetPortString())
+		if err != nil {
+			log.Fatalf("server.go: failed to listen %v", err)
+		}
 
-	// Create a cmux.
-	m := cmux.New(l)
+		// Create a cmux.
+		m := cmux.New(l)
 
-	// Match connections in order:
-	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
-	httpL := m.Match(cmux.HTTP1Fast())
+		// Match connections in order:
+		grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
+		httpL := m.Match(cmux.HTTP1Fast())
 
-	// Create your protocol servers.
-	grpcS := s.GRPCServer()
-	echo := s.HttpServer()
-	httpS := echo.Server(s.Config.GetPortString())
+		// Create your protocol servers.
+		grpcS := s.GRPCServer()
+		echo := s.HttpServer()
+		httpS := echo.Server(s.Config.GetPortString())
 
-	go grpcS.Serve(grpcL)
-	go httpS.Serve(httpL)
+		go grpcS.Serve(grpcL)
+		go httpS.Serve(httpL)
 
-	if err := m.Serve(); !strings.Contains(err.Error(), "use of closed network connection") {
-		panic(err)
+		if err := m.Serve(); !strings.Contains(err.Error(), "use of closed network connection") {
+			panic(err)
+		}
+	} else {
+		//TLS
+		gserver := s.GRPCServer()
+		echo := s.HttpServer()
+		srv := &http.Server{
+			Addr:    s.Config.GetPortString(),
+			Handler: s.grpcHandlerFunc(gserver, echo),
+		}
+		if err := srv.ListenAndServeTLS(s.Config.TlsCertFile, s.Config.TlsKeyFile); err != nil {
+			panic(err)
+		}
+		log.Infoln("closing server")
 	}
 }

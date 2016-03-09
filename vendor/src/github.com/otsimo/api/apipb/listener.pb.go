@@ -38,6 +38,29 @@ func (m *DeviceInfo) Reset()         { *m = DeviceInfo{} }
 func (m *DeviceInfo) String() string { return proto.CompactTextString(m) }
 func (*DeviceInfo) ProtoMessage()    {}
 
+type GameInfo struct {
+	Id       string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Version  string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	Language string `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
+}
+
+func (m *GameInfo) Reset()         { *m = GameInfo{} }
+func (m *GameInfo) String() string { return proto.CompactTextString(m) }
+func (*GameInfo) ProtoMessage()    {}
+
+// Points are represented as latitude-longitude pairs in the E7 representation
+// (degrees multiplied by 10**7 and rounded to the nearest integer).
+// Latitudes should be in the range +/- 90 degrees and longitude should be in
+// the range +/- 180 degrees (inclusive).
+type Point struct {
+	Latitude  int32 `protobuf:"varint,1,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	Longitude int32 `protobuf:"varint,2,opt,name=longitude,proto3" json:"longitude,omitempty"`
+}
+
+func (m *Point) Reset()         { *m = Point{} }
+func (m *Point) String() string { return proto.CompactTextString(m) }
+func (*Point) ProtoMessage()    {}
+
 type Event struct {
 	// UserId is profile id or child id
 	UserId string `protobuf:"bytes,1,opt,name=user_id,proto3" json:"user_id,omitempty"`
@@ -45,14 +68,16 @@ type Event struct {
 	ChildId string `protobuf:"bytes,2,opt,name=child_id,proto3" json:"child_id,omitempty"`
 	// Event the event name
 	Event string `protobuf:"bytes,3,opt,name=event,proto3" json:"event,omitempty"`
-	// Timestamp is millisecond unix time
+	// Timestamp is seconds unix time
 	Timestamp int64 `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	// SubId will use for game id
-	SubId string `protobuf:"bytes,5,opt,name=sub_id,proto3" json:"sub_id,omitempty"`
-	// DeviceId is unique device identifier,
-	DeviceId string `protobuf:"bytes,6,opt,name=device_id,proto3" json:"device_id,omitempty"`
+	// Game is the game information
+	Game *GameInfo `protobuf:"bytes,5,opt,name=game" json:"game,omitempty"`
+	// Device is device information,
+	Device *DeviceInfo `protobuf:"bytes,6,opt,name=device" json:"device,omitempty"`
 	// AppId is the client app id
 	AppId string `protobuf:"bytes,7,opt,name=app_id,proto3" json:"app_id,omitempty"`
+	// Loc is the location of user
+	Loc *Point `protobuf:"bytes,8,opt,name=loc" json:"loc,omitempty"`
 	// Payload is a json data
 	Payload []byte `protobuf:"bytes,11,opt,name=payload,proto3" json:"payload,omitempty"`
 }
@@ -61,12 +86,34 @@ func (m *Event) Reset()         { *m = Event{} }
 func (m *Event) String() string { return proto.CompactTextString(m) }
 func (*Event) ProtoMessage()    {}
 
+func (m *Event) GetGame() *GameInfo {
+	if m != nil {
+		return m.Game
+	}
+	return nil
+}
+
+func (m *Event) GetDevice() *DeviceInfo {
+	if m != nil {
+		return m.Device
+	}
+	return nil
+}
+
+func (m *Event) GetLoc() *Point {
+	if m != nil {
+		return m.Loc
+	}
+	return nil
+}
+
 type AppEventData struct {
 	Event     string      `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
 	AppId     string      `protobuf:"bytes,2,opt,name=app_id,proto3" json:"app_id,omitempty"`
 	Device    *DeviceInfo `protobuf:"bytes,3,opt,name=device" json:"device,omitempty"`
 	Timestamp int64       `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	Payload   []byte      `protobuf:"bytes,5,opt,name=payload,proto3" json:"payload,omitempty"`
+	Loc       *Point      `protobuf:"bytes,6,opt,name=loc" json:"loc,omitempty"`
 }
 
 func (m *AppEventData) Reset()         { *m = AppEventData{} }
@@ -76,6 +123,13 @@ func (*AppEventData) ProtoMessage()    {}
 func (m *AppEventData) GetDevice() *DeviceInfo {
 	if m != nil {
 		return m.Device
+	}
+	return nil
+}
+
+func (m *AppEventData) GetLoc() *Point {
+	if m != nil {
+		return m.Loc
 	}
 	return nil
 }
@@ -293,6 +347,70 @@ func (m *DeviceInfo) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
+func (m *GameInfo) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *GameInfo) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Id) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintListener(data, i, uint64(len(m.Id)))
+		i += copy(data[i:], m.Id)
+	}
+	if len(m.Version) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintListener(data, i, uint64(len(m.Version)))
+		i += copy(data[i:], m.Version)
+	}
+	if len(m.Language) > 0 {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintListener(data, i, uint64(len(m.Language)))
+		i += copy(data[i:], m.Language)
+	}
+	return i, nil
+}
+
+func (m *Point) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *Point) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Latitude != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintListener(data, i, uint64(m.Latitude))
+	}
+	if m.Longitude != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintListener(data, i, uint64(m.Longitude))
+	}
+	return i, nil
+}
+
 func (m *Event) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -331,23 +449,41 @@ func (m *Event) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintListener(data, i, uint64(m.Timestamp))
 	}
-	if len(m.SubId) > 0 {
+	if m.Game != nil {
 		data[i] = 0x2a
 		i++
-		i = encodeVarintListener(data, i, uint64(len(m.SubId)))
-		i += copy(data[i:], m.SubId)
+		i = encodeVarintListener(data, i, uint64(m.Game.Size()))
+		n1, err := m.Game.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
 	}
-	if len(m.DeviceId) > 0 {
+	if m.Device != nil {
 		data[i] = 0x32
 		i++
-		i = encodeVarintListener(data, i, uint64(len(m.DeviceId)))
-		i += copy(data[i:], m.DeviceId)
+		i = encodeVarintListener(data, i, uint64(m.Device.Size()))
+		n2, err := m.Device.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
 	}
 	if len(m.AppId) > 0 {
 		data[i] = 0x3a
 		i++
 		i = encodeVarintListener(data, i, uint64(len(m.AppId)))
 		i += copy(data[i:], m.AppId)
+	}
+	if m.Loc != nil {
+		data[i] = 0x42
+		i++
+		i = encodeVarintListener(data, i, uint64(m.Loc.Size()))
+		n3, err := m.Loc.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n3
 	}
 	if m.Payload != nil {
 		if len(m.Payload) > 0 {
@@ -391,11 +527,11 @@ func (m *AppEventData) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x1a
 		i++
 		i = encodeVarintListener(data, i, uint64(m.Device.Size()))
-		n1, err := m.Device.MarshalTo(data[i:])
+		n4, err := m.Device.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n1
+		i += n4
 	}
 	if m.Timestamp != 0 {
 		data[i] = 0x20
@@ -409,6 +545,16 @@ func (m *AppEventData) MarshalTo(data []byte) (int, error) {
 			i = encodeVarintListener(data, i, uint64(len(m.Payload)))
 			i += copy(data[i:], m.Payload)
 		}
+	}
+	if m.Loc != nil {
+		data[i] = 0x32
+		i++
+		i = encodeVarintListener(data, i, uint64(m.Loc.Size()))
+		n5, err := m.Loc.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n5
 	}
 	return i, nil
 }
@@ -490,6 +636,36 @@ func (m *DeviceInfo) Size() (n int) {
 	return n
 }
 
+func (m *GameInfo) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovListener(uint64(l))
+	}
+	l = len(m.Version)
+	if l > 0 {
+		n += 1 + l + sovListener(uint64(l))
+	}
+	l = len(m.Language)
+	if l > 0 {
+		n += 1 + l + sovListener(uint64(l))
+	}
+	return n
+}
+
+func (m *Point) Size() (n int) {
+	var l int
+	_ = l
+	if m.Latitude != 0 {
+		n += 1 + sovListener(uint64(m.Latitude))
+	}
+	if m.Longitude != 0 {
+		n += 1 + sovListener(uint64(m.Longitude))
+	}
+	return n
+}
+
 func (m *Event) Size() (n int) {
 	var l int
 	_ = l
@@ -508,16 +684,20 @@ func (m *Event) Size() (n int) {
 	if m.Timestamp != 0 {
 		n += 1 + sovListener(uint64(m.Timestamp))
 	}
-	l = len(m.SubId)
-	if l > 0 {
+	if m.Game != nil {
+		l = m.Game.Size()
 		n += 1 + l + sovListener(uint64(l))
 	}
-	l = len(m.DeviceId)
-	if l > 0 {
+	if m.Device != nil {
+		l = m.Device.Size()
 		n += 1 + l + sovListener(uint64(l))
 	}
 	l = len(m.AppId)
 	if l > 0 {
+		n += 1 + l + sovListener(uint64(l))
+	}
+	if m.Loc != nil {
+		l = m.Loc.Size()
 		n += 1 + l + sovListener(uint64(l))
 	}
 	if m.Payload != nil {
@@ -552,6 +732,10 @@ func (m *AppEventData) Size() (n int) {
 		if l > 0 {
 			n += 1 + l + sovListener(uint64(l))
 		}
+	}
+	if m.Loc != nil {
+		l = m.Loc.Size()
+		n += 1 + l + sovListener(uint64(l))
 	}
 	return n
 }
@@ -938,6 +1122,231 @@ func (m *DeviceInfo) Unmarshal(data []byte) error {
 	}
 	return nil
 }
+func (m *GameInfo) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowListener
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GameInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GameInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowListener
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthListener
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowListener
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthListener
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Version = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Language", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowListener
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthListener
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Language = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipListener(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthListener
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Point) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowListener
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Point: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Point: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Latitude", wireType)
+			}
+			m.Latitude = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowListener
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Latitude |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Longitude", wireType)
+			}
+			m.Longitude = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowListener
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Longitude |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipListener(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthListener
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *Event) Unmarshal(data []byte) error {
 	l := len(data)
 	iNdEx := 0
@@ -1075,9 +1484,9 @@ func (m *Event) Unmarshal(data []byte) error {
 			}
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SubId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Game", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowListener
@@ -1087,26 +1496,30 @@ func (m *Event) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthListener
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.SubId = string(data[iNdEx:postIndex])
+			if m.Game == nil {
+				m.Game = &GameInfo{}
+			}
+			if err := m.Game.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DeviceId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Device", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowListener
@@ -1116,20 +1529,24 @@ func (m *Event) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthListener
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DeviceId = string(data[iNdEx:postIndex])
+			if m.Device == nil {
+				m.Device = &DeviceInfo{}
+			}
+			if err := m.Device.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 7:
 			if wireType != 2 {
@@ -1159,6 +1576,39 @@ func (m *Event) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.AppId = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Loc", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowListener
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthListener
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Loc == nil {
+				m.Loc = &Point{}
+			}
+			if err := m.Loc.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 11:
 			if wireType != 2 {
@@ -1375,6 +1825,39 @@ func (m *AppEventData) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Payload = append([]byte{}, data[iNdEx:postIndex]...)
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Loc", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowListener
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthListener
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Loc == nil {
+				m.Loc = &Point{}
+			}
+			if err := m.Loc.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

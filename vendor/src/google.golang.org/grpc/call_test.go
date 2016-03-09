@@ -39,6 +39,7 @@ import (
 	"math"
 	"net"
 	"strconv"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -75,7 +76,7 @@ type testStreamHandler struct {
 }
 
 func (h *testStreamHandler) handleStream(t *testing.T, s *transport.Stream) {
-	p := &parser{s: s}
+	p := &parser{r: s}
 	for {
 		pf, req, err := p.recvMsg()
 		if err == io.EOF {
@@ -95,7 +96,7 @@ func (h *testStreamHandler) handleStream(t *testing.T, s *transport.Stream) {
 			return
 		}
 		if v != expectedRequest {
-			h.t.WriteStatus(s, codes.Internal, string(make([]byte, sizeLargeErr)))
+			h.t.WriteStatus(s, codes.Internal, strings.Repeat("A", sizeLargeErr))
 			return
 		}
 	}
@@ -125,9 +126,9 @@ func newTestServer() *server {
 func (s *server) start(t *testing.T, port int, maxStreams uint32) {
 	var err error
 	if port == 0 {
-		s.lis, err = net.Listen("tcp", ":0")
+		s.lis, err = net.Listen("tcp", "localhost:0")
 	} else {
-		s.lis, err = net.Listen("tcp", ":"+strconv.Itoa(port))
+		s.lis, err = net.Listen("tcp", "localhost:"+strconv.Itoa(port))
 	}
 	if err != nil {
 		s.startedErr <- fmt.Errorf("failed to listen: %v", err)

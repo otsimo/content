@@ -37,6 +37,7 @@ type ApiServiceClient interface {
 	UpdateGameEntry(ctx context.Context, in *GameEntryRequest, opts ...grpc.CallOption) (*Response, error)
 	ChangeActivation(ctx context.Context, in *ChangeChildActivationRequest, opts ...grpc.CallOption) (*Response, error)
 	GetDisabledChildren(ctx context.Context, in *GetChildrenFromProfileRequest, opts ...grpc.CallOption) (*GetChildrenFromProfileResponse, error)
+	SoundEnable(ctx context.Context, in *SoundEnableRequest, opts ...grpc.CallOption) (*Response, error)
 }
 
 type apiServiceClient struct {
@@ -137,6 +138,15 @@ func (c *apiServiceClient) GetDisabledChildren(ctx context.Context, in *GetChild
 	return out, nil
 }
 
+func (c *apiServiceClient) SoundEnable(ctx context.Context, in *SoundEnableRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := grpc.Invoke(ctx, "/apipb.ApiService/SoundEnable", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for ApiService service
 
 type ApiServiceServer interface {
@@ -152,6 +162,7 @@ type ApiServiceServer interface {
 	UpdateGameEntry(context.Context, *GameEntryRequest) (*Response, error)
 	ChangeActivation(context.Context, *ChangeChildActivationRequest) (*Response, error)
 	GetDisabledChildren(context.Context, *GetChildrenFromProfileRequest) (*GetChildrenFromProfileResponse, error)
+	SoundEnable(context.Context, *SoundEnableRequest) (*Response, error)
 }
 
 func RegisterApiServiceServer(s *grpc.Server, srv ApiServiceServer) {
@@ -278,6 +289,18 @@ func _ApiService_GetDisabledChildren_Handler(srv interface{}, ctx context.Contex
 	return out, nil
 }
 
+func _ApiService_SoundEnable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+	in := new(SoundEnableRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	out, err := srv.(ApiServiceServer).SoundEnable(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 var _ApiService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "apipb.ApiService",
 	HandlerType: (*ApiServiceServer)(nil),
@@ -321,6 +344,10 @@ var _ApiService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDisabledChildren",
 			Handler:    _ApiService_GetDisabledChildren_Handler,
+		},
+		{
+			MethodName: "SoundEnable",
+			Handler:    _ApiService_SoundEnable_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{},

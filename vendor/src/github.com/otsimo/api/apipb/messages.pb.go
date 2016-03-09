@@ -187,10 +187,13 @@ func (m *Profile) String() string { return proto.CompactTextString(m) }
 func (*Profile) ProtoMessage()    {}
 
 type ChildGameEntry struct {
-	Id             gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id,omitempty" bson:"id"`
-	Active         bool                          `protobuf:"varint,2,opt,name=active,proto3" json:"active,omitempty" bson:"active"`
-	DashboardIndex int32                         `protobuf:"varint,3,opt,name=dashboard_index,proto3" json:"dashboard_index,omitempty" bson:"dashboard_index"`
-	Settings       []byte                        `protobuf:"bytes,4,opt,name=settings,proto3" json:"settings,omitempty" bson:"settings"`
+	Id                  gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id,omitempty" bson:"id"`
+	Active              bool                          `protobuf:"varint,2,opt,name=active,proto3" json:"active,omitempty" bson:"active"`
+	DashboardIndex      int32                         `protobuf:"varint,3,opt,name=dashboard_index,proto3" json:"dashboard_index,omitempty" bson:"dashboard_index"`
+	Settings            []byte                        `protobuf:"bytes,4,opt,name=settings,proto3" json:"settings,omitempty" bson:"settings"`
+	AddedAt             int64                         `protobuf:"varint,5,opt,name=added_at,proto3" json:"added_at,omitempty" bson:"added_at"`
+	ActivationChangedAt int64                         `protobuf:"varint,6,opt,name=activation_changed_at,proto3" json:"activation_changed_at,omitempty" bson:"activation_changed_at"`
+	UpdatedAt           int64                         `protobuf:"varint,7,opt,name=updated_at,proto3" json:"updated_at,omitempty" bson:"updated_at"`
 }
 
 func (m *ChildGameEntry) Reset()         { *m = ChildGameEntry{} }
@@ -198,17 +201,19 @@ func (m *ChildGameEntry) String() string { return proto.CompactTextString(m) }
 func (*ChildGameEntry) ProtoMessage()    {}
 
 type Child struct {
-	Id          gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id,omitempty" bson:"_id,omitempty"`
-	ParentId    gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,2,opt,name=parent_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"parent_id,omitempty" bson:"parent_id,omitempty"`
-	FirstName   string                        `protobuf:"bytes,3,opt,name=first_name,proto3" json:"first_name,omitempty" bson:"first_name,omitempty"`
-	LastName    string                        `protobuf:"bytes,4,opt,name=last_name,proto3" json:"last_name,omitempty" bson:"last_name,omitempty"`
-	BirthDay    int64                         `protobuf:"varint,5,opt,name=birth_day,proto3" json:"birth_day,omitempty" bson:"birth_day,omitempty"`
-	Gender      Gender                        `protobuf:"varint,7,opt,name=gender,proto3,enum=apipb.Gender" json:"gender,omitempty" bson:"gender,omitempty"`
-	Language    string                        `protobuf:"bytes,8,opt,name=language,proto3" json:"language,omitempty" bson:"language,omitempty"`
-	Games       []*ChildGameEntry             `protobuf:"bytes,9,rep,name=games" json:"games,omitempty" bson:"games,omitempty"`
-	Active      bool                          `protobuf:"varint,10,opt,name=active,proto3" json:"active,omitempty" bson:"active,omitempty"`
-	CreatedAt   int64                         `protobuf:"varint,15,opt,name=created_at,proto3" json:"created_at,omitempty" bson:"created_at,omitempty"`
-	LastUpdated int64                         `protobuf:"varint,16,opt,name=last_updated,proto3" json:"last_updated,omitempty" bson:"last_updated,omitempty"`
+	Id            gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id,omitempty" bson:"_id,omitempty"`
+	ParentId      gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,2,opt,name=parent_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"parent_id,omitempty" bson:"parent_id,omitempty"`
+	FirstName     string                        `protobuf:"bytes,3,opt,name=first_name,proto3" json:"first_name,omitempty" bson:"first_name,omitempty"`
+	LastName      string                        `protobuf:"bytes,4,opt,name=last_name,proto3" json:"last_name,omitempty" bson:"last_name,omitempty"`
+	BirthDay      int64                         `protobuf:"varint,5,opt,name=birth_day,proto3" json:"birth_day,omitempty" bson:"birth_day,omitempty"`
+	Gender        Gender                        `protobuf:"varint,7,opt,name=gender,proto3,enum=apipb.Gender" json:"gender,omitempty" bson:"gender,omitempty"`
+	Language      string                        `protobuf:"bytes,8,opt,name=language,proto3" json:"language,omitempty" bson:"language,omitempty"`
+	Games         []*ChildGameEntry             `protobuf:"bytes,9,rep,name=games" json:"games,omitempty" bson:"games,omitempty"`
+	Active        bool                          `protobuf:"varint,10,opt,name=active,proto3" json:"active,omitempty" bson:"active,omitempty"`
+	LoggedIn      bool                          `protobuf:"varint,11,opt,name=logged_in,proto3" json:"logged_in,omitempty" bson:"logged_in,omitempty"`
+	SoundsEnabled bool                          `protobuf:"varint,12,opt,name=sounds_enabled,proto3" json:"sounds_enabled,omitempty" bson:"sounds_enabled,omitempty"`
+	CreatedAt     int64                         `protobuf:"varint,15,opt,name=created_at,proto3" json:"created_at,omitempty" bson:"created_at,omitempty"`
+	LastUpdated   int64                         `protobuf:"varint,16,opt,name=last_updated,proto3" json:"last_updated,omitempty" bson:"last_updated,omitempty"`
 }
 
 func (m *Child) Reset()         { *m = Child{} }
@@ -271,7 +276,7 @@ type GameManifest struct {
 	DefaultLogo string `protobuf:"bytes,10,opt,name=default_logo,proto3" json:"default_logo,omitempty" bson:"default_logo,omitempty"`
 	// Icon square image
 	DefaultIcon string `protobuf:"bytes,11,opt,name=default_icon,proto3" json:"default_icon,omitempty" bson:"default_icon,omitempty"`
-	// Images are image files that show on market
+	// Images are image files that show on aoo
 	DefaultImages []string `protobuf:"bytes,12,rep,name=default_images" json:"default_images,omitempty" bson:"default_images,omitempty"`
 	// Metadata information for each languages
 	Metadata []*GameMetadata `protobuf:"bytes,13,rep,name=metadata" json:"metadata,omitempty" bson:"metadata,omitempty"`
@@ -281,6 +286,8 @@ type GameManifest struct {
 	Settings string `protobuf:"bytes,15,opt,name=settings,proto3" json:"settings,omitempty" bson:"settings,omitempty"`
 	// KV directory path
 	KvPath string `protobuf:"bytes,16,opt,name=kv_path,proto3" json:"kv_path,omitempty" bson:"kv_path,omitempty"`
+	// DeveloperName is the visible developer name
+	DeveloperName string `protobuf:"bytes,17,opt,name=developer_name,proto3" json:"developer_name,omitempty" bson:"developer_name,omitempty"`
 }
 
 func (m *GameManifest) Reset()         { *m = GameManifest{} }
@@ -302,16 +309,18 @@ func (m *Game) String() string { return proto.CompactTextString(m) }
 func (*Game) ProtoMessage()    {}
 
 type GameRelease struct {
-	ReleaseId    gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=release_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"release_id,omitempty" bson:"_id"`
-	GameId       gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,2,opt,name=game_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"game_id,omitempty" bson:"game_id"`
-	Version      string                        `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty" bson:"version"`
-	GameManifest *GameManifest                 `protobuf:"bytes,4,opt,name=game_manifest" json:"game_manifest,omitempty" bson:"game_manifest,omitempty"`
-	ReleasedAt   int64                         `protobuf:"varint,5,opt,name=released_at,proto3" json:"released_at,omitempty" bson:"released_at"`
-	ReleasedBy   gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,6,opt,name=released_by,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"released_by,omitempty" bson:"released_by,omitempty"`
-	ReleaseState ReleaseState                  `protobuf:"varint,7,opt,name=release_state,proto3,enum=apipb.ReleaseState" json:"release_state,omitempty" bson:"release_state"`
-	ValidatedBy  gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,8,opt,name=validated_by,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"validated_by,omitempty" bson:"validated_by,omitempty"`
-	ValidatedAt  int64                         `protobuf:"varint,9,opt,name=validated_at,proto3" json:"validated_at,omitempty" bson:"validated_at"`
-	IntVersion   int64                         `protobuf:"varint,10,opt,name=int_version,proto3" json:"int_version,omitempty" bson:"int_version"`
+	ReleaseId     gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=release_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"release_id,omitempty" bson:"_id"`
+	GameId        gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,2,opt,name=game_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"game_id,omitempty" bson:"game_id"`
+	Version       string                        `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty" bson:"version"`
+	GameManifest  *GameManifest                 `protobuf:"bytes,4,opt,name=game_manifest" json:"game_manifest,omitempty" bson:"game_manifest,omitempty"`
+	ReleasedAt    int64                         `protobuf:"varint,5,opt,name=released_at,proto3" json:"released_at,omitempty" bson:"released_at"`
+	ReleasedBy    gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,6,opt,name=released_by,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"released_by,omitempty" bson:"released_by,omitempty"`
+	ReleaseState  ReleaseState                  `protobuf:"varint,7,opt,name=release_state,proto3,enum=apipb.ReleaseState" json:"release_state,omitempty" bson:"release_state"`
+	ValidatedBy   gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,8,opt,name=validated_by,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"validated_by,omitempty" bson:"validated_by,omitempty"`
+	ValidatedAt   int64                         `protobuf:"varint,9,opt,name=validated_at,proto3" json:"validated_at,omitempty" bson:"validated_at"`
+	IntVersion    int64                         `protobuf:"varint,10,opt,name=int_version,proto3" json:"int_version,omitempty" bson:"int_version"`
+	Storage       string                        `protobuf:"bytes,11,opt,name=storage,proto3" json:"storage,omitempty" bson:"-"`
+	ArchiveFormat string                        `protobuf:"bytes,12,opt,name=archive_format,proto3" json:"archive_format,omitempty" bson:"-"`
 }
 
 func (m *GameRelease) Reset()         { *m = GameRelease{} }
@@ -382,6 +391,16 @@ func (m *GetGameReleaseRequest) Reset()         { *m = GetGameReleaseRequest{} }
 func (m *GetGameReleaseRequest) String() string { return proto.CompactTextString(m) }
 func (*GetGameReleaseRequest) ProtoMessage()    {}
 
+type SoundEnableRequest struct {
+	ChildId   string `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
+	ProfileId string `protobuf:"bytes,2,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
+	Enable    bool   `protobuf:"varint,3,opt,name=enable,proto3" json:"enable,omitempty"`
+}
+
+func (m *SoundEnableRequest) Reset()         { *m = SoundEnableRequest{} }
+func (m *SoundEnableRequest) String() string { return proto.CompactTextString(m) }
+func (*SoundEnableRequest) ProtoMessage()    {}
+
 type GameEntryRequest struct {
 	ChildId  string                       `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
 	GameId   string                       `protobuf:"bytes,2,opt,name=game_id,proto3" json:"game_id,omitempty"`
@@ -440,6 +459,8 @@ type ListItem struct {
 	LatestVersion     string       `protobuf:"bytes,3,opt,name=latest_version,proto3" json:"latest_version,omitempty"`
 	LatestState       ReleaseState `protobuf:"varint,4,opt,name=latest_state,proto3,enum=apipb.ReleaseState" json:"latest_state,omitempty"`
 	ProductionVersion string       `protobuf:"bytes,5,opt,name=production_version,proto3" json:"production_version,omitempty"`
+	Storage           string       `protobuf:"bytes,6,opt,name=storage,proto3" json:"storage,omitempty"`
+	ArchiveFormat     string       `protobuf:"bytes,7,opt,name=archive_format,proto3" json:"archive_format,omitempty"`
 }
 
 func (m *ListItem) Reset()         { *m = ListItem{} }
@@ -690,6 +711,21 @@ func (m *ChildGameEntry) MarshalTo(data []byte) (int, error) {
 			i += copy(data[i:], m.Settings)
 		}
 	}
+	if m.AddedAt != 0 {
+		data[i] = 0x28
+		i++
+		i = encodeVarintMessages(data, i, uint64(m.AddedAt))
+	}
+	if m.ActivationChangedAt != 0 {
+		data[i] = 0x30
+		i++
+		i = encodeVarintMessages(data, i, uint64(m.ActivationChangedAt))
+	}
+	if m.UpdatedAt != 0 {
+		data[i] = 0x38
+		i++
+		i = encodeVarintMessages(data, i, uint64(m.UpdatedAt))
+	}
 	return i, nil
 }
 
@@ -764,6 +800,26 @@ func (m *Child) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x50
 		i++
 		if m.Active {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.LoggedIn {
+		data[i] = 0x58
+		i++
+		if m.LoggedIn {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.SoundsEnabled {
+		data[i] = 0x60
+		i++
+		if m.SoundsEnabled {
 			data[i] = 1
 		} else {
 			data[i] = 0
@@ -1057,6 +1113,14 @@ func (m *GameManifest) MarshalTo(data []byte) (int, error) {
 		i = encodeVarintMessages(data, i, uint64(len(m.KvPath)))
 		i += copy(data[i:], m.KvPath)
 	}
+	if len(m.DeveloperName) > 0 {
+		data[i] = 0x8a
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintMessages(data, i, uint64(len(m.DeveloperName)))
+		i += copy(data[i:], m.DeveloperName)
+	}
 	return i, nil
 }
 
@@ -1196,6 +1260,18 @@ func (m *GameRelease) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x50
 		i++
 		i = encodeVarintMessages(data, i, uint64(m.IntVersion))
+	}
+	if len(m.Storage) > 0 {
+		data[i] = 0x5a
+		i++
+		i = encodeVarintMessages(data, i, uint64(len(m.Storage)))
+		i += copy(data[i:], m.Storage)
+	}
+	if len(m.ArchiveFormat) > 0 {
+		data[i] = 0x62
+		i++
+		i = encodeVarintMessages(data, i, uint64(len(m.ArchiveFormat)))
+		i += copy(data[i:], m.ArchiveFormat)
 	}
 	return i, nil
 }
@@ -1420,6 +1496,46 @@ func (m *GetGameReleaseRequest) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x18
 		i++
 		i = encodeVarintMessages(data, i, uint64(m.State))
+	}
+	return i, nil
+}
+
+func (m *SoundEnableRequest) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *SoundEnableRequest) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.ChildId) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintMessages(data, i, uint64(len(m.ChildId)))
+		i += copy(data[i:], m.ChildId)
+	}
+	if len(m.ProfileId) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintMessages(data, i, uint64(len(m.ProfileId)))
+		i += copy(data[i:], m.ProfileId)
+	}
+	if m.Enable {
+		data[i] = 0x18
+		i++
+		if m.Enable {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
 	}
 	return i, nil
 }
@@ -1652,6 +1768,18 @@ func (m *ListItem) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintMessages(data, i, uint64(len(m.ProductionVersion)))
 		i += copy(data[i:], m.ProductionVersion)
+	}
+	if len(m.Storage) > 0 {
+		data[i] = 0x32
+		i++
+		i = encodeVarintMessages(data, i, uint64(len(m.Storage)))
+		i += copy(data[i:], m.Storage)
+	}
+	if len(m.ArchiveFormat) > 0 {
+		data[i] = 0x3a
+		i++
+		i = encodeVarintMessages(data, i, uint64(len(m.ArchiveFormat)))
+		i += copy(data[i:], m.ArchiveFormat)
 	}
 	return i, nil
 }
@@ -2012,6 +2140,15 @@ func (m *ChildGameEntry) Size() (n int) {
 			n += 1 + l + sovMessages(uint64(l))
 		}
 	}
+	if m.AddedAt != 0 {
+		n += 1 + sovMessages(uint64(m.AddedAt))
+	}
+	if m.ActivationChangedAt != 0 {
+		n += 1 + sovMessages(uint64(m.ActivationChangedAt))
+	}
+	if m.UpdatedAt != 0 {
+		n += 1 + sovMessages(uint64(m.UpdatedAt))
+	}
 	return n
 }
 
@@ -2051,6 +2188,12 @@ func (m *Child) Size() (n int) {
 		}
 	}
 	if m.Active {
+		n += 2
+	}
+	if m.LoggedIn {
+		n += 2
+	}
+	if m.SoundsEnabled {
 		n += 2
 	}
 	if m.CreatedAt != 0 {
@@ -2199,6 +2342,10 @@ func (m *GameManifest) Size() (n int) {
 	if l > 0 {
 		n += 2 + l + sovMessages(uint64(l))
 	}
+	l = len(m.DeveloperName)
+	if l > 0 {
+		n += 2 + l + sovMessages(uint64(l))
+	}
 	return n
 }
 
@@ -2271,6 +2418,14 @@ func (m *GameRelease) Size() (n int) {
 	}
 	if m.IntVersion != 0 {
 		n += 1 + sovMessages(uint64(m.IntVersion))
+	}
+	l = len(m.Storage)
+	if l > 0 {
+		n += 1 + l + sovMessages(uint64(l))
+	}
+	l = len(m.ArchiveFormat)
+	if l > 0 {
+		n += 1 + l + sovMessages(uint64(l))
 	}
 	return n
 }
@@ -2372,6 +2527,23 @@ func (m *GetGameReleaseRequest) Size() (n int) {
 	}
 	if m.State != 0 {
 		n += 1 + sovMessages(uint64(m.State))
+	}
+	return n
+}
+
+func (m *SoundEnableRequest) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.ChildId)
+	if l > 0 {
+		n += 1 + l + sovMessages(uint64(l))
+	}
+	l = len(m.ProfileId)
+	if l > 0 {
+		n += 1 + l + sovMessages(uint64(l))
+	}
+	if m.Enable {
+		n += 2
 	}
 	return n
 }
@@ -2484,6 +2656,14 @@ func (m *ListItem) Size() (n int) {
 		n += 1 + sovMessages(uint64(m.LatestState))
 	}
 	l = len(m.ProductionVersion)
+	if l > 0 {
+		n += 1 + l + sovMessages(uint64(l))
+	}
+	l = len(m.Storage)
+	if l > 0 {
+		n += 1 + l + sovMessages(uint64(l))
+	}
+	l = len(m.ArchiveFormat)
 	if l > 0 {
 		n += 1 + l + sovMessages(uint64(l))
 	}
@@ -3223,6 +3403,63 @@ func (m *ChildGameEntry) Unmarshal(data []byte) error {
 			}
 			m.Settings = append([]byte{}, data[iNdEx:postIndex]...)
 			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AddedAt", wireType)
+			}
+			m.AddedAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.AddedAt |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ActivationChangedAt", wireType)
+			}
+			m.ActivationChangedAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.ActivationChangedAt |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedAt", wireType)
+			}
+			m.UpdatedAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.UpdatedAt |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMessages(data[iNdEx:])
@@ -3507,6 +3744,46 @@ func (m *Child) Unmarshal(data []byte) error {
 				}
 			}
 			m.Active = bool(v != 0)
+		case 11:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoggedIn", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.LoggedIn = bool(v != 0)
+		case 12:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SoundsEnabled", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.SoundsEnabled = bool(v != 0)
 		case 15:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
@@ -4482,6 +4759,35 @@ func (m *GameManifest) Unmarshal(data []byte) error {
 			}
 			m.KvPath = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 17:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeveloperName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessages
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DeveloperName = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMessages(data[iNdEx:])
@@ -5010,6 +5316,64 @@ func (m *GameRelease) Unmarshal(data []byte) error {
 					break
 				}
 			}
+		case 11:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Storage", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessages
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Storage = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 12:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ArchiveFormat", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessages
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ArchiveFormat = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMessages(data[iNdEx:])
@@ -5768,6 +6132,134 @@ func (m *GetGameReleaseRequest) Unmarshal(data []byte) error {
 					break
 				}
 			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMessages(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthMessages
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SoundEnableRequest) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMessages
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SoundEnableRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SoundEnableRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChildId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessages
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ChildId = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProfileId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessages
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProfileId = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Enable", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Enable = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMessages(data[iNdEx:])
@@ -6599,6 +7091,64 @@ func (m *ListItem) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.ProductionVersion = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Storage", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessages
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Storage = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ArchiveFormat", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessages
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ArchiveFormat = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -26,17 +26,20 @@ const (
 	WatchEvent_PROFILE_UPDATED     WatchEvent_EventType = 0
 	WatchEvent_CHILD_UPDATED       WatchEvent_EventType = 1
 	WatchEvent_CHILD_GAMES_UPDATED WatchEvent_EventType = 2
+	WatchEvent_CHILD_SOUND_UPDATED WatchEvent_EventType = 3
 )
 
 var WatchEvent_EventType_name = map[int32]string{
 	0: "PROFILE_UPDATED",
 	1: "CHILD_UPDATED",
 	2: "CHILD_GAMES_UPDATED",
+	3: "CHILD_SOUND_UPDATED",
 }
 var WatchEvent_EventType_value = map[string]int32{
 	"PROFILE_UPDATED":     0,
 	"CHILD_UPDATED":       1,
 	"CHILD_GAMES_UPDATED": 2,
+	"CHILD_SOUND_UPDATED": 3,
 }
 
 func (x WatchEvent_EventType) String() string {

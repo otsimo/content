@@ -43,7 +43,7 @@ type (
 const (
 	skind kind = iota
 	pkind
-	mkind
+	akind
 )
 
 // NewRouter returns a new Router instance.
@@ -82,7 +82,7 @@ func (r *Router) Add(method, path string, h HandlerFunc, e *Echo) {
 		} else if path[i] == '*' {
 			r.insert(method, path[:i], nil, skind, "", nil, e)
 			pnames = append(pnames, "_*")
-			r.insert(method, path[:i+1], h, mkind, ppath, pnames, e)
+			r.insert(method, path[:i+1], h, akind, ppath, pnames, e)
 			return
 		}
 	}
@@ -172,7 +172,7 @@ func (r *Router) insert(method, path string, h HandlerFunc, t kind, ppath string
 			// Node already exists
 			if h != nil {
 				cn.addHandler(method, h)
-				cn.ppath = path
+				cn.ppath = ppath
 				cn.pnames = pnames
 				cn.echo = e
 			}
@@ -286,6 +286,7 @@ func (n *node) check405() HandlerFunc {
 // Find dispatches the request to the handler whos route is matched with the
 // specified request path.
 func (r *Router) Find(method, path string, ctx *Context) (h HandlerFunc, e *Echo) {
+	// r.tree.printTree("", true)
 	h = notFoundHandler
 	e = r.echo
 	cn := r.tree // Current node as root
@@ -299,7 +300,7 @@ func (r *Router) Find(method, path string, ctx *Context) (h HandlerFunc, e *Echo
 		ns     string // Next search
 	)
 
-	// Search order static > param > match-any
+	// Search order static > param > any
 	for {
 		if search == "" {
 			goto End
@@ -329,12 +330,11 @@ func (r *Router) Find(method, path string, ctx *Context) (h HandlerFunc, e *Echo
 			search = ns
 			if nk == pkind {
 				goto Param
-			} else if nk == mkind {
-				goto MatchAny
-			} else {
-				// Not found
-				return
+			} else if nk == akind {
+				goto Any
 			}
+			// Not found
+			return
 		}
 
 		if search == "" {
@@ -342,8 +342,7 @@ func (r *Router) Find(method, path string, ctx *Context) (h HandlerFunc, e *Echo
 		}
 
 		// Static node
-		c = cn.findChild(search[0], skind)
-		if c != nil {
+		if c = cn.findChild(search[0], skind); c != nil {
 			// Save next
 			if cn.label == '/' {
 				nk = pkind
@@ -356,15 +355,20 @@ func (r *Router) Find(method, path string, ctx *Context) (h HandlerFunc, e *Echo
 
 		// Param node
 	Param:
-		c = cn.findChildByKind(pkind)
-		if c != nil {
+		if c = cn.findChildByKind(pkind); c != nil {
+			// Issue #378
+			if len(ctx.pvalues) == n {
+				continue
+			}
+
 			// Save next
 			if cn.label == '/' {
-				nk = mkind
+				nk = akind
 				nn = cn
 				ns = search
 			}
 			cn = c
+
 			i, l := 0, len(search)
 			for ; i < l && search[i] != '/'; i++ {
 			}
@@ -374,15 +378,20 @@ func (r *Router) Find(method, path string, ctx *Context) (h HandlerFunc, e *Echo
 			continue
 		}
 
-		// Match-any node
-	MatchAny:
-		// c = cn.getChild()
-		if cn = cn.findChildByKind(mkind); cn == nil {
-			// Not found
-			if nn != nil { // Issue #217
+		// Any node
+	Any:
+		if cn = cn.findChildByKind(akind); cn == nil {
+			if nn != nil {
 				cn = nn
-				continue
+				nn = nil // Next
+				search = ns
+				if nk == pkind {
+					goto Param
+				} else if nk == akind {
+					goto Any
+				}
 			}
+			// Not found
 			return
 		}
 		ctx.pvalues[len(cn.pnames)-1] = search
@@ -401,9 +410,9 @@ End:
 	if h == nil {
 		h = cn.check405()
 
-		// Dig further for match-any, might have an empty value for *, e.g.
+		// Dig further for any, might have an empty value for *, e.g.
 		// serving a directory. Issue #207.
-		if cn = cn.findChildByKind(mkind); cn == nil {
+		if cn = cn.findChildByKind(akind); cn == nil {
 			return
 		}
 		ctx.pvalues[len(cn.pnames)-1] = ""

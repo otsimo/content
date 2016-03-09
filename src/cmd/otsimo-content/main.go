@@ -24,9 +24,7 @@ func RunAction(c *cli.Context) {
 	config.RedisAddr = c.String("redis-addr")
 	config.RedisDB = int64(c.Int("redis-db"))
 	config.RedisPassword = c.String("redis-password")
-
 	config.Port = c.Int("port")
-
 	config.TlsCertFile = c.String("tls-cert-file")
 	config.TlsKeyFile = c.String("tls-key-file")
 

@@ -164,7 +164,7 @@ func (p *connPool) closed() bool {
 }
 
 func (p *connPool) isIdle(cn *conn) bool {
-	return p.opt.getIdleTimeout() > 0 && time.Since(cn.usedAt) > p.opt.getIdleTimeout()
+	return p.opt.getIdleTimeout() > 0 && time.Since(cn.UsedAt) > p.opt.getIdleTimeout()
 }
 
 // First returns first non-idle connection from the pool or nil if
@@ -246,13 +246,14 @@ func (p *connPool) Get() (cn *conn, isNew bool, err error) {
 
 	// Try to create a new one.
 	if p.conns.Reserve() {
+		isNew = true
+
 		cn, err = p.new()
 		if err != nil {
 			p.conns.Remove(nil)
 			return
 		}
 		p.conns.Add(cn)
-		isNew = true
 		return
 	}
 
@@ -273,9 +274,6 @@ func (p *connPool) Put(cn *conn) error {
 		err := fmt.Errorf("connection has unread data: %q", b)
 		Logger.Print(err)
 		return p.Remove(cn, err)
-	}
-	if p.opt.getIdleTimeout() > 0 {
-		cn.usedAt = time.Now()
 	}
 	p.freeConns <- cn
 	return nil
@@ -481,13 +479,13 @@ func (p *stickyConnPool) Put(cn *conn) error {
 	return nil
 }
 
-func (p *stickyConnPool) remove(reason error) (err error) {
-	err = p.pool.Remove(p.cn, reason)
+func (p *stickyConnPool) remove(reason error) error {
+	err := p.pool.Remove(p.cn, reason)
 	p.cn = nil
 	return err
 }
 
-func (p *stickyConnPool) Remove(cn *conn, _ error) error {
+func (p *stickyConnPool) Remove(cn *conn, reason error) error {
 	defer p.mx.Unlock()
 	p.mx.Lock()
 	if p.closed {
@@ -499,7 +497,7 @@ func (p *stickyConnPool) Remove(cn *conn, _ error) error {
 	if cn != nil && p.cn != cn {
 		panic("p.cn != cn")
 	}
-	return nil
+	return p.remove(reason)
 }
 
 func (p *stickyConnPool) Len() int {
@@ -521,15 +519,6 @@ func (p *stickyConnPool) FreeLen() int {
 }
 
 func (p *stickyConnPool) Stats() *PoolStats { return nil }
-
-func (p *stickyConnPool) Reset(reason error) (err error) {
-	p.mx.Lock()
-	if p.cn != nil {
-		err = p.remove(reason)
-	}
-	p.mx.Unlock()
-	return err
-}
 
 func (p *stickyConnPool) Close() error {
 	defer p.mx.Unlock()
