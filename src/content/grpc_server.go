@@ -30,7 +30,6 @@ func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRe
 
 		contents = append(contents, c)
 	}
-
 	return &apipb.ContentListResponse{
 		AssetVersion: w.server.Content.assetVersion,
 		Contents:     contents,

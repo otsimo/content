@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/labstack/echo"
 	pb "github.com/otsimo/api/apipb"
 	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
@@ -105,11 +106,28 @@ func (s *Server) TrackEvent() {
 	}
 }
 
+func grpcLog(req *http.Request) {
+	remoteAddr := req.RemoteAddr
+	if ip := req.Header.Get(echo.XRealIP); ip != "" {
+		remoteAddr = ip
+	} else if ip = req.Header.Get(echo.XForwardedFor); ip != "" {
+		remoteAddr = ip
+	}
+	remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
+	path := req.URL.Path
+	if path == "" {
+		path = "/"
+	}
+	log.Printf("%s %s %s", remoteAddr, "GRPC", path)
+}
+
 func (s *Server) grpcHandlerFunc(rpcServer *grpc.Server, otherHandler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+			go grpcLog(r)
 			rpcServer.ServeHTTP(w, r)
 		} else {
+			log.Infoln("serving http", r.URL.String())
 			otherHandler.ServeHTTP(w, r)
 		}
 	})
@@ -118,6 +136,7 @@ func (s *Server) grpcHandlerFunc(rpcServer *grpc.Server, otherHandler http.Handl
 func (s *Server) Listen() {
 	//Non-TLS
 	if s.Config.TlsCertFile == "" || s.Config.TlsKeyFile == "" {
+		log.Infoln("Starting without TLS")
 		// Create the main listener.
 		l, err := net.Listen("tcp", s.Config.GetPortString())
 		if err != nil {
@@ -144,6 +163,7 @@ func (s *Server) Listen() {
 		}
 	} else {
 		//TLS
+		log.Infoln("Starting TLS server")
 		gserver := s.GRPCServer()
 		echo := s.HttpServer()
 		srv := &http.Server{
