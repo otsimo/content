@@ -182,7 +182,7 @@ func (cm *ContentManager) AddContent(content *apipb.Content) error {
 }
 
 func (cm *ContentManager) Update(commit string) error {
-	err := cm.Git.Checkout(commit)
+	err := cm.Git.FetchAndPull()
 	if err != nil {
 		log.Errorf("content.go: failed to checkout repository err=%+v", err)
 		return err
