@@ -61,9 +61,10 @@ func (gc GitClient) HasCommitHash(sha1 string) bool {
 	return err == nil
 }
 func (gc GitClient) Checkout(arg ...string) error {
-	log.Debugf("git.go: starting to checkout %s to %s", gc.GitUrl, gc.Path, arg)
+	log.Debugf("git.go: starting to checkout %s at path %s args %+v", gc.GitUrl, gc.Path, arg)
 	args := append([]string{"checkout"}, arg...)
 	cmd := exec.Command(gitPath, args...)
+	cmd.Dir = gc.Path
 	cmd.Stdout = os.Stdout
 	return cmd.Run()
 }

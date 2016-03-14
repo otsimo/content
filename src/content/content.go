@@ -27,7 +27,7 @@ type PublicDirEntry struct {
 	//Path is shown on http url
 	Path string
 	//Dir is real path where folder is located
-	Dir string
+	Dir  string
 }
 
 type ContentManager struct {
@@ -184,17 +184,18 @@ func (cm *ContentManager) AddContent(content *apipb.Content) error {
 func (cm *ContentManager) Update(commit string) error {
 	err := cm.Git.Checkout(commit)
 	if err != nil {
-		log.Errorf("content.go: failed to checkout repository")
+		log.Errorf("content.go: failed to checkout repository err=%+v", err)
 		return err
 	}
 
 	ch, err := cm.Git.CommitHash()
 	if err == nil {
 		cm.CurrentCommit = ch
+		log.Infof("content.go: Git.CommitHash=%s", ch)
 	} else {
+		log.Infof("content.go: Git.CommitHash error='%v'", ch, err)
 		return err
 	}
 
-	log.Infof("content.go: Git.CommitHash '%s', '%v'", ch, err)
 	return cm.ReadContent()
 }
