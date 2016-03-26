@@ -45,15 +45,17 @@ var WatchEvent_EventType_value = map[string]int32{
 func (x WatchEvent_EventType) String() string {
 	return proto.EnumName(WatchEvent_EventType_name, int32(x))
 }
+func (WatchEvent_EventType) EnumDescriptor() ([]byte, []int) { return fileDescriptorWatch, []int{3, 0} }
 
 type EmitRequest struct {
-	ProfileId string      `protobuf:"bytes,1,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
+	ProfileId string      `protobuf:"bytes,1,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
 	Event     *WatchEvent `protobuf:"bytes,2,opt,name=event" json:"event,omitempty"`
 }
 
-func (m *EmitRequest) Reset()         { *m = EmitRequest{} }
-func (m *EmitRequest) String() string { return proto.CompactTextString(m) }
-func (*EmitRequest) ProtoMessage()    {}
+func (m *EmitRequest) Reset()                    { *m = EmitRequest{} }
+func (m *EmitRequest) String() string            { return proto.CompactTextString(m) }
+func (*EmitRequest) ProtoMessage()               {}
+func (*EmitRequest) Descriptor() ([]byte, []int) { return fileDescriptorWatch, []int{0} }
 
 func (m *EmitRequest) GetEvent() *WatchEvent {
 	if m != nil {
@@ -65,29 +67,32 @@ func (m *EmitRequest) GetEvent() *WatchEvent {
 type EmitResponse struct {
 }
 
-func (m *EmitResponse) Reset()         { *m = EmitResponse{} }
-func (m *EmitResponse) String() string { return proto.CompactTextString(m) }
-func (*EmitResponse) ProtoMessage()    {}
+func (m *EmitResponse) Reset()                    { *m = EmitResponse{} }
+func (m *EmitResponse) String() string            { return proto.CompactTextString(m) }
+func (*EmitResponse) ProtoMessage()               {}
+func (*EmitResponse) Descriptor() ([]byte, []int) { return fileDescriptorWatch, []int{1} }
 
 type WatchRequest struct {
 	// profile id is for Create request
-	ProfileId string `protobuf:"bytes,2,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
+	ProfileId string `protobuf:"bytes,2,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
 }
 
-func (m *WatchRequest) Reset()         { *m = WatchRequest{} }
-func (m *WatchRequest) String() string { return proto.CompactTextString(m) }
-func (*WatchRequest) ProtoMessage()    {}
+func (m *WatchRequest) Reset()                    { *m = WatchRequest{} }
+func (m *WatchRequest) String() string            { return proto.CompactTextString(m) }
+func (*WatchRequest) ProtoMessage()               {}
+func (*WatchRequest) Descriptor() ([]byte, []int) { return fileDescriptorWatch, []int{2} }
 
 type WatchEvent struct {
 	Type      WatchEvent_EventType `protobuf:"varint,1,opt,name=type,proto3,enum=apipb.WatchEvent_EventType" json:"type,omitempty"`
-	ProfileId string               `protobuf:"bytes,2,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
-	ChildId   string               `protobuf:"bytes,3,opt,name=child_id,proto3" json:"child_id,omitempty"`
-	GameId    string               `protobuf:"bytes,4,opt,name=game_id,proto3" json:"game_id,omitempty"`
+	ProfileId string               `protobuf:"bytes,2,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
+	ChildId   string               `protobuf:"bytes,3,opt,name=child_id,json=childId,proto3" json:"child_id,omitempty"`
+	GameId    string               `protobuf:"bytes,4,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
 }
 
-func (m *WatchEvent) Reset()         { *m = WatchEvent{} }
-func (m *WatchEvent) String() string { return proto.CompactTextString(m) }
-func (*WatchEvent) ProtoMessage()    {}
+func (m *WatchEvent) Reset()                    { *m = WatchEvent{} }
+func (m *WatchEvent) String() string            { return proto.CompactTextString(m) }
+func (*WatchEvent) ProtoMessage()               {}
+func (*WatchEvent) Descriptor() ([]byte, []int) { return fileDescriptorWatch, []int{3} }
 
 type WatchResponse struct {
 	Created  bool        `protobuf:"varint,1,opt,name=created,proto3" json:"created,omitempty"`
@@ -95,9 +100,10 @@ type WatchResponse struct {
 	Event    *WatchEvent `protobuf:"bytes,3,opt,name=event" json:"event,omitempty"`
 }
 
-func (m *WatchResponse) Reset()         { *m = WatchResponse{} }
-func (m *WatchResponse) String() string { return proto.CompactTextString(m) }
-func (*WatchResponse) ProtoMessage()    {}
+func (m *WatchResponse) Reset()                    { *m = WatchResponse{} }
+func (m *WatchResponse) String() string            { return proto.CompactTextString(m) }
+func (*WatchResponse) ProtoMessage()               {}
+func (*WatchResponse) Descriptor() ([]byte, []int) { return fileDescriptorWatch, []int{4} }
 
 func (m *WatchResponse) GetEvent() *WatchEvent {
 	if m != nil {
@@ -107,6 +113,11 @@ func (m *WatchResponse) GetEvent() *WatchEvent {
 }
 
 func init() {
+	proto.RegisterType((*EmitRequest)(nil), "apipb.EmitRequest")
+	proto.RegisterType((*EmitResponse)(nil), "apipb.EmitResponse")
+	proto.RegisterType((*WatchRequest)(nil), "apipb.WatchRequest")
+	proto.RegisterType((*WatchEvent)(nil), "apipb.WatchEvent")
+	proto.RegisterType((*WatchResponse)(nil), "apipb.WatchResponse")
 	proto.RegisterEnum("apipb.WatchEvent_EventType", WatchEvent_EventType_name, WatchEvent_EventType_value)
 }
 
@@ -1128,3 +1139,32 @@ var (
 	ErrInvalidLengthWatch = fmt.Errorf("proto: negative length found during unmarshaling")
 	ErrIntOverflowWatch   = fmt.Errorf("proto: integer overflow")
 )
+
+var fileDescriptorWatch = []byte{
+	// 386 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0xe2, 0x2e, 0x4f, 0x2c, 0x49,
+	0xce, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x4d, 0x2c, 0xc8, 0x2c, 0x48, 0x52, 0x0a,
+	0xe5, 0xe2, 0x76, 0xcd, 0xcd, 0x2c, 0x09, 0x4a, 0x2d, 0x2c, 0x4d, 0x2d, 0x2e, 0x11, 0x92, 0xe5,
+	0xe2, 0x02, 0x4a, 0xa7, 0x65, 0xe6, 0xa4, 0xc6, 0x67, 0xa6, 0x48, 0x30, 0x2a, 0x30, 0x6a, 0x70,
+	0x06, 0x71, 0x42, 0x45, 0x3c, 0x53, 0x84, 0xd4, 0xb9, 0x58, 0x53, 0xcb, 0x52, 0xf3, 0x4a, 0x24,
+	0x98, 0x80, 0x32, 0xdc, 0x46, 0x82, 0x7a, 0x60, 0x43, 0xf4, 0xc2, 0x41, 0xe6, 0xba, 0x82, 0x24,
+	0x82, 0x20, 0xf2, 0x4a, 0x7c, 0x5c, 0x3c, 0x10, 0x63, 0x8b, 0x0b, 0xf2, 0xf3, 0x8a, 0x53, 0x95,
+	0x74, 0xb9, 0x78, 0xc0, 0x8a, 0xb0, 0xdb, 0xc3, 0x84, 0x66, 0x8f, 0xd2, 0x77, 0x46, 0x2e, 0x2e,
+	0x84, 0xa1, 0x42, 0xfa, 0x5c, 0x2c, 0x25, 0x95, 0x05, 0xa9, 0x60, 0xf7, 0xf0, 0x19, 0x49, 0x63,
+	0xd8, 0xaa, 0x07, 0x26, 0x43, 0x80, 0x4a, 0x82, 0xc0, 0x0a, 0x09, 0x18, 0x2f, 0x24, 0xc9, 0xc5,
+	0x91, 0x9c, 0x91, 0x99, 0x93, 0x02, 0x92, 0x64, 0x06, 0x4b, 0xb2, 0x83, 0xf9, 0x40, 0x29, 0x71,
+	0x2e, 0xf6, 0xf4, 0xc4, 0x5c, 0xb0, 0x36, 0x16, 0xb0, 0x0c, 0x1b, 0x88, 0x0b, 0x74, 0x52, 0x2a,
+	0x17, 0x27, 0xdc, 0x16, 0x21, 0x61, 0x2e, 0xfe, 0x80, 0x20, 0x7f, 0x37, 0x4f, 0x1f, 0xd7, 0xf8,
+	0xd0, 0x00, 0x17, 0xc7, 0x10, 0x57, 0x17, 0x01, 0x06, 0x21, 0x41, 0x2e, 0x5e, 0x67, 0x0f, 0x4f,
+	0x1f, 0x17, 0xb8, 0x10, 0x23, 0xd0, 0x34, 0x61, 0x88, 0x90, 0xbb, 0xa3, 0xaf, 0x6b, 0x30, 0x5c,
+	0x82, 0x09, 0x21, 0x11, 0xec, 0x1f, 0xea, 0x87, 0xd0, 0xc1, 0xac, 0x94, 0xc7, 0xc5, 0x0b, 0x0d,
+	0x28, 0x48, 0xc8, 0x09, 0x49, 0x70, 0xb1, 0x27, 0x17, 0xa5, 0x26, 0x96, 0xa4, 0x42, 0xa2, 0x83,
+	0x23, 0x08, 0xc6, 0x15, 0x92, 0x02, 0xfa, 0x22, 0x31, 0x2f, 0x39, 0x35, 0x27, 0x15, 0xe2, 0x45,
+	0x8e, 0x20, 0x38, 0x1f, 0x11, 0x51, 0xcc, 0xf8, 0x23, 0xca, 0xa8, 0x14, 0x1a, 0x31, 0xc1, 0xa9,
+	0x45, 0x65, 0x99, 0xc9, 0xa9, 0xa0, 0xa0, 0x06, 0x45, 0x9c, 0x90, 0x10, 0x54, 0x07, 0x52, 0xe2,
+	0x90, 0x12, 0x46, 0x11, 0x83, 0xba, 0xcf, 0x84, 0x8b, 0x15, 0x6c, 0x80, 0x90, 0x30, 0xb2, 0x1d,
+	0x30, 0x2d, 0x22, 0xa8, 0x82, 0x10, 0x3d, 0x06, 0x8c, 0x4e, 0x62, 0x27, 0x1e, 0xc9, 0x31, 0x5e,
+	0x00, 0xe2, 0x07, 0x40, 0x3c, 0xe1, 0xb1, 0x1c, 0xc3, 0x22, 0x26, 0x66, 0xff, 0x90, 0xe0, 0x24,
+	0x36, 0x70, 0xe2, 0x34, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x3c, 0xa0, 0xb0, 0xc1, 0xab, 0x02,
+	0x00, 0x00,
+}

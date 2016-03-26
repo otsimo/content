@@ -13,8 +13,6 @@ import (
 	grpc "google.golang.org/grpc"
 )
 
-import github_com_gogo_protobuf_sortkeys "github.com/gogo/protobuf/sortkeys"
-
 import io "io"
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -25,25 +23,26 @@ var _ = math.Inf
 type OtsimoServices struct {
 	Environment          string            `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
 	Issuer               string            `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	IsProduction         bool              `protobuf:"varint,3,opt,name=is_production,proto3" json:"is_production,omitempty"`
-	UseTls               bool              `protobuf:"varint,4,opt,name=use_tls,proto3" json:"use_tls,omitempty"`
-	RegistryGrpc         string            `protobuf:"bytes,5,opt,name=registry_grpc,proto3" json:"registry_grpc,omitempty"`
-	ListenerGrpc         string            `protobuf:"bytes,6,opt,name=listener_grpc,proto3" json:"listener_grpc,omitempty"`
-	WatchGrpc            string            `protobuf:"bytes,7,opt,name=watch_grpc,proto3" json:"watch_grpc,omitempty"`
-	CatalogGrpc          string            `protobuf:"bytes,8,opt,name=catalog_grpc,proto3" json:"catalog_grpc,omitempty"`
-	ContentGrpc          string            `protobuf:"bytes,9,opt,name=content_grpc,proto3" json:"content_grpc,omitempty"`
-	DashboardGrpc        string            `protobuf:"bytes,10,opt,name=dashboard_grpc,proto3" json:"dashboard_grpc,omitempty"`
-	ApiGrpc              string            `protobuf:"bytes,11,opt,name=api_grpc,proto3" json:"api_grpc,omitempty"`
-	GameContent          string            `protobuf:"bytes,12,opt,name=game_content,proto3" json:"game_content,omitempty"`
+	IsProduction         bool              `protobuf:"varint,3,opt,name=is_production,json=isProduction,proto3" json:"is_production,omitempty"`
+	UseTls               bool              `protobuf:"varint,4,opt,name=use_tls,json=useTls,proto3" json:"use_tls,omitempty"`
+	RegistryGrpc         string            `protobuf:"bytes,5,opt,name=registry_grpc,json=registryGrpc,proto3" json:"registry_grpc,omitempty"`
+	ListenerGrpc         string            `protobuf:"bytes,6,opt,name=listener_grpc,json=listenerGrpc,proto3" json:"listener_grpc,omitempty"`
+	WatchGrpc            string            `protobuf:"bytes,7,opt,name=watch_grpc,json=watchGrpc,proto3" json:"watch_grpc,omitempty"`
+	CatalogGrpc          string            `protobuf:"bytes,8,opt,name=catalog_grpc,json=catalogGrpc,proto3" json:"catalog_grpc,omitempty"`
+	ContentGrpc          string            `protobuf:"bytes,9,opt,name=content_grpc,json=contentGrpc,proto3" json:"content_grpc,omitempty"`
+	DashboardGrpc        string            `protobuf:"bytes,10,opt,name=dashboard_grpc,json=dashboardGrpc,proto3" json:"dashboard_grpc,omitempty"`
+	ApiGrpc              string            `protobuf:"bytes,11,opt,name=api_grpc,json=apiGrpc,proto3" json:"api_grpc,omitempty"`
+	GameContent          string            `protobuf:"bytes,12,opt,name=game_content,json=gameContent,proto3" json:"game_content,omitempty"`
 	Accounts             string            `protobuf:"bytes,13,opt,name=accounts,proto3" json:"accounts,omitempty"`
-	RegistryHttp         string            `protobuf:"bytes,14,opt,name=registry_http,proto3" json:"registry_http,omitempty"`
+	RegistryHttp         string            `protobuf:"bytes,14,opt,name=registry_http,json=registryHttp,proto3" json:"registry_http,omitempty"`
 	Services             map[string]string `protobuf:"bytes,20,rep,name=services" json:"services,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	GameStorageProviders map[string]string `protobuf:"bytes,21,rep,name=game_storage_providers" json:"game_storage_providers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	GameStorageProviders map[string]string `protobuf:"bytes,21,rep,name=game_storage_providers,json=gameStorageProviders" json:"game_storage_providers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
-func (m *OtsimoServices) Reset()         { *m = OtsimoServices{} }
-func (m *OtsimoServices) String() string { return proto.CompactTextString(m) }
-func (*OtsimoServices) ProtoMessage()    {}
+func (m *OtsimoServices) Reset()                    { *m = OtsimoServices{} }
+func (m *OtsimoServices) String() string            { return proto.CompactTextString(m) }
+func (*OtsimoServices) ProtoMessage()               {}
+func (*OtsimoServices) Descriptor() ([]byte, []int) { return fileDescriptorDiscovery, []int{0} }
 
 func (m *OtsimoServices) GetServices() map[string]string {
 	if m != nil {
@@ -61,14 +60,20 @@ func (m *OtsimoServices) GetGameStorageProviders() map[string]string {
 
 type DiscoveryRequest struct {
 	Environment string `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
-	SdkVersion  string `protobuf:"bytes,2,opt,name=sdk_version,proto3" json:"sdk_version,omitempty"`
-	OsName      string `protobuf:"bytes,3,opt,name=os_name,proto3" json:"os_name,omitempty"`
-	CountryCode string `protobuf:"bytes,4,opt,name=country_code,proto3" json:"country_code,omitempty"`
+	SdkVersion  string `protobuf:"bytes,2,opt,name=sdk_version,json=sdkVersion,proto3" json:"sdk_version,omitempty"`
+	OsName      string `protobuf:"bytes,3,opt,name=os_name,json=osName,proto3" json:"os_name,omitempty"`
+	CountryCode string `protobuf:"bytes,4,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
 }
 
-func (m *DiscoveryRequest) Reset()         { *m = DiscoveryRequest{} }
-func (m *DiscoveryRequest) String() string { return proto.CompactTextString(m) }
-func (*DiscoveryRequest) ProtoMessage()    {}
+func (m *DiscoveryRequest) Reset()                    { *m = DiscoveryRequest{} }
+func (m *DiscoveryRequest) String() string            { return proto.CompactTextString(m) }
+func (*DiscoveryRequest) ProtoMessage()               {}
+func (*DiscoveryRequest) Descriptor() ([]byte, []int) { return fileDescriptorDiscovery, []int{1} }
+
+func init() {
+	proto.RegisterType((*OtsimoServices)(nil), "apipb.OtsimoServices")
+	proto.RegisterType((*DiscoveryRequest)(nil), "apipb.DiscoveryRequest")
+}
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
@@ -239,12 +244,7 @@ func (m *OtsimoServices) MarshalTo(data []byte) (int, error) {
 		i += copy(data[i:], m.RegistryHttp)
 	}
 	if len(m.Services) > 0 {
-		keysForServices := make([]string, 0, len(m.Services))
 		for k, _ := range m.Services {
-			keysForServices = append(keysForServices, k)
-		}
-		github_com_gogo_protobuf_sortkeys.Strings(keysForServices)
-		for _, k := range keysForServices {
 			data[i] = 0xa2
 			i++
 			data[i] = 0x1
@@ -263,12 +263,7 @@ func (m *OtsimoServices) MarshalTo(data []byte) (int, error) {
 		}
 	}
 	if len(m.GameStorageProviders) > 0 {
-		keysForGameStorageProviders := make([]string, 0, len(m.GameStorageProviders))
 		for k, _ := range m.GameStorageProviders {
-			keysForGameStorageProviders = append(keysForGameStorageProviders, k)
-		}
-		github_com_gogo_protobuf_sortkeys.Strings(keysForGameStorageProviders)
-		for _, k := range keysForGameStorageProviders {
 			data[i] = 0xaa
 			i++
 			data[i] = 0x1
@@ -1399,3 +1394,41 @@ var (
 	ErrInvalidLengthDiscovery = fmt.Errorf("proto: negative length found during unmarshaling")
 	ErrIntOverflowDiscovery   = fmt.Errorf("proto: integer overflow")
 )
+
+var fileDescriptorDiscovery = []byte{
+	// 534 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x94, 0x54, 0xcd, 0x8a, 0x13, 0x41,
+	0x10, 0x36, 0x1b, 0xf3, 0x57, 0xf9, 0x31, 0x34, 0xd9, 0xdd, 0xd9, 0x80, 0x6b, 0xdc, 0x45, 0xd8,
+	0x53, 0x84, 0x15, 0x41, 0xf4, 0x20, 0xec, 0x2a, 0xf1, 0xa4, 0x4b, 0x56, 0xbc, 0x0e, 0x93, 0x99,
+	0x66, 0xd2, 0x6c, 0x32, 0x1d, 0xbb, 0x7a, 0x22, 0x79, 0x06, 0x2f, 0xfa, 0x56, 0x1e, 0x7d, 0x04,
+	0xd1, 0x17, 0xb1, 0xa6, 0x7a, 0x66, 0x30, 0x12, 0xc1, 0x3d, 0x0c, 0x74, 0x7d, 0xf5, 0x7d, 0x5f,
+	0x57, 0xba, 0xaa, 0x02, 0xf7, 0x22, 0x85, 0xa1, 0x5e, 0x4b, 0xb3, 0x19, 0xaf, 0x8c, 0xb6, 0x5a,
+	0xd4, 0x82, 0x95, 0x5a, 0xcd, 0x4e, 0x3e, 0xd7, 0xa1, 0xf7, 0xce, 0xa2, 0x5a, 0xea, 0x6b, 0x69,
+	0xd6, 0x2a, 0x94, 0x28, 0x46, 0xd0, 0x96, 0xc9, 0x5a, 0x19, 0x9d, 0x2c, 0x65, 0x62, 0xbd, 0xca,
+	0xa8, 0x72, 0xd6, 0x9a, 0xfe, 0x09, 0x89, 0x03, 0xa8, 0x2b, 0xc4, 0x54, 0x1a, 0x6f, 0x8f, 0x93,
+	0x79, 0x24, 0x4e, 0xa1, 0xab, 0xd0, 0x27, 0xff, 0x28, 0x0d, 0xad, 0xd2, 0x89, 0x57, 0xa5, 0x74,
+	0x73, 0xda, 0x51, 0x78, 0x55, 0x62, 0xe2, 0x10, 0x1a, 0x29, 0x4a, 0xdf, 0x2e, 0xd0, 0xbb, 0xcb,
+	0xe9, 0x3a, 0x85, 0xef, 0x17, 0x98, 0xa9, 0x8d, 0x8c, 0x15, 0x5a, 0xb3, 0xf1, 0x63, 0xb3, 0x0a,
+	0xbd, 0x1a, 0x9b, 0x77, 0x0a, 0x70, 0x42, 0x58, 0x46, 0x5a, 0x50, 0x24, 0x13, 0x69, 0x1c, 0xa9,
+	0xee, 0x48, 0x05, 0xc8, 0xa4, 0xfb, 0x00, 0x9f, 0x02, 0x1b, 0xce, 0x1d, 0xa3, 0xc1, 0x8c, 0x16,
+	0x23, 0x9c, 0x7e, 0x08, 0x9d, 0x30, 0xb0, 0xc1, 0x42, 0xc7, 0x8e, 0xd0, 0x74, 0xbf, 0x30, 0xc7,
+	0x4a, 0x8a, 0x4e, 0xc8, 0xd1, 0x3a, 0x4a, 0x2b, 0xa7, 0x38, 0x8c, 0x29, 0x8f, 0xa0, 0x17, 0x05,
+	0x38, 0x9f, 0xe9, 0xc0, 0x44, 0x8e, 0x04, 0x4c, 0xea, 0x96, 0x28, 0xd3, 0x8e, 0xa0, 0x49, 0x2f,
+	0xed, 0x08, 0x6d, 0x26, 0x34, 0x28, 0x2e, 0x2e, 0x89, 0x83, 0xa5, 0xf4, 0x73, 0x57, 0xaf, 0xe3,
+	0x2e, 0xc9, 0xb0, 0x4b, 0x07, 0x89, 0x21, 0xa9, 0xc3, 0x50, 0xa7, 0x89, 0x45, 0xaf, 0xcb, 0xe9,
+	0x32, 0xde, 0x7a, 0xaf, 0xb9, 0xb5, 0x2b, 0xaf, 0xb7, 0xfd, 0x5e, 0x6f, 0x08, 0x13, 0x2f, 0xa1,
+	0x89, 0x79, 0x63, 0xbd, 0xc1, 0xa8, 0x7a, 0xd6, 0x3e, 0x3f, 0x1d, 0x73, 0xe7, 0xc7, 0xdb, 0x5d,
+	0x1f, 0x17, 0x87, 0xd7, 0x09, 0x49, 0xa7, 0xa5, 0x48, 0x48, 0x38, 0xe0, 0x22, 0xd1, 0x6a, 0x13,
+	0xc4, 0x32, 0xeb, 0xee, 0x5a, 0x45, 0xd2, 0xa0, 0xb7, 0xcf, 0x76, 0x8f, 0x77, 0xdb, 0x4d, 0x48,
+	0x73, 0xed, 0x24, 0x57, 0x85, 0xc2, 0x59, 0x0f, 0xe2, 0x1d, 0xa9, 0xe1, 0x0b, 0xe8, 0x6e, 0x55,
+	0x20, 0xfa, 0x50, 0xbd, 0x91, 0x9b, 0x7c, 0xfa, 0xb2, 0xa3, 0x18, 0x40, 0x6d, 0x1d, 0x2c, 0x52,
+	0x99, 0x0f, 0x9d, 0x0b, 0x9e, 0xef, 0x3d, 0xab, 0x0c, 0x27, 0x70, 0xf4, 0xcf, 0xfb, 0x6e, 0x63,
+	0x74, 0xf2, 0xb5, 0x02, 0xfd, 0x57, 0xc5, 0xa2, 0x4c, 0xe5, 0xc7, 0x54, 0xa2, 0xfd, 0x8f, 0x7d,
+	0x78, 0x00, 0x6d, 0x8c, 0x6e, 0x7c, 0x12, 0x61, 0x36, 0xf5, 0xce, 0x16, 0x08, 0xfa, 0xe0, 0x90,
+	0x6c, 0xe6, 0x35, 0xfa, 0x09, 0xd5, 0xc8, 0x2b, 0x41, 0x1b, 0xa3, 0xf1, 0x2d, 0x45, 0x6e, 0xce,
+	0xd2, 0xac, 0x4e, 0x9a, 0x82, 0x48, 0xf2, 0x46, 0xf0, 0x9c, 0x31, 0x76, 0x49, 0xd0, 0xf9, 0x05,
+	0xb4, 0xca, 0x92, 0xc4, 0x53, 0xa8, 0x4e, 0xa4, 0x15, 0x87, 0xf9, 0xa3, 0xff, 0x5d, 0xeb, 0x70,
+	0x7f, 0x67, 0x37, 0x2e, 0xfa, 0xdf, 0x7e, 0x1e, 0x57, 0xbe, 0xd3, 0xf7, 0x83, 0xbe, 0x2f, 0xbf,
+	0x8e, 0xef, 0xcc, 0xea, 0xfc, 0x2f, 0xf0, 0xe4, 0x77, 0x00, 0x00, 0x00, 0xff, 0xff, 0x2d, 0x20,
+	0x5d, 0xa3, 0x18, 0x04, 0x00, 0x00,
+}

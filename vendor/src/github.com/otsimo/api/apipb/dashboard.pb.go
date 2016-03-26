@@ -57,25 +57,54 @@ var ChartType_value = map[string]int32{
 func (x ChartType) String() string {
 	return proto.EnumName(ChartType_name, int32(x))
 }
+func (ChartType) EnumDescriptor() ([]byte, []int) { return fileDescriptorDashboard, []int{0} }
 
 type Dashboard struct {
+	// ProfileId
+	ProfileId string `protobuf:"bytes,1,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
+	// ChildId
+	ChildId string `protobuf:"bytes,2,opt,name=child_id,json=childId,proto3" json:"child_id,omitempty"`
+	// Data
+	Data *DataSet `protobuf:"bytes,3,opt,name=data" json:"data,omitempty"`
+	// Created At
+	CreatedAt int64 `protobuf:"varint,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	// Request which created this data
+	Request *AnalyzeRequest `protobuf:"bytes,5,opt,name=request" json:"request,omitempty"`
 }
 
-func (m *Dashboard) Reset()         { *m = Dashboard{} }
-func (m *Dashboard) String() string { return proto.CompactTextString(m) }
-func (*Dashboard) ProtoMessage()    {}
+func (m *Dashboard) Reset()                    { *m = Dashboard{} }
+func (m *Dashboard) String() string            { return proto.CompactTextString(m) }
+func (*Dashboard) ProtoMessage()               {}
+func (*Dashboard) Descriptor() ([]byte, []int) { return fileDescriptorDashboard, []int{0} }
+
+func (m *Dashboard) GetData() *DataSet {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
+func (m *Dashboard) GetRequest() *AnalyzeRequest {
+	if m != nil {
+		return m.Request
+	}
+	return nil
+}
 
 type DashboardGetRequest struct {
-	ProfileId  string `protobuf:"bytes,1,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
-	ChildId    string `protobuf:"bytes,2,opt,name=child_id,proto3" json:"child_id,omitempty"`
-	AppVersion string `protobuf:"bytes,3,opt,name=app_version,proto3" json:"app_version,omitempty"`
+	ProfileId  string `protobuf:"bytes,1,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
+	ChildId    string `protobuf:"bytes,2,opt,name=child_id,json=childId,proto3" json:"child_id,omitempty"`
+	AppVersion string `protobuf:"bytes,3,opt,name=app_version,json=appVersion,proto3" json:"app_version,omitempty"`
 }
 
-func (m *DashboardGetRequest) Reset()         { *m = DashboardGetRequest{} }
-func (m *DashboardGetRequest) String() string { return proto.CompactTextString(m) }
-func (*DashboardGetRequest) ProtoMessage()    {}
+func (m *DashboardGetRequest) Reset()                    { *m = DashboardGetRequest{} }
+func (m *DashboardGetRequest) String() string            { return proto.CompactTextString(m) }
+func (*DashboardGetRequest) ProtoMessage()               {}
+func (*DashboardGetRequest) Descriptor() ([]byte, []int) { return fileDescriptorDashboard, []int{1} }
 
 func init() {
+	proto.RegisterType((*Dashboard)(nil), "apipb.Dashboard")
+	proto.RegisterType((*DashboardGetRequest)(nil), "apipb.DashboardGetRequest")
 	proto.RegisterEnum("apipb.ChartType", ChartType_name, ChartType_value)
 }
 
@@ -155,6 +184,43 @@ func (m *Dashboard) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ProfileId) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintDashboard(data, i, uint64(len(m.ProfileId)))
+		i += copy(data[i:], m.ProfileId)
+	}
+	if len(m.ChildId) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintDashboard(data, i, uint64(len(m.ChildId)))
+		i += copy(data[i:], m.ChildId)
+	}
+	if m.Data != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintDashboard(data, i, uint64(m.Data.Size()))
+		n1, err := m.Data.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
+	if m.CreatedAt != 0 {
+		data[i] = 0x20
+		i++
+		i = encodeVarintDashboard(data, i, uint64(m.CreatedAt))
+	}
+	if m.Request != nil {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintDashboard(data, i, uint64(m.Request.Size()))
+		n2, err := m.Request.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
 	return i, nil
 }
 
@@ -224,6 +290,25 @@ func encodeVarintDashboard(data []byte, offset int, v uint64) int {
 func (m *Dashboard) Size() (n int) {
 	var l int
 	_ = l
+	l = len(m.ProfileId)
+	if l > 0 {
+		n += 1 + l + sovDashboard(uint64(l))
+	}
+	l = len(m.ChildId)
+	if l > 0 {
+		n += 1 + l + sovDashboard(uint64(l))
+	}
+	if m.Data != nil {
+		l = m.Data.Size()
+		n += 1 + l + sovDashboard(uint64(l))
+	}
+	if m.CreatedAt != 0 {
+		n += 1 + sovDashboard(uint64(m.CreatedAt))
+	}
+	if m.Request != nil {
+		l = m.Request.Size()
+		n += 1 + l + sovDashboard(uint64(l))
+	}
 	return n
 }
 
@@ -287,6 +372,149 @@ func (m *Dashboard) Unmarshal(data []byte) error {
 			return fmt.Errorf("proto: Dashboard: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProfileId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDashboard
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDashboard
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProfileId = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChildId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDashboard
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDashboard
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ChildId = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDashboard
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDashboard
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Data == nil {
+				m.Data = &DataSet{}
+			}
+			if err := m.Data.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
+			}
+			m.CreatedAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDashboard
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.CreatedAt |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Request", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDashboard
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDashboard
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Request == nil {
+				m.Request = &AnalyzeRequest{}
+			}
+			if err := m.Request.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDashboard(data[iNdEx:])
@@ -549,3 +777,30 @@ var (
 	ErrInvalidLengthDashboard = fmt.Errorf("proto: negative length found during unmarshaling")
 	ErrIntOverflowDashboard   = fmt.Errorf("proto: integer overflow")
 )
+
+var fileDescriptorDashboard = []byte{
+	// 356 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xa4, 0x91, 0xdf, 0x4e, 0xc2, 0x30,
+	0x18, 0xc5, 0x19, 0xdb, 0x18, 0xfb, 0x30, 0xd8, 0xd4, 0x98, 0x4c, 0x12, 0xd1, 0x70, 0x65, 0xbc,
+	0xc0, 0x04, 0x9e, 0x60, 0x83, 0x85, 0x2c, 0xc1, 0x3f, 0x29, 0xd3, 0x5b, 0x52, 0x58, 0x0d, 0x4b,
+	0x08, 0xab, 0x5d, 0x25, 0xc1, 0xa7, 0xf0, 0x75, 0x7c, 0x03, 0x2f, 0x7d, 0x04, 0xa3, 0x2f, 0x62,
+	0xd7, 0x01, 0x17, 0x7a, 0xe9, 0x45, 0x93, 0xee, 0x77, 0x4e, 0xce, 0xf7, 0x9d, 0x15, 0x0e, 0x13,
+	0x9a, 0x2f, 0x66, 0x19, 0x15, 0x49, 0x97, 0x8b, 0x4c, 0x66, 0xd8, 0xa6, 0x3c, 0xe5, 0xb3, 0x56,
+	0x93, 0xae, 0xe8, 0x72, 0x93, 0xa7, 0x79, 0x89, 0x3b, 0x6f, 0x06, 0xb8, 0xc3, 0x9d, 0x15, 0x9f,
+	0x02, 0x28, 0xfc, 0x98, 0x2e, 0xd9, 0x34, 0x4d, 0x3c, 0xe3, 0xdc, 0xb8, 0x70, 0x89, 0xbb, 0x25,
+	0x51, 0x82, 0x4f, 0xa0, 0x3e, 0x5f, 0xa4, 0xcb, 0xa4, 0x10, 0xab, 0x5a, 0x74, 0xf4, 0xb7, 0x92,
+	0x3a, 0x60, 0x25, 0x54, 0x52, 0xcf, 0x54, 0xb8, 0xd1, 0x6b, 0x76, 0xf5, 0xb4, 0xee, 0x50, 0xa1,
+	0x09, 0x93, 0x44, 0x6b, 0x45, 0xfa, 0x5c, 0x30, 0x2a, 0x59, 0x32, 0xa5, 0xd2, 0xb3, 0x94, 0xd3,
+	0x24, 0xee, 0x96, 0xf8, 0x12, 0x5f, 0x81, 0x23, 0xd8, 0xd3, 0x33, 0xcb, 0xa5, 0x67, 0xeb, 0x94,
+	0xe3, 0x6d, 0x8a, 0x5f, 0xac, 0xfc, 0xc2, 0x48, 0x29, 0x92, 0x9d, 0xab, 0xc3, 0xe1, 0x68, 0xbf,
+	0xfa, 0x48, 0x4d, 0x29, 0xf1, 0x3f, 0x4a, 0x9c, 0x41, 0x83, 0x72, 0x3e, 0x5d, 0x33, 0x91, 0xa7,
+	0xd9, 0x4a, 0x77, 0x71, 0x09, 0x28, 0xf4, 0x50, 0x92, 0x4b, 0x0a, 0xee, 0x60, 0x41, 0x85, 0x8c,
+	0x37, 0x9c, 0xe1, 0x3a, 0x58, 0xe3, 0xe8, 0x26, 0x44, 0x15, 0xec, 0x80, 0x19, 0xf8, 0x04, 0x19,
+	0xc5, 0xe5, 0x2e, 0x0a, 0x51, 0x15, 0x37, 0xc0, 0x99, 0x0c, 0xfc, 0x38, 0x0e, 0x09, 0x32, 0xb1,
+	0x0b, 0x76, 0x70, 0x1f, 0x8c, 0x43, 0x64, 0x15, 0x57, 0xe2, 0x0f, 0x95, 0xd7, 0x2e, 0xbc, 0xa3,
+	0xf0, 0x16, 0xd5, 0xf0, 0x01, 0xd4, 0xe3, 0xe8, 0x3a, 0xd4, 0x59, 0x4e, 0x6f, 0x04, 0x68, 0x5f,
+	0x6a, 0xc2, 0xc4, 0x3a, 0x9d, 0x33, 0xdc, 0x57, 0x56, 0x26, 0x71, 0x6b, 0xff, 0x57, 0xff, 0x94,
+	0x6e, 0xa1, 0xdf, 0x5a, 0x80, 0xde, 0xbf, 0xda, 0xc6, 0x87, 0x3a, 0x9f, 0xea, 0xbc, 0x7e, 0xb7,
+	0x2b, 0xb3, 0x9a, 0x7e, 0xf2, 0xfe, 0x4f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x85, 0xee, 0x9e, 0xea,
+	0x1c, 0x02, 0x00, 0x00,
+}

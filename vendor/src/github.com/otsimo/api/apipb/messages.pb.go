@@ -41,6 +41,7 @@ var Gender_value = map[string]int32{
 func (x Gender) String() string {
 	return proto.EnumName(Gender_name, int32(x))
 }
+func (Gender) EnumDescriptor() ([]byte, []int) { return fileDescriptorMessages, []int{0} }
 
 type ReleaseState int32
 
@@ -73,6 +74,7 @@ var ReleaseState_value = map[string]int32{
 func (x ReleaseState) String() string {
 	return proto.EnumName(ReleaseState_name, int32(x))
 }
+func (ReleaseState) EnumDescriptor() ([]byte, []int) { return fileDescriptorMessages, []int{1} }
 
 type RequestReleaseState int32
 
@@ -93,6 +95,7 @@ var RequestReleaseState_value = map[string]int32{
 func (x RequestReleaseState) String() string {
 	return proto.EnumName(RequestReleaseState_name, int32(x))
 }
+func (RequestReleaseState) EnumDescriptor() ([]byte, []int) { return fileDescriptorMessages, []int{2} }
 
 type GameEntryRequest_RequestType int32
 
@@ -121,6 +124,9 @@ var GameEntryRequest_RequestType_value = map[string]int32{
 
 func (x GameEntryRequest_RequestType) String() string {
 	return proto.EnumName(GameEntryRequest_RequestType_name, int32(x))
+}
+func (GameEntryRequest_RequestType) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptorMessages, []int{17, 0}
 }
 
 type ListGamesRequest_InnerState int32
@@ -157,82 +163,90 @@ var ListGamesRequest_InnerState_value = map[string]int32{
 func (x ListGamesRequest_InnerState) String() string {
 	return proto.EnumName(ListGamesRequest_InnerState_name, int32(x))
 }
+func (ListGamesRequest_InnerState) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptorMessages, []int{21, 0}
+}
 
 type Address struct {
-	StreetAddress string `protobuf:"bytes,1,opt,name=street_address,proto3" json:"street_address,omitempty" bson:"street_address,omitempty"`
+	StreetAddress string `protobuf:"bytes,1,opt,name=street_address,json=streetAddress,proto3" json:"street_address,omitempty" bson:"street_address,omitempty"`
 	City          string `protobuf:"bytes,2,opt,name=city,proto3" json:"city,omitempty" bson:"city,omitempty"`
 	State         string `protobuf:"bytes,3,opt,name=state,proto3" json:"state,omitempty" bson:"state,omitempty"`
-	ZipCode       string `protobuf:"bytes,4,opt,name=zip_code,proto3" json:"zip_code,omitempty" bson:"zip_code,omitempty"`
-	CountryCode   string `protobuf:"bytes,5,opt,name=country_code,proto3" json:"country_code,omitempty" bson:"country_code,omitempty"`
+	ZipCode       string `protobuf:"bytes,4,opt,name=zip_code,json=zipCode,proto3" json:"zip_code,omitempty" bson:"zip_code,omitempty"`
+	CountryCode   string `protobuf:"bytes,5,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty" bson:"country_code,omitempty"`
 }
 
-func (m *Address) Reset()         { *m = Address{} }
-func (m *Address) String() string { return proto.CompactTextString(m) }
-func (*Address) ProtoMessage()    {}
+func (m *Address) Reset()                    { *m = Address{} }
+func (m *Address) String() string            { return proto.CompactTextString(m) }
+func (*Address) ProtoMessage()               {}
+func (*Address) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{0} }
 
 type Profile struct {
-	Id          gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id,omitempty" bson:"_id,omitempty"`
+	Id          gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id" bson:"_id,omitempty"`
 	Email       string                        `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty" bson:"email,omitempty"`
-	FirstName   string                        `protobuf:"bytes,3,opt,name=first_name,proto3" json:"first_name,omitempty" bson:"first_name,omitempty"`
-	LastName    string                        `protobuf:"bytes,4,opt,name=last_name,proto3" json:"last_name,omitempty" bson:"last_name,omitempty"`
+	FirstName   string                        `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty" bson:"first_name,omitempty"`
+	LastName    string                        `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty" bson:"last_name,omitempty"`
 	Language    string                        `protobuf:"bytes,5,opt,name=language,proto3" json:"language,omitempty" bson:"language,omitempty"`
-	MobilePhone string                        `protobuf:"bytes,6,opt,name=mobile_phone,proto3" json:"mobile_phone,omitempty" bson:"mobile_phone,omitempty"`
+	MobilePhone string                        `protobuf:"bytes,6,opt,name=mobile_phone,json=mobilePhone,proto3" json:"mobile_phone,omitempty" bson:"mobile_phone,omitempty"`
 	Address     *Address                      `protobuf:"bytes,7,opt,name=address" json:"address,omitempty" bson:"address,omitempty"`
-	CreatedAt   int64                         `protobuf:"varint,8,opt,name=created_at,proto3" json:"created_at,omitempty" bson:"created_at,omitempty"`
-	LastUpdated int64                         `protobuf:"varint,9,opt,name=last_updated,proto3" json:"last_updated,omitempty" bson:"last_updated,omitempty"`
+	CreatedAt   int64                         `protobuf:"varint,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" bson:"created_at,omitempty"`
+	LastUpdated int64                         `protobuf:"varint,9,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty" bson:"last_updated,omitempty"`
 }
 
-func (m *Profile) Reset()         { *m = Profile{} }
-func (m *Profile) String() string { return proto.CompactTextString(m) }
-func (*Profile) ProtoMessage()    {}
+func (m *Profile) Reset()                    { *m = Profile{} }
+func (m *Profile) String() string            { return proto.CompactTextString(m) }
+func (*Profile) ProtoMessage()               {}
+func (*Profile) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{1} }
 
 type ChildGameEntry struct {
-	Id                  gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id,omitempty" bson:"id"`
+	Id                  gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id" bson:"id"`
 	Active              bool                          `protobuf:"varint,2,opt,name=active,proto3" json:"active,omitempty" bson:"active"`
-	DashboardIndex      int32                         `protobuf:"varint,3,opt,name=dashboard_index,proto3" json:"dashboard_index,omitempty" bson:"dashboard_index"`
+	DashboardIndex      int32                         `protobuf:"varint,3,opt,name=dashboard_index,json=dashboardIndex,proto3" json:"dashboard_index,omitempty" bson:"dashboard_index"`
 	Settings            []byte                        `protobuf:"bytes,4,opt,name=settings,proto3" json:"settings,omitempty" bson:"settings"`
-	AddedAt             int64                         `protobuf:"varint,5,opt,name=added_at,proto3" json:"added_at,omitempty" bson:"added_at"`
-	ActivationChangedAt int64                         `protobuf:"varint,6,opt,name=activation_changed_at,proto3" json:"activation_changed_at,omitempty" bson:"activation_changed_at"`
-	UpdatedAt           int64                         `protobuf:"varint,7,opt,name=updated_at,proto3" json:"updated_at,omitempty" bson:"updated_at"`
+	AddedAt             int64                         `protobuf:"varint,5,opt,name=added_at,json=addedAt,proto3" json:"added_at,omitempty" bson:"added_at"`
+	ActivationChangedAt int64                         `protobuf:"varint,6,opt,name=activation_changed_at,json=activationChangedAt,proto3" json:"activation_changed_at,omitempty" bson:"activation_changed_at"`
+	UpdatedAt           int64                         `protobuf:"varint,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty" bson:"updated_at"`
 }
 
-func (m *ChildGameEntry) Reset()         { *m = ChildGameEntry{} }
-func (m *ChildGameEntry) String() string { return proto.CompactTextString(m) }
-func (*ChildGameEntry) ProtoMessage()    {}
+func (m *ChildGameEntry) Reset()                    { *m = ChildGameEntry{} }
+func (m *ChildGameEntry) String() string            { return proto.CompactTextString(m) }
+func (*ChildGameEntry) ProtoMessage()               {}
+func (*ChildGameEntry) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{2} }
 
 type Child struct {
-	Id            gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id,omitempty" bson:"_id,omitempty"`
-	ParentId      gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,2,opt,name=parent_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"parent_id,omitempty" bson:"parent_id,omitempty"`
-	FirstName     string                        `protobuf:"bytes,3,opt,name=first_name,proto3" json:"first_name,omitempty" bson:"first_name,omitempty"`
-	LastName      string                        `protobuf:"bytes,4,opt,name=last_name,proto3" json:"last_name,omitempty" bson:"last_name,omitempty"`
-	BirthDay      int64                         `protobuf:"varint,5,opt,name=birth_day,proto3" json:"birth_day,omitempty" bson:"birth_day,omitempty"`
+	Id            gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id" bson:"_id,omitempty"`
+	ParentId      gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,2,opt,name=parent_id,json=parentId,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"parent_id" bson:"parent_id,omitempty"`
+	FirstName     string                        `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty" bson:"first_name,omitempty"`
+	LastName      string                        `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty" bson:"last_name,omitempty"`
+	BirthDay      int64                         `protobuf:"varint,5,opt,name=birth_day,json=birthDay,proto3" json:"birth_day,omitempty" bson:"birth_day,omitempty"`
 	Gender        Gender                        `protobuf:"varint,7,opt,name=gender,proto3,enum=apipb.Gender" json:"gender,omitempty" bson:"gender,omitempty"`
 	Language      string                        `protobuf:"bytes,8,opt,name=language,proto3" json:"language,omitempty" bson:"language,omitempty"`
 	Games         []*ChildGameEntry             `protobuf:"bytes,9,rep,name=games" json:"games,omitempty" bson:"games,omitempty"`
 	Active        bool                          `protobuf:"varint,10,opt,name=active,proto3" json:"active,omitempty" bson:"active,omitempty"`
-	LoggedIn      bool                          `protobuf:"varint,11,opt,name=logged_in,proto3" json:"logged_in,omitempty" bson:"logged_in,omitempty"`
-	SoundsEnabled bool                          `protobuf:"varint,12,opt,name=sounds_enabled,proto3" json:"sounds_enabled,omitempty" bson:"sounds_enabled,omitempty"`
-	CreatedAt     int64                         `protobuf:"varint,15,opt,name=created_at,proto3" json:"created_at,omitempty" bson:"created_at,omitempty"`
-	LastUpdated   int64                         `protobuf:"varint,16,opt,name=last_updated,proto3" json:"last_updated,omitempty" bson:"last_updated,omitempty"`
+	LoggedIn      bool                          `protobuf:"varint,11,opt,name=logged_in,json=loggedIn,proto3" json:"logged_in,omitempty" bson:"logged_in,omitempty"`
+	SoundsEnabled bool                          `protobuf:"varint,12,opt,name=sounds_enabled,json=soundsEnabled,proto3" json:"sounds_enabled,omitempty" bson:"sounds_enabled,omitempty"`
+	CreatedAt     int64                         `protobuf:"varint,15,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" bson:"created_at,omitempty"`
+	LastUpdated   int64                         `protobuf:"varint,16,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty" bson:"last_updated,omitempty"`
 }
 
-func (m *Child) Reset()         { *m = Child{} }
-func (m *Child) String() string { return proto.CompactTextString(m) }
-func (*Child) ProtoMessage()    {}
+func (m *Child) Reset()                    { *m = Child{} }
+func (m *Child) String() string            { return proto.CompactTextString(m) }
+func (*Child) ProtoMessage()               {}
+func (*Child) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{3} }
 
 type Author struct {
 	Name  string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty" bson:"name,omitempty"`
 	Email string `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty" bson:"email,omitempty"`
 }
 
-func (m *Author) Reset()         { *m = Author{} }
-func (m *Author) String() string { return proto.CompactTextString(m) }
-func (*Author) ProtoMessage()    {}
+func (m *Author) Reset()                    { *m = Author{} }
+func (m *Author) String() string            { return proto.CompactTextString(m) }
+func (*Author) ProtoMessage()               {}
+func (*Author) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{4} }
 
 type GameMetadata struct {
 	Language string `protobuf:"bytes,1,opt,name=language,proto3" json:"language,omitempty" bson:"language,omitempty"`
 	// Visible Name
-	VisibleName string `protobuf:"bytes,2,opt,name=visible_name,proto3" json:"visible_name,omitempty" bson:"visible_name,omitempty"`
+	VisibleName string `protobuf:"bytes,2,opt,name=visible_name,json=visibleName,proto3" json:"visible_name,omitempty" bson:"visible_name,omitempty"`
 	// Summary is summary of game
 	Summary string `protobuf:"bytes,3,opt,name=summary,proto3" json:"summary,omitempty" bson:"summary,omitempty"`
 	// Description
@@ -246,16 +260,19 @@ type GameMetadata struct {
 	// Images are image files that show on market
 	Images []string `protobuf:"bytes,8,rep,name=images" json:"images,omitempty" bson:"images,omitempty"`
 	// InfoSlug is the id of the content which describes how to play this game
-	InfoSlug string `protobuf:"bytes,9,opt,name=info_slug,proto3" json:"info_slug,omitempty" bson:"info_slug,omitempty"`
+	InfoSlug string `protobuf:"bytes,9,opt,name=info_slug,json=infoSlug,proto3" json:"info_slug,omitempty" bson:"info_slug,omitempty"`
+	// Assets are asset folders or paths for this language
+	Assets []string `protobuf:"bytes,10,rep,name=assets" json:"assets,omitempty" bson:"assets,omitempty"`
 }
 
-func (m *GameMetadata) Reset()         { *m = GameMetadata{} }
-func (m *GameMetadata) String() string { return proto.CompactTextString(m) }
-func (*GameMetadata) ProtoMessage()    {}
+func (m *GameMetadata) Reset()                    { *m = GameMetadata{} }
+func (m *GameMetadata) String() string            { return proto.CompactTextString(m) }
+func (*GameMetadata) ProtoMessage()               {}
+func (*GameMetadata) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{5} }
 
 type GameManifest struct {
 	// Unique Name of game
-	UniqueName string `protobuf:"bytes,1,opt,name=unique_name,proto3" json:"unique_name,omitempty" bson:"unique_name,omitempty" cli:"Unique Name"`
+	UniqueName string `protobuf:"bytes,1,opt,name=unique_name,json=uniqueName,proto3" json:"unique_name,omitempty" bson:"unique_name,omitempty" cli:"Unique Name"`
 	// Licence
 	Licence string `protobuf:"bytes,2,opt,name=licence,proto3" json:"licence,omitempty" bson:"licence,omitempty" cli:"Licence"`
 	// Languages
@@ -270,14 +287,6 @@ type GameManifest struct {
 	Authors []*Author `protobuf:"bytes,7,rep,name=authors" json:"authors,omitempty" bson:"authors"`
 	// Repository
 	Repository string `protobuf:"bytes,8,opt,name=repository,proto3" json:"repository,omitempty" bson:"repository"`
-	// Default Visible Name
-	DefaultName string `protobuf:"bytes,9,opt,name=default_name,proto3" json:"default_name,omitempty" bson:"default_name,omitempty" cli:"Default Visible Name"`
-	// Logo is rectangle image
-	DefaultLogo string `protobuf:"bytes,10,opt,name=default_logo,proto3" json:"default_logo,omitempty" bson:"default_logo,omitempty"`
-	// Icon square image
-	DefaultIcon string `protobuf:"bytes,11,opt,name=default_icon,proto3" json:"default_icon,omitempty" bson:"default_icon,omitempty"`
-	// Images are image files that show on aoo
-	DefaultImages []string `protobuf:"bytes,12,rep,name=default_images" json:"default_images,omitempty" bson:"default_images,omitempty"`
 	// Metadata information for each languages
 	Metadata []*GameMetadata `protobuf:"bytes,13,rep,name=metadata" json:"metadata,omitempty" bson:"metadata,omitempty"`
 	// Exclude directories when building
@@ -285,93 +294,107 @@ type GameManifest struct {
 	// Settings.json path
 	Settings string `protobuf:"bytes,15,opt,name=settings,proto3" json:"settings,omitempty" bson:"settings,omitempty"`
 	// KV directory path
-	KvPath string `protobuf:"bytes,16,opt,name=kv_path,proto3" json:"kv_path,omitempty" bson:"kv_path,omitempty"`
+	KvPath string `protobuf:"bytes,16,opt,name=kv_path,json=kvPath,proto3" json:"kv_path,omitempty" bson:"kv_path,omitempty"`
 	// DeveloperName is the visible developer name
-	DeveloperName string `protobuf:"bytes,17,opt,name=developer_name,proto3" json:"developer_name,omitempty" bson:"developer_name,omitempty"`
+	DeveloperName string `protobuf:"bytes,17,opt,name=developer_name,json=developerName,proto3" json:"developer_name,omitempty" bson:"developer_name,omitempty"`
+	// DefaultLanguage
+	DefaultLanguage string `protobuf:"bytes,18,opt,name=default_language,json=defaultLanguage,proto3" json:"default_language,omitempty" bson:"default_language,omitempty"`
 }
 
-func (m *GameManifest) Reset()         { *m = GameManifest{} }
-func (m *GameManifest) String() string { return proto.CompactTextString(m) }
-func (*GameManifest) ProtoMessage()    {}
+func (m *GameManifest) Reset()                    { *m = GameManifest{} }
+func (m *GameManifest) String() string            { return proto.CompactTextString(m) }
+func (*GameManifest) ProtoMessage()               {}
+func (*GameManifest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{6} }
 
 type Game struct {
-	Id                gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id,omitempty" bson:"_id,omitempty"`
-	UniqueName        string                        `protobuf:"bytes,2,opt,name=unique_name,proto3" json:"unique_name,omitempty" bson:"unique_name,omitempty"`
-	OwnerId           gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,3,opt,name=owner_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"owner_id,omitempty" bson:"owner_id,omitempty"`
-	ProductionVersion string                        `protobuf:"bytes,4,opt,name=production_version,proto3" json:"production_version,omitempty" bson:"production_version,omitempty"`
-	IsOnProduction    bool                          `protobuf:"varint,5,opt,name=is_on_production,proto3" json:"is_on_production,omitempty" bson:"is_on_production,omitempty"`
-	CreatedAt         int64                         `protobuf:"varint,6,opt,name=created_at,proto3" json:"created_at,omitempty" bson:"created_at,omitempty"`
-	LastUpdated       int64                         `protobuf:"varint,7,opt,name=last_updated,proto3" json:"last_updated,omitempty" bson:"last_updated,omitempty"`
+	Id                gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"id" bson:"_id,omitempty"`
+	UniqueName        string                        `protobuf:"bytes,2,opt,name=unique_name,json=uniqueName,proto3" json:"unique_name,omitempty" bson:"unique_name,omitempty"`
+	OwnerId           gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,3,opt,name=owner_id,json=ownerId,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"owner_id" bson:"owner_id,omitempty"`
+	ProductionVersion string                        `protobuf:"bytes,4,opt,name=production_version,json=productionVersion,proto3" json:"production_version,omitempty" bson:"production_version,omitempty"`
+	IsOnProduction    bool                          `protobuf:"varint,5,opt,name=is_on_production,json=isOnProduction,proto3" json:"is_on_production,omitempty" bson:"is_on_production,omitempty"`
+	CreatedAt         int64                         `protobuf:"varint,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" bson:"created_at,omitempty"`
+	LastUpdated       int64                         `protobuf:"varint,7,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty" bson:"last_updated,omitempty"`
 }
 
-func (m *Game) Reset()         { *m = Game{} }
-func (m *Game) String() string { return proto.CompactTextString(m) }
-func (*Game) ProtoMessage()    {}
+func (m *Game) Reset()                    { *m = Game{} }
+func (m *Game) String() string            { return proto.CompactTextString(m) }
+func (*Game) ProtoMessage()               {}
+func (*Game) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{7} }
 
 type GameRelease struct {
-	ReleaseId     gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=release_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"release_id,omitempty" bson:"_id"`
-	GameId        gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,2,opt,name=game_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"game_id,omitempty" bson:"game_id"`
+	ReleaseId     gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,1,opt,name=release_id,json=releaseId,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"release_id" bson:"_id"`
+	GameId        gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,2,opt,name=game_id,json=gameId,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"game_id" bson:"game_id"`
 	Version       string                        `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty" bson:"version"`
-	GameManifest  *GameManifest                 `protobuf:"bytes,4,opt,name=game_manifest" json:"game_manifest,omitempty" bson:"game_manifest,omitempty"`
-	ReleasedAt    int64                         `protobuf:"varint,5,opt,name=released_at,proto3" json:"released_at,omitempty" bson:"released_at"`
-	ReleasedBy    gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,6,opt,name=released_by,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"released_by,omitempty" bson:"released_by,omitempty"`
-	ReleaseState  ReleaseState                  `protobuf:"varint,7,opt,name=release_state,proto3,enum=apipb.ReleaseState" json:"release_state,omitempty" bson:"release_state"`
-	ValidatedBy   gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,8,opt,name=validated_by,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"validated_by,omitempty" bson:"validated_by,omitempty"`
-	ValidatedAt   int64                         `protobuf:"varint,9,opt,name=validated_at,proto3" json:"validated_at,omitempty" bson:"validated_at"`
-	IntVersion    int64                         `protobuf:"varint,10,opt,name=int_version,proto3" json:"int_version,omitempty" bson:"int_version"`
+	GameManifest  *GameManifest                 `protobuf:"bytes,4,opt,name=game_manifest,json=gameManifest" json:"game_manifest,omitempty" bson:"game_manifest,omitempty"`
+	ReleasedAt    int64                         `protobuf:"varint,5,opt,name=released_at,json=releasedAt,proto3" json:"released_at,omitempty" bson:"released_at"`
+	ReleasedBy    gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,6,opt,name=released_by,json=releasedBy,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"released_by" bson:"released_by,omitempty"`
+	ReleaseState  ReleaseState                  `protobuf:"varint,7,opt,name=release_state,json=releaseState,proto3,enum=apipb.ReleaseState" json:"release_state,omitempty" bson:"release_state"`
+	ValidatedBy   gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,8,opt,name=validated_by,json=validatedBy,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"validated_by" bson:"validated_by,omitempty"`
+	ValidatedAt   int64                         `protobuf:"varint,9,opt,name=validated_at,json=validatedAt,proto3" json:"validated_at,omitempty" bson:"validated_at"`
+	IntVersion    int64                         `protobuf:"varint,10,opt,name=int_version,json=intVersion,proto3" json:"int_version,omitempty" bson:"int_version"`
 	Storage       string                        `protobuf:"bytes,11,opt,name=storage,proto3" json:"storage,omitempty" bson:"-"`
-	ArchiveFormat string                        `protobuf:"bytes,12,opt,name=archive_format,proto3" json:"archive_format,omitempty" bson:"-"`
+	ArchiveFormat string                        `protobuf:"bytes,12,opt,name=archive_format,json=archiveFormat,proto3" json:"archive_format,omitempty" bson:"-"`
 }
 
-func (m *GameRelease) Reset()         { *m = GameRelease{} }
-func (m *GameRelease) String() string { return proto.CompactTextString(m) }
-func (*GameRelease) ProtoMessage()    {}
+func (m *GameRelease) Reset()                    { *m = GameRelease{} }
+func (m *GameRelease) String() string            { return proto.CompactTextString(m) }
+func (*GameRelease) ProtoMessage()               {}
+func (*GameRelease) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{8} }
 
 type UploadToken struct {
 	Token      string                        `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty" bson:"token,omitempty"`
-	ExpiresAt  int64                         `protobuf:"varint,2,opt,name=expires_at,proto3" json:"expires_at,omitempty" bson:"expires_at,omitempty"`
-	UserId     gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,3,opt,name=user_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"user_id,omitempty" bson:"user_id,omitempty"`
-	GameId     gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,4,opt,name=game_id,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"game_id,omitempty" bson:"game_id,omitempty"`
-	NewVersion string                        `protobuf:"bytes,5,opt,name=new_version,proto3" json:"new_version,omitempty" bson:"new_version,omitempty"`
-	UploadTo   string                        `protobuf:"bytes,6,opt,name=upload_to,proto3" json:"upload_to,omitempty" bson:"upload_to,omitempty"`
+	ExpiresAt  int64                         `protobuf:"varint,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty" bson:"expires_at,omitempty"`
+	UserId     gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"user_id" bson:"user_id,omitempty"`
+	GameId     gopkg_in_mgo_v2_bson.ObjectId `protobuf:"bytes,4,opt,name=game_id,json=gameId,proto3,customtype=gopkg.in/mgo.v2/bson.ObjectId" json:"game_id" bson:"game_id,omitempty"`
+	NewVersion string                        `protobuf:"bytes,5,opt,name=new_version,json=newVersion,proto3" json:"new_version,omitempty" bson:"new_version,omitempty"`
+	UploadTo   string                        `protobuf:"bytes,6,opt,name=upload_to,json=uploadTo,proto3" json:"upload_to,omitempty" bson:"upload_to,omitempty"`
 }
 
-func (m *UploadToken) Reset()         { *m = UploadToken{} }
-func (m *UploadToken) String() string { return proto.CompactTextString(m) }
-func (*UploadToken) ProtoMessage()    {}
+func (m *UploadToken) Reset()                    { *m = UploadToken{} }
+func (m *UploadToken) String() string            { return proto.CompactTextString(m) }
+func (*UploadToken) ProtoMessage()               {}
+func (*UploadToken) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{9} }
 
 type GetProfileRequest struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *GetProfileRequest) Reset()         { *m = GetProfileRequest{} }
-func (m *GetProfileRequest) String() string { return proto.CompactTextString(m) }
-func (*GetProfileRequest) ProtoMessage()    {}
+func (m *GetProfileRequest) Reset()                    { *m = GetProfileRequest{} }
+func (m *GetProfileRequest) String() string            { return proto.CompactTextString(m) }
+func (*GetProfileRequest) ProtoMessage()               {}
+func (*GetProfileRequest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{10} }
 
 type GetChildRequest struct {
-	ChildId string `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
+	ChildId string `protobuf:"bytes,1,opt,name=child_id,json=childId,proto3" json:"child_id,omitempty"`
 }
 
-func (m *GetChildRequest) Reset()         { *m = GetChildRequest{} }
-func (m *GetChildRequest) String() string { return proto.CompactTextString(m) }
-func (*GetChildRequest) ProtoMessage()    {}
+func (m *GetChildRequest) Reset()                    { *m = GetChildRequest{} }
+func (m *GetChildRequest) String() string            { return proto.CompactTextString(m) }
+func (*GetChildRequest) ProtoMessage()               {}
+func (*GetChildRequest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{11} }
 
 type GetChildrenFromProfileRequest struct {
-	ProfileId string `protobuf:"bytes,1,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
+	ProfileId string `protobuf:"bytes,1,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
 }
 
 func (m *GetChildrenFromProfileRequest) Reset()         { *m = GetChildrenFromProfileRequest{} }
 func (m *GetChildrenFromProfileRequest) String() string { return proto.CompactTextString(m) }
 func (*GetChildrenFromProfileRequest) ProtoMessage()    {}
+func (*GetChildrenFromProfileRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptorMessages, []int{12}
+}
 
 type ChangeChildActivationRequest struct {
-	ChildId string `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
+	ChildId string `protobuf:"bytes,1,opt,name=child_id,json=childId,proto3" json:"child_id,omitempty"`
 	Active  bool   `protobuf:"varint,2,opt,name=active,proto3" json:"active,omitempty"`
 }
 
 func (m *ChangeChildActivationRequest) Reset()         { *m = ChangeChildActivationRequest{} }
 func (m *ChangeChildActivationRequest) String() string { return proto.CompactTextString(m) }
 func (*ChangeChildActivationRequest) ProtoMessage()    {}
+func (*ChangeChildActivationRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptorMessages, []int{13}
+}
 
 type GetChildrenFromProfileResponse struct {
 	Children []*Child `protobuf:"bytes,1,rep,name=children" json:"children,omitempty"`
@@ -380,38 +403,44 @@ type GetChildrenFromProfileResponse struct {
 func (m *GetChildrenFromProfileResponse) Reset()         { *m = GetChildrenFromProfileResponse{} }
 func (m *GetChildrenFromProfileResponse) String() string { return proto.CompactTextString(m) }
 func (*GetChildrenFromProfileResponse) ProtoMessage()    {}
+func (*GetChildrenFromProfileResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptorMessages, []int{14}
+}
 
 type GetGameReleaseRequest struct {
-	GameId  string              `protobuf:"bytes,1,opt,name=game_id,proto3" json:"game_id,omitempty"`
+	GameId  string              `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
 	Version string              `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
 	State   RequestReleaseState `protobuf:"varint,3,opt,name=state,proto3,enum=apipb.RequestReleaseState" json:"state,omitempty"`
 }
 
-func (m *GetGameReleaseRequest) Reset()         { *m = GetGameReleaseRequest{} }
-func (m *GetGameReleaseRequest) String() string { return proto.CompactTextString(m) }
-func (*GetGameReleaseRequest) ProtoMessage()    {}
+func (m *GetGameReleaseRequest) Reset()                    { *m = GetGameReleaseRequest{} }
+func (m *GetGameReleaseRequest) String() string            { return proto.CompactTextString(m) }
+func (*GetGameReleaseRequest) ProtoMessage()               {}
+func (*GetGameReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{15} }
 
 type SoundEnableRequest struct {
-	ChildId   string `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
-	ProfileId string `protobuf:"bytes,2,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
+	ChildId   string `protobuf:"bytes,1,opt,name=child_id,json=childId,proto3" json:"child_id,omitempty"`
+	ProfileId string `protobuf:"bytes,2,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
 	Enable    bool   `protobuf:"varint,3,opt,name=enable,proto3" json:"enable,omitempty"`
 }
 
-func (m *SoundEnableRequest) Reset()         { *m = SoundEnableRequest{} }
-func (m *SoundEnableRequest) String() string { return proto.CompactTextString(m) }
-func (*SoundEnableRequest) ProtoMessage()    {}
+func (m *SoundEnableRequest) Reset()                    { *m = SoundEnableRequest{} }
+func (m *SoundEnableRequest) String() string            { return proto.CompactTextString(m) }
+func (*SoundEnableRequest) ProtoMessage()               {}
+func (*SoundEnableRequest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{16} }
 
 type GameEntryRequest struct {
-	ChildId  string                       `protobuf:"bytes,1,opt,name=child_id,proto3" json:"child_id,omitempty"`
-	GameId   string                       `protobuf:"bytes,2,opt,name=game_id,proto3" json:"game_id,omitempty"`
+	ChildId  string                       `protobuf:"bytes,1,opt,name=child_id,json=childId,proto3" json:"child_id,omitempty"`
+	GameId   string                       `protobuf:"bytes,2,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
 	Type     GameEntryRequest_RequestType `protobuf:"varint,3,opt,name=type,proto3,enum=apipb.GameEntryRequest_RequestType" json:"type,omitempty"`
 	Settings []byte                       `protobuf:"bytes,4,opt,name=settings,proto3" json:"settings,omitempty"`
 	Index    int32                        `protobuf:"varint,5,opt,name=index,proto3" json:"index,omitempty"`
 }
 
-func (m *GameEntryRequest) Reset()         { *m = GameEntryRequest{} }
-func (m *GameEntryRequest) String() string { return proto.CompactTextString(m) }
-func (*GameEntryRequest) ProtoMessage()    {}
+func (m *GameEntryRequest) Reset()                    { *m = GameEntryRequest{} }
+func (m *GameEntryRequest) String() string            { return proto.CompactTextString(m) }
+func (*GameEntryRequest) ProtoMessage()               {}
+func (*GameEntryRequest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{17} }
 
 type PublishResponse struct {
 	Type    int32        `protobuf:"varint,1,opt,name=type,proto3" json:"type,omitempty"`
@@ -419,126 +448,172 @@ type PublishResponse struct {
 	Token   *UploadToken `protobuf:"bytes,3,opt,name=token" json:"token,omitempty"`
 }
 
-func (m *PublishResponse) Reset()         { *m = PublishResponse{} }
-func (m *PublishResponse) String() string { return proto.CompactTextString(m) }
-func (*PublishResponse) ProtoMessage()    {}
+func (m *PublishResponse) Reset()                    { *m = PublishResponse{} }
+func (m *PublishResponse) String() string            { return proto.CompactTextString(m) }
+func (*PublishResponse) ProtoMessage()               {}
+func (*PublishResponse) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{18} }
 
 type ValidateRequest struct {
-	GameId      string       `protobuf:"bytes,1,opt,name=game_id,proto3" json:"game_id,omitempty"`
-	GameVersion string       `protobuf:"bytes,2,opt,name=game_version,proto3" json:"game_version,omitempty"`
-	NewState    ReleaseState `protobuf:"varint,3,opt,name=new_state,proto3,enum=apipb.ReleaseState" json:"new_state,omitempty"`
+	GameId      string       `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
+	GameVersion string       `protobuf:"bytes,2,opt,name=game_version,json=gameVersion,proto3" json:"game_version,omitempty"`
+	NewState    ReleaseState `protobuf:"varint,3,opt,name=new_state,json=newState,proto3,enum=apipb.ReleaseState" json:"new_state,omitempty"`
 }
 
-func (m *ValidateRequest) Reset()         { *m = ValidateRequest{} }
-func (m *ValidateRequest) String() string { return proto.CompactTextString(m) }
-func (*ValidateRequest) ProtoMessage()    {}
+func (m *ValidateRequest) Reset()                    { *m = ValidateRequest{} }
+func (m *ValidateRequest) String() string            { return proto.CompactTextString(m) }
+func (*ValidateRequest) ProtoMessage()               {}
+func (*ValidateRequest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{19} }
 
 // Get game by game_id or unique_name
 type GetGameRequest struct {
-	UniqueName string `protobuf:"bytes,1,opt,name=unique_name,proto3" json:"unique_name,omitempty"`
-	GameId     string `protobuf:"bytes,2,opt,name=game_id,proto3" json:"game_id,omitempty"`
+	UniqueName string `protobuf:"bytes,1,opt,name=unique_name,json=uniqueName,proto3" json:"unique_name,omitempty"`
+	GameId     string `protobuf:"bytes,2,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
 }
 
-func (m *GetGameRequest) Reset()         { *m = GetGameRequest{} }
-func (m *GetGameRequest) String() string { return proto.CompactTextString(m) }
-func (*GetGameRequest) ProtoMessage()    {}
+func (m *GetGameRequest) Reset()                    { *m = GetGameRequest{} }
+func (m *GetGameRequest) String() string            { return proto.CompactTextString(m) }
+func (*GetGameRequest) ProtoMessage()               {}
+func (*GetGameRequest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{20} }
 
 type ListGamesRequest struct {
-	ReleaseState ListGamesRequest_InnerState `protobuf:"varint,1,opt,name=release_state,proto3,enum=apipb.ListGamesRequest_InnerState" json:"release_state,omitempty"`
+	ReleaseState ListGamesRequest_InnerState `protobuf:"varint,1,opt,name=release_state,json=releaseState,proto3,enum=apipb.ListGamesRequest_InnerState" json:"release_state,omitempty"`
 	Limit        int32                       `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset       int32                       `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
 }
 
-func (m *ListGamesRequest) Reset()         { *m = ListGamesRequest{} }
-func (m *ListGamesRequest) String() string { return proto.CompactTextString(m) }
-func (*ListGamesRequest) ProtoMessage()    {}
+func (m *ListGamesRequest) Reset()                    { *m = ListGamesRequest{} }
+func (m *ListGamesRequest) String() string            { return proto.CompactTextString(m) }
+func (*ListGamesRequest) ProtoMessage()               {}
+func (*ListGamesRequest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{21} }
 
 type ListItem struct {
-	GameId            string       `protobuf:"bytes,1,opt,name=game_id,proto3" json:"game_id,omitempty"`
-	UniqueName        string       `protobuf:"bytes,2,opt,name=unique_name,proto3" json:"unique_name,omitempty"`
-	LatestVersion     string       `protobuf:"bytes,3,opt,name=latest_version,proto3" json:"latest_version,omitempty"`
-	LatestState       ReleaseState `protobuf:"varint,4,opt,name=latest_state,proto3,enum=apipb.ReleaseState" json:"latest_state,omitempty"`
-	ProductionVersion string       `protobuf:"bytes,5,opt,name=production_version,proto3" json:"production_version,omitempty"`
+	GameId            string       `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
+	UniqueName        string       `protobuf:"bytes,2,opt,name=unique_name,json=uniqueName,proto3" json:"unique_name,omitempty"`
+	LatestVersion     string       `protobuf:"bytes,3,opt,name=latest_version,json=latestVersion,proto3" json:"latest_version,omitempty"`
+	LatestState       ReleaseState `protobuf:"varint,4,opt,name=latest_state,json=latestState,proto3,enum=apipb.ReleaseState" json:"latest_state,omitempty"`
+	ProductionVersion string       `protobuf:"bytes,5,opt,name=production_version,json=productionVersion,proto3" json:"production_version,omitempty"`
 	Storage           string       `protobuf:"bytes,6,opt,name=storage,proto3" json:"storage,omitempty"`
-	ArchiveFormat     string       `protobuf:"bytes,7,opt,name=archive_format,proto3" json:"archive_format,omitempty"`
+	ArchiveFormat     string       `protobuf:"bytes,7,opt,name=archive_format,json=archiveFormat,proto3" json:"archive_format,omitempty"`
 }
 
-func (m *ListItem) Reset()         { *m = ListItem{} }
-func (m *ListItem) String() string { return proto.CompactTextString(m) }
-func (*ListItem) ProtoMessage()    {}
+func (m *ListItem) Reset()                    { *m = ListItem{} }
+func (m *ListItem) String() string            { return proto.CompactTextString(m) }
+func (*ListItem) ProtoMessage()               {}
+func (*ListItem) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{22} }
 
 type GetLatestVersionsRequest struct {
 	State   RequestReleaseState `protobuf:"varint,1,opt,name=state,proto3,enum=apipb.RequestReleaseState" json:"state,omitempty"`
-	GameIds []string            `protobuf:"bytes,2,rep,name=game_ids" json:"game_ids,omitempty"`
+	GameIds []string            `protobuf:"bytes,2,rep,name=game_ids,json=gameIds" json:"game_ids,omitempty"`
 }
 
 func (m *GetLatestVersionsRequest) Reset()         { *m = GetLatestVersionsRequest{} }
 func (m *GetLatestVersionsRequest) String() string { return proto.CompactTextString(m) }
 func (*GetLatestVersionsRequest) ProtoMessage()    {}
-
-type GameAndVersion struct {
-	GameId     string `protobuf:"bytes,1,opt,name=game_id,proto3" json:"game_id,omitempty"`
-	Version    string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
-	TarballUrl string `protobuf:"bytes,3,opt,name=tarball_url,proto3" json:"tarball_url,omitempty"`
+func (*GetLatestVersionsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptorMessages, []int{23}
 }
 
-func (m *GameAndVersion) Reset()         { *m = GameAndVersion{} }
-func (m *GameAndVersion) String() string { return proto.CompactTextString(m) }
-func (*GameAndVersion) ProtoMessage()    {}
+type GameAndVersion struct {
+	GameId     string `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
+	Version    string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	TarballUrl string `protobuf:"bytes,3,opt,name=tarball_url,json=tarballUrl,proto3" json:"tarball_url,omitempty"`
+}
+
+func (m *GameAndVersion) Reset()                    { *m = GameAndVersion{} }
+func (m *GameAndVersion) String() string            { return proto.CompactTextString(m) }
+func (*GameAndVersion) ProtoMessage()               {}
+func (*GameAndVersion) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{24} }
 
 type GameVersionsResponse struct {
 	Results []*GameAndVersion `protobuf:"bytes,1,rep,name=results" json:"results,omitempty"`
 }
 
-func (m *GameVersionsResponse) Reset()         { *m = GameVersionsResponse{} }
-func (m *GameVersionsResponse) String() string { return proto.CompactTextString(m) }
-func (*GameVersionsResponse) ProtoMessage()    {}
+func (m *GameVersionsResponse) Reset()                    { *m = GameVersionsResponse{} }
+func (m *GameVersionsResponse) String() string            { return proto.CompactTextString(m) }
+func (*GameVersionsResponse) ProtoMessage()               {}
+func (*GameVersionsResponse) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{25} }
 
 // Search Service
 type IndexRequest struct {
 }
 
-func (m *IndexRequest) Reset()         { *m = IndexRequest{} }
-func (m *IndexRequest) String() string { return proto.CompactTextString(m) }
-func (*IndexRequest) ProtoMessage()    {}
+func (m *IndexRequest) Reset()                    { *m = IndexRequest{} }
+func (m *IndexRequest) String() string            { return proto.CompactTextString(m) }
+func (*IndexRequest) ProtoMessage()               {}
+func (*IndexRequest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{26} }
 
 type SearchResult struct {
-	GameId string  `protobuf:"bytes,1,opt,name=game_id,proto3" json:"game_id,omitempty"`
+	GameId string  `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
 	Score  float64 `protobuf:"fixed64,2,opt,name=score,proto3" json:"score,omitempty"`
 }
 
-func (m *SearchResult) Reset()         { *m = SearchResult{} }
-func (m *SearchResult) String() string { return proto.CompactTextString(m) }
-func (*SearchResult) ProtoMessage()    {}
+func (m *SearchResult) Reset()                    { *m = SearchResult{} }
+func (m *SearchResult) String() string            { return proto.CompactTextString(m) }
+func (*SearchResult) ProtoMessage()               {}
+func (*SearchResult) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{27} }
 
 type SearchRequest struct {
 	Query string              `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
 	State RequestReleaseState `protobuf:"varint,2,opt,name=state,proto3,enum=apipb.RequestReleaseState" json:"state,omitempty"`
 }
 
-func (m *SearchRequest) Reset()         { *m = SearchRequest{} }
-func (m *SearchRequest) String() string { return proto.CompactTextString(m) }
-func (*SearchRequest) ProtoMessage()    {}
+func (m *SearchRequest) Reset()                    { *m = SearchRequest{} }
+func (m *SearchRequest) String() string            { return proto.CompactTextString(m) }
+func (*SearchRequest) ProtoMessage()               {}
+func (*SearchRequest) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{28} }
 
 type SearchResponse struct {
 	Type    int32           `protobuf:"varint,1,opt,name=type,proto3" json:"type,omitempty"`
 	Results []*SearchResult `protobuf:"bytes,2,rep,name=results" json:"results,omitempty"`
 }
 
-func (m *SearchResponse) Reset()         { *m = SearchResponse{} }
-func (m *SearchResponse) String() string { return proto.CompactTextString(m) }
-func (*SearchResponse) ProtoMessage()    {}
+func (m *SearchResponse) Reset()                    { *m = SearchResponse{} }
+func (m *SearchResponse) String() string            { return proto.CompactTextString(m) }
+func (*SearchResponse) ProtoMessage()               {}
+func (*SearchResponse) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{29} }
 
 type Response struct {
 	Type    int32  `protobuf:"varint,1,opt,name=type,proto3" json:"type,omitempty"`
 	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 }
 
-func (m *Response) Reset()         { *m = Response{} }
-func (m *Response) String() string { return proto.CompactTextString(m) }
-func (*Response) ProtoMessage()    {}
+func (m *Response) Reset()                    { *m = Response{} }
+func (m *Response) String() string            { return proto.CompactTextString(m) }
+func (*Response) ProtoMessage()               {}
+func (*Response) Descriptor() ([]byte, []int) { return fileDescriptorMessages, []int{30} }
 
 func init() {
+	proto.RegisterType((*Address)(nil), "apipb.Address")
+	proto.RegisterType((*Profile)(nil), "apipb.Profile")
+	proto.RegisterType((*ChildGameEntry)(nil), "apipb.ChildGameEntry")
+	proto.RegisterType((*Child)(nil), "apipb.Child")
+	proto.RegisterType((*Author)(nil), "apipb.Author")
+	proto.RegisterType((*GameMetadata)(nil), "apipb.GameMetadata")
+	proto.RegisterType((*GameManifest)(nil), "apipb.GameManifest")
+	proto.RegisterType((*Game)(nil), "apipb.Game")
+	proto.RegisterType((*GameRelease)(nil), "apipb.GameRelease")
+	proto.RegisterType((*UploadToken)(nil), "apipb.UploadToken")
+	proto.RegisterType((*GetProfileRequest)(nil), "apipb.GetProfileRequest")
+	proto.RegisterType((*GetChildRequest)(nil), "apipb.GetChildRequest")
+	proto.RegisterType((*GetChildrenFromProfileRequest)(nil), "apipb.GetChildrenFromProfileRequest")
+	proto.RegisterType((*ChangeChildActivationRequest)(nil), "apipb.ChangeChildActivationRequest")
+	proto.RegisterType((*GetChildrenFromProfileResponse)(nil), "apipb.GetChildrenFromProfileResponse")
+	proto.RegisterType((*GetGameReleaseRequest)(nil), "apipb.GetGameReleaseRequest")
+	proto.RegisterType((*SoundEnableRequest)(nil), "apipb.SoundEnableRequest")
+	proto.RegisterType((*GameEntryRequest)(nil), "apipb.GameEntryRequest")
+	proto.RegisterType((*PublishResponse)(nil), "apipb.PublishResponse")
+	proto.RegisterType((*ValidateRequest)(nil), "apipb.ValidateRequest")
+	proto.RegisterType((*GetGameRequest)(nil), "apipb.GetGameRequest")
+	proto.RegisterType((*ListGamesRequest)(nil), "apipb.ListGamesRequest")
+	proto.RegisterType((*ListItem)(nil), "apipb.ListItem")
+	proto.RegisterType((*GetLatestVersionsRequest)(nil), "apipb.GetLatestVersionsRequest")
+	proto.RegisterType((*GameAndVersion)(nil), "apipb.GameAndVersion")
+	proto.RegisterType((*GameVersionsResponse)(nil), "apipb.GameVersionsResponse")
+	proto.RegisterType((*IndexRequest)(nil), "apipb.IndexRequest")
+	proto.RegisterType((*SearchResult)(nil), "apipb.SearchResult")
+	proto.RegisterType((*SearchRequest)(nil), "apipb.SearchRequest")
+	proto.RegisterType((*SearchResponse)(nil), "apipb.SearchResponse")
+	proto.RegisterType((*Response)(nil), "apipb.Response")
 	proto.RegisterEnum("apipb.Gender", Gender_name, Gender_value)
 	proto.RegisterEnum("apipb.ReleaseState", ReleaseState_name, ReleaseState_value)
 	proto.RegisterEnum("apipb.RequestReleaseState", RequestReleaseState_name, RequestReleaseState_value)
@@ -958,6 +1033,21 @@ func (m *GameMetadata) MarshalTo(data []byte) (int, error) {
 		i = encodeVarintMessages(data, i, uint64(len(m.InfoSlug)))
 		i += copy(data[i:], m.InfoSlug)
 	}
+	if len(m.Assets) > 0 {
+		for _, s := range m.Assets {
+			data[i] = 0x52
+			i++
+			l = len(s)
+			for l >= 1<<7 {
+				data[i] = uint8(uint64(l)&0x7f | 0x80)
+				l >>= 7
+				i++
+			}
+			data[i] = uint8(l)
+			i++
+			i += copy(data[i:], s)
+		}
+	}
 	return i, nil
 }
 
@@ -1039,39 +1129,6 @@ func (m *GameManifest) MarshalTo(data []byte) (int, error) {
 		i = encodeVarintMessages(data, i, uint64(len(m.Repository)))
 		i += copy(data[i:], m.Repository)
 	}
-	if len(m.DefaultName) > 0 {
-		data[i] = 0x4a
-		i++
-		i = encodeVarintMessages(data, i, uint64(len(m.DefaultName)))
-		i += copy(data[i:], m.DefaultName)
-	}
-	if len(m.DefaultLogo) > 0 {
-		data[i] = 0x52
-		i++
-		i = encodeVarintMessages(data, i, uint64(len(m.DefaultLogo)))
-		i += copy(data[i:], m.DefaultLogo)
-	}
-	if len(m.DefaultIcon) > 0 {
-		data[i] = 0x5a
-		i++
-		i = encodeVarintMessages(data, i, uint64(len(m.DefaultIcon)))
-		i += copy(data[i:], m.DefaultIcon)
-	}
-	if len(m.DefaultImages) > 0 {
-		for _, s := range m.DefaultImages {
-			data[i] = 0x62
-			i++
-			l = len(s)
-			for l >= 1<<7 {
-				data[i] = uint8(uint64(l)&0x7f | 0x80)
-				l >>= 7
-				i++
-			}
-			data[i] = uint8(l)
-			i++
-			i += copy(data[i:], s)
-		}
-	}
 	if len(m.Metadata) > 0 {
 		for _, msg := range m.Metadata {
 			data[i] = 0x6a
@@ -1120,6 +1177,14 @@ func (m *GameManifest) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintMessages(data, i, uint64(len(m.DeveloperName)))
 		i += copy(data[i:], m.DeveloperName)
+	}
+	if len(m.DefaultLanguage) > 0 {
+		data[i] = 0x92
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintMessages(data, i, uint64(len(m.DefaultLanguage)))
+		i += copy(data[i:], m.DefaultLanguage)
 	}
 	return i, nil
 }
@@ -1930,7 +1995,7 @@ func (m *SearchResult) MarshalTo(data []byte) (int, error) {
 	if m.Score != 0 {
 		data[i] = 0x11
 		i++
-		i = encodeFixed64Messages(data, i, uint64(math.Float64bits(m.Score)))
+		i = encodeFixed64Messages(data, i, uint64(math.Float64bits(float64(m.Score))))
 	}
 	return i, nil
 }
@@ -2262,6 +2327,12 @@ func (m *GameMetadata) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovMessages(uint64(l))
 	}
+	if len(m.Assets) > 0 {
+		for _, s := range m.Assets {
+			l = len(s)
+			n += 1 + l + sovMessages(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -2304,24 +2375,6 @@ func (m *GameManifest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovMessages(uint64(l))
 	}
-	l = len(m.DefaultName)
-	if l > 0 {
-		n += 1 + l + sovMessages(uint64(l))
-	}
-	l = len(m.DefaultLogo)
-	if l > 0 {
-		n += 1 + l + sovMessages(uint64(l))
-	}
-	l = len(m.DefaultIcon)
-	if l > 0 {
-		n += 1 + l + sovMessages(uint64(l))
-	}
-	if len(m.DefaultImages) > 0 {
-		for _, s := range m.DefaultImages {
-			l = len(s)
-			n += 1 + l + sovMessages(uint64(l))
-		}
-	}
 	if len(m.Metadata) > 0 {
 		for _, e := range m.Metadata {
 			l = e.Size()
@@ -2343,6 +2396,10 @@ func (m *GameManifest) Size() (n int) {
 		n += 2 + l + sovMessages(uint64(l))
 	}
 	l = len(m.DeveloperName)
+	if l > 0 {
+		n += 2 + l + sovMessages(uint64(l))
+	}
+	l = len(m.DefaultLanguage)
 	if l > 0 {
 		n += 2 + l + sovMessages(uint64(l))
 	}
@@ -3401,7 +3458,10 @@ func (m *ChildGameEntry) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Settings = append([]byte{}, data[iNdEx:postIndex]...)
+			m.Settings = append(m.Settings[:0], data[iNdEx:postIndex]...)
+			if m.Settings == nil {
+				m.Settings = []byte{}
+			}
 			iNdEx = postIndex
 		case 5:
 			if wireType != 0 {
@@ -4241,6 +4301,35 @@ func (m *GameMetadata) Unmarshal(data []byte) error {
 			}
 			m.InfoSlug = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Assets", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessages
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Assets = append(m.Assets, string(data[iNdEx:postIndex]))
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMessages(data[iNdEx:])
@@ -4525,122 +4614,6 @@ func (m *GameManifest) Unmarshal(data []byte) error {
 			}
 			m.Repository = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 9:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DefaultName", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMessages
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMessages
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DefaultName = string(data[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 10:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DefaultLogo", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMessages
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMessages
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DefaultLogo = string(data[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 11:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DefaultIcon", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMessages
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMessages
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DefaultIcon = string(data[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 12:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DefaultImages", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMessages
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMessages
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DefaultImages = append(m.DefaultImages, string(data[iNdEx:postIndex]))
-			iNdEx = postIndex
 		case 13:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
@@ -4787,6 +4760,35 @@ func (m *GameManifest) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.DeveloperName = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 18:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DefaultLanguage", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessages
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessages
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DefaultLanguage = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -6413,7 +6415,10 @@ func (m *GameEntryRequest) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Settings = append([]byte{}, data[iNdEx:postIndex]...)
+			m.Settings = append(m.Settings[:0], data[iNdEx:postIndex]...)
+			if m.Settings == nil {
+				m.Settings = []byte{}
+			}
 			iNdEx = postIndex
 		case 5:
 			if wireType != 0 {
@@ -8034,3 +8039,180 @@ var (
 	ErrInvalidLengthMessages = fmt.Errorf("proto: negative length found during unmarshaling")
 	ErrIntOverflowMessages   = fmt.Errorf("proto: integer overflow")
 )
+
+var fileDescriptorMessages = []byte{
+	// 2761 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xc4, 0x5a, 0x4b, 0x6f, 0xdb, 0xd8,
+	0x15, 0xb6, 0xde, 0xd2, 0x91, 0x2c, 0x2b, 0x4c, 0x3c, 0xd1, 0x78, 0x12, 0x3b, 0xc3, 0x20, 0xd3,
+	0x69, 0x9a, 0x38, 0x45, 0xd2, 0x99, 0x4c, 0x33, 0x9d, 0x01, 0x24, 0x4b, 0x31, 0x94, 0xfa, 0x55,
+	0xca, 0x76, 0xda, 0x41, 0x0b, 0x95, 0x12, 0x29, 0x99, 0x0d, 0x45, 0xaa, 0x24, 0xe5, 0xc4, 0x45,
+	0x81, 0xf6, 0x27, 0x0c, 0xd0, 0x7f, 0xd0, 0x45, 0xf7, 0xdd, 0xb4, 0x7f, 0x21, 0x40, 0x37, 0x5d,
+	0x75, 0xd1, 0xc5, 0xa0, 0x8f, 0x5f, 0xd0, 0xae, 0xba, 0x2a, 0x7a, 0xee, 0x8b, 0xbc, 0x97, 0xb1,
+	0x31, 0x4a, 0x66, 0x80, 0x2e, 0x0c, 0x90, 0xe7, 0x75, 0xef, 0x3d, 0xe7, 0x3b, 0x8f, 0x4b, 0x19,
+	0xea, 0x53, 0x3b, 0x0c, 0xcd, 0x89, 0x1d, 0x6e, 0xce, 0x02, 0x3f, 0xf2, 0xb5, 0x82, 0x39, 0x73,
+	0x66, 0xc3, 0xb5, 0x2b, 0x13, 0x7f, 0xe2, 0x53, 0xca, 0x3d, 0xf2, 0xc4, 0x98, 0xfa, 0x1f, 0xb2,
+	0x50, 0x6a, 0x59, 0x56, 0x80, 0x2a, 0xda, 0x13, 0xa8, 0x87, 0x51, 0x60, 0xdb, 0xd1, 0xc0, 0x64,
+	0x94, 0x66, 0xe6, 0x46, 0xe6, 0xfd, 0x4a, 0xfb, 0xe6, 0xbf, 0xbf, 0xd8, 0xd8, 0x18, 0x86, 0xbe,
+	0xf7, 0x48, 0x57, 0xf9, 0x77, 0xfc, 0xa9, 0x13, 0xd9, 0xd3, 0x59, 0x74, 0xa6, 0x1b, 0xcb, 0x8c,
+	0x25, 0x6c, 0xdd, 0x85, 0xfc, 0xc8, 0x89, 0xce, 0x9a, 0x59, 0x6a, 0xe1, 0x6d, 0xb4, 0xb0, 0xca,
+	0x2c, 0x10, 0xaa, 0xac, 0x47, 0xc5, 0xb4, 0x6f, 0x43, 0x21, 0x8c, 0xcc, 0xc8, 0x6e, 0xe6, 0xa8,
+	0xfc, 0x1a, 0xca, 0xbf, 0x25, 0x56, 0x44, 0xb2, 0xac, 0xc0, 0x04, 0xb5, 0x8f, 0xa0, 0xfc, 0x0b,
+	0x67, 0x36, 0x18, 0xf9, 0x96, 0xdd, 0xcc, 0x53, 0xa5, 0xeb, 0xa8, 0xf4, 0x36, 0x53, 0x12, 0x1c,
+	0x59, 0xaf, 0x84, 0xc4, 0x2d, 0xa4, 0x69, 0x1d, 0xa8, 0x8d, 0xfc, 0xb9, 0x17, 0x05, 0x67, 0x4c,
+	0xbb, 0x40, 0xb5, 0xdf, 0x45, 0xed, 0xeb, 0x7c, 0x8b, 0x12, 0x57, 0xb6, 0x50, 0xe5, 0x0c, 0x62,
+	0x45, 0xff, 0x4b, 0x1e, 0x4a, 0x07, 0x81, 0x3f, 0x76, 0x5c, 0x5b, 0xdb, 0x85, 0xac, 0x63, 0x71,
+	0x67, 0x7d, 0xf2, 0xf2, 0x8b, 0x8d, 0xa5, 0xbf, 0xa2, 0x2d, 0x74, 0xf6, 0xb3, 0xc9, 0xa6, 0xe3,
+	0xdd, 0x9b, 0xa2, 0xb3, 0x4f, 0xef, 0xdf, 0x23, 0xb6, 0x37, 0xf7, 0x87, 0x3f, 0xb3, 0x47, 0x51,
+	0xcf, 0xc2, 0xc5, 0xae, 0xb0, 0xc5, 0x06, 0x8e, 0x25, 0xaf, 0x81, 0x86, 0x88, 0x33, 0xec, 0xa9,
+	0xe9, 0xb8, 0xdc, 0x79, 0x92, 0x33, 0x28, 0x59, 0x71, 0x06, 0xa5, 0x68, 0x9f, 0x02, 0x8c, 0x9d,
+	0x20, 0x8c, 0x06, 0x9e, 0x39, 0x15, 0x3e, 0xdc, 0x40, 0xb5, 0x77, 0x98, 0x5a, 0xc2, 0x93, 0x75,
+	0x2b, 0x94, 0xbc, 0x87, 0x54, 0xed, 0x63, 0xa8, 0xb8, 0xa6, 0x50, 0x67, 0xde, 0x5c, 0x47, 0xf5,
+	0x35, 0xa6, 0x1e, 0xb3, 0x64, 0xed, 0x32, 0xa1, 0x52, 0xe5, 0xef, 0x02, 0x3e, 0x7b, 0x93, 0x39,
+	0x42, 0x8e, 0xfb, 0x52, 0x8a, 0x84, 0xe0, 0xa4, 0x54, 0x19, 0x91, 0x84, 0x62, 0xea, 0x0f, 0xd1,
+	0x85, 0x83, 0xd9, 0x89, 0xef, 0xd9, 0xcd, 0x62, 0x3a, 0x14, 0x32, 0x57, 0x09, 0x05, 0x63, 0x1c,
+	0x10, 0xba, 0xf6, 0x18, 0x4a, 0x02, 0xb0, 0x25, 0x34, 0x50, 0xbd, 0x5f, 0xdf, 0xa4, 0x90, 0xdf,
+	0xe4, 0x60, 0x6c, 0x5f, 0x43, 0x83, 0x4d, 0x66, 0xf0, 0x1c, 0xe4, 0x0a, 0x65, 0xe2, 0xc5, 0x51,
+	0x60, 0x23, 0xb8, 0xac, 0x81, 0x19, 0x35, 0xcb, 0x68, 0x2a, 0x27, 0x7b, 0x31, 0xe1, 0x29, 0x5e,
+	0xe4, 0xe4, 0x56, 0x44, 0x4e, 0x43, 0x5d, 0x35, 0x9f, 0x59, 0x84, 0xd2, 0xac, 0x50, 0x0b, 0xd2,
+	0x69, 0x64, 0xae, 0x72, 0x1a, 0xc2, 0x38, 0x62, 0x74, 0xfd, 0xf7, 0x39, 0xa8, 0x6f, 0x9d, 0x38,
+	0xae, 0xb5, 0x8d, 0xce, 0xed, 0x12, 0xbc, 0x69, 0x6d, 0x09, 0x5f, 0xf7, 0x17, 0xc5, 0x57, 0x85,
+	0xad, 0xe9, 0x58, 0x0c, 0x54, 0xdf, 0x84, 0xa2, 0x39, 0x8a, 0x9c, 0x53, 0x9b, 0xa2, 0xaa, 0xdc,
+	0xbe, 0x84, 0x22, 0xcb, 0xdc, 0x27, 0x94, 0xae, 0x1b, 0x5c, 0x40, 0xdb, 0x82, 0x15, 0xcb, 0x0c,
+	0x4f, 0x86, 0xbe, 0x19, 0x58, 0x03, 0xc7, 0xb3, 0xec, 0x17, 0x14, 0x52, 0x05, 0x19, 0x89, 0x29,
+	0x01, 0xdd, 0xa8, 0xc7, 0x94, 0x1e, 0x21, 0x68, 0xf7, 0xa0, 0x1c, 0xda, 0x51, 0xe4, 0x78, 0x93,
+	0x90, 0x22, 0xaa, 0xd6, 0xbe, 0x8c, 0xda, 0x2b, 0x3c, 0xa9, 0x39, 0x07, 0xb1, 0x20, 0x1e, 0xb5,
+	0x4d, 0x28, 0x63, 0x20, 0x98, 0xef, 0x0b, 0xd4, 0x73, 0x92, 0x82, 0xe0, 0xb0, 0x68, 0x51, 0x6f,
+	0x1f, 0xc2, 0x2a, 0xdd, 0xaf, 0x19, 0x39, 0xbe, 0x37, 0x18, 0x9d, 0x20, 0xa6, 0x98, 0x72, 0x91,
+	0x2a, 0xdf, 0x40, 0xe5, 0x6b, 0xd2, 0xf9, 0xd2, 0x62, 0xba, 0x71, 0x39, 0xa1, 0x6f, 0x31, 0x32,
+	0x5a, 0xfd, 0x0e, 0x00, 0x0f, 0x10, 0x31, 0x55, 0xa2, 0xa6, 0x56, 0xd1, 0xd4, 0x25, 0x66, 0x2a,
+	0xe1, 0x61, 0xe4, 0xf9, 0x4b, 0x2b, 0xd2, 0xff, 0x5b, 0x84, 0x02, 0x8d, 0xd9, 0xd7, 0x5d, 0x0a,
+	0x7e, 0x0a, 0x95, 0x99, 0x19, 0xd8, 0x5e, 0x84, 0x3c, 0x5e, 0x0e, 0xb6, 0x16, 0xb5, 0xca, 0xb3,
+	0x37, 0xd6, 0x57, 0x52, 0x90, 0x51, 0x7b, 0xd6, 0xff, 0xb7, 0x74, 0xa0, 0xf2, 0xd0, 0x09, 0xa2,
+	0x93, 0x81, 0x65, 0x9e, 0xf1, 0xa0, 0x4b, 0xca, 0x31, 0x4b, 0x51, 0xa6, 0xd4, 0x8e, 0x49, 0xb2,
+	0xa2, 0x38, 0xb1, 0x11, 0x6b, 0x01, 0x0d, 0x53, 0xfd, 0xfe, 0x32, 0xcf, 0xfa, 0x6d, 0x4a, 0x6c,
+	0xbf, 0x83, 0x86, 0xae, 0x32, 0x43, 0x4c, 0x4c, 0xb6, 0xc2, 0x35, 0x95, 0xda, 0x55, 0x7e, 0xbd,
+	0xda, 0xb5, 0x0d, 0x85, 0x09, 0x9e, 0x21, 0xc4, 0x34, 0xcf, 0x61, 0xcd, 0x59, 0xe5, 0xab, 0xab,
+	0xa9, 0x2b, 0xa7, 0x0c, 0x95, 0x56, 0x8a, 0x37, 0xa5, 0x68, 0x0f, 0xe2, 0xcc, 0x04, 0x9a, 0x99,
+	0xd2, 0xc6, 0x19, 0x5d, 0xd9, 0x38, 0xcf, 0x51, 0xe2, 0x76, 0x7f, 0x42, 0xa0, 0xec, 0x78, 0xcd,
+	0x2a, 0xd5, 0x93, 0xdd, 0x2e, 0x58, 0xea, 0xd6, 0x29, 0xb5, 0xe7, 0xd1, 0x46, 0x8f, 0xad, 0xcc,
+	0x0a, 0x07, 0xb6, 0x67, 0x0e, 0x5d, 0x2c, 0x55, 0x35, 0x6a, 0x41, 0x6e, 0xf4, 0x0a, 0x5f, 0x6d,
+	0xf4, 0x94, 0xd5, 0x65, 0x9c, 0x54, 0xd1, 0x5c, 0xf9, 0xca, 0x45, 0xb3, 0xf1, 0x46, 0x45, 0xd3,
+	0x81, 0x62, 0x6b, 0x1e, 0x9d, 0xf8, 0x01, 0x19, 0x3c, 0x28, 0x14, 0x33, 0xe9, 0xc1, 0x23, 0x8d,
+	0x42, 0x2a, 0xf6, 0xfa, 0xbd, 0x56, 0xff, 0x53, 0x1e, 0x6a, 0x24, 0xbe, 0xbb, 0x76, 0x64, 0xe2,
+	0xe2, 0xa6, 0x82, 0xa1, 0xcc, 0x6b, 0xf7, 0xbf, 0x53, 0x27, 0x74, 0xd0, 0x91, 0x2c, 0x7f, 0xb2,
+	0xe9, 0xfe, 0x27, 0x73, 0x95, 0xc3, 0x73, 0x06, 0xcd, 0xa2, 0x0f, 0xa1, 0x14, 0xce, 0xa7, 0x53,
+	0x33, 0x38, 0xe3, 0xf9, 0x2b, 0xf5, 0x3b, 0xce, 0x50, 0xfa, 0x1d, 0xa7, 0x61, 0x02, 0x55, 0x2d,
+	0x3b, 0x1c, 0x05, 0xce, 0x8c, 0xd4, 0x40, 0x9e, 0xbc, 0x52, 0xdd, 0x94, 0x98, 0xca, 0xda, 0x12,
+	0x9d, 0xb8, 0x1b, 0x61, 0xe5, 0xf3, 0xc6, 0x2f, 0xb9, 0x9b, 0x50, 0x15, 0x77, 0x13, 0x02, 0x11,
+	0x77, 0x46, 0xb8, 0x56, 0x31, 0x2d, 0x4e, 0xa8, 0x8a, 0x38, 0x21, 0x10, 0xd7, 0x3e, 0xb3, 0xcf,
+	0x9e, 0xfb, 0x81, 0x45, 0x5a, 0x7b, 0x4e, 0x75, 0xad, 0xe0, 0x28, 0xae, 0x15, 0x44, 0x92, 0x55,
+	0xce, 0x94, 0x4c, 0xc1, 0x98, 0xd7, 0x44, 0x51, 0xca, 0x2a, 0x46, 0x57, 0xb2, 0x8a, 0x91, 0x48,
+	0x56, 0x39, 0xde, 0xd8, 0x1f, 0x84, 0xee, 0x7c, 0x42, 0xdb, 0xb7, 0x52, 0xcc, 0x62, 0x96, 0xb2,
+	0x22, 0xa1, 0xf6, 0x91, 0x48, 0xf3, 0x38, 0xc4, 0x76, 0x16, 0x62, 0x1e, 0xa7, 0x56, 0x64, 0x74,
+	0x35, 0x8f, 0x29, 0x49, 0xff, 0xbc, 0xc4, 0xd1, 0x64, 0x7a, 0xce, 0xd8, 0x0e, 0x23, 0xad, 0x0f,
+	0xd5, 0xb9, 0xe7, 0xfc, 0x7c, 0xce, 0x11, 0xc1, 0x9b, 0x3e, 0x9a, 0xda, 0xe4, 0x1d, 0x28, 0x61,
+	0x4a, 0xf6, 0x6e, 0x8c, 0x5c, 0xe7, 0x91, 0x7e, 0x44, 0x79, 0x37, 0x08, 0x28, 0x74, 0x03, 0x98,
+	0x24, 0x45, 0x48, 0x07, 0x4a, 0xae, 0x33, 0xb2, 0xbd, 0x91, 0x80, 0xd8, 0x6d, 0x34, 0xf8, 0x1e,
+	0x0f, 0x14, 0x63, 0xbc, 0x62, 0x6c, 0x87, 0xd1, 0x11, 0x2f, 0x5c, 0x42, 0xfb, 0x1e, 0x29, 0xf5,
+	0x0c, 0xb9, 0x21, 0x22, 0x2d, 0x97, 0x2e, 0xf5, 0x9c, 0xa5, 0x24, 0x7a, 0x4c, 0x25, 0xb1, 0x3c,
+	0xf1, 0xa7, 0xf6, 0x8c, 0xa4, 0xc9, 0x2b, 0x03, 0xbb, 0xe0, 0x28, 0x9e, 0x15, 0x44, 0x1c, 0x0d,
+	0xf2, 0x98, 0x7a, 0x1e, 0x07, 0x99, 0x94, 0xa3, 0x84, 0xca, 0xb7, 0xbb, 0x4b, 0x1e, 0x0d, 0x2a,
+	0xa7, 0x3d, 0x82, 0xd2, 0xa9, 0x1d, 0x84, 0x4e, 0x0c, 0x34, 0x09, 0xd4, 0x9c, 0xc1, 0xb5, 0x8e,
+	0xf9, 0x9b, 0x21, 0x14, 0x10, 0x02, 0x25, 0x93, 0x56, 0x12, 0x86, 0xb8, 0x6a, 0xdc, 0x56, 0x58,
+	0x7d, 0x69, 0x6b, 0x68, 0xaa, 0xce, 0xa3, 0xca, 0xe4, 0xc8, 0x4c, 0xc2, 0x9e, 0xb4, 0x0f, 0x00,
+	0x02, 0x7b, 0xe6, 0x87, 0x4e, 0xe4, 0x63, 0x32, 0xb2, 0x86, 0x22, 0x4d, 0x0f, 0x09, 0x0f, 0xc3,
+	0x93, 0xbc, 0x68, 0x7b, 0x50, 0x9e, 0xf2, 0x6a, 0xd2, 0x5c, 0xa6, 0x8b, 0x5e, 0x16, 0xbd, 0x4c,
+	0x2a, 0x34, 0xb2, 0xbf, 0x84, 0xb8, 0xe2, 0x2f, 0x41, 0xd4, 0xee, 0x40, 0xc9, 0x7e, 0x31, 0x72,
+	0xe7, 0x78, 0xb9, 0xa9, 0xd3, 0x30, 0x49, 0x9b, 0xe6, 0x0c, 0xdc, 0x34, 0x7f, 0x22, 0x81, 0x89,
+	0x27, 0xb5, 0x95, 0x74, 0x60, 0x04, 0x47, 0x59, 0x28, 0x9e, 0xd9, 0x3e, 0x80, 0xd2, 0xb3, 0xd3,
+	0xc1, 0xcc, 0x8c, 0x4e, 0x68, 0xdd, 0x56, 0x2a, 0x0f, 0x67, 0x28, 0xa0, 0x7f, 0x76, 0x7a, 0x80,
+	0x24, 0xd2, 0x7f, 0x2c, 0xfb, 0xd4, 0x76, 0xfd, 0x99, 0x1d, 0x30, 0x98, 0x5f, 0x4a, 0x5f, 0x34,
+	0x55, 0xbe, 0xd2, 0x7f, 0x62, 0x16, 0x85, 0xf6, 0x01, 0x34, 0x2c, 0x7b, 0x6c, 0xce, 0xdd, 0x68,
+	0x10, 0x57, 0x61, 0x8d, 0x5a, 0xbb, 0x85, 0xd6, 0xde, 0x15, 0xd6, 0x54, 0x09, 0xd9, 0xde, 0x0a,
+	0x67, 0xee, 0x70, 0x9e, 0xfe, 0xbb, 0x3c, 0xe4, 0x89, 0xdf, 0xbf, 0xee, 0x59, 0xae, 0xa5, 0x66,
+	0x76, 0x36, 0x8d, 0xcc, 0xf3, 0x33, 0x5b, 0xc9, 0xe3, 0x9f, 0x40, 0xd9, 0x7f, 0xee, 0xa1, 0x53,
+	0x70, 0x5f, 0xac, 0xd4, 0xb7, 0x17, 0xdd, 0x17, 0x8f, 0xa7, 0x50, 0x57, 0x1a, 0x02, 0x25, 0xe2,
+	0x2c, 0x78, 0x0c, 0xda, 0x2c, 0xf0, 0xad, 0xf9, 0x88, 0xce, 0xca, 0x22, 0x85, 0x58, 0xb2, 0x7e,
+	0x03, 0x6d, 0xdc, 0xe4, 0x13, 0xe5, 0x2b, 0x32, 0xb2, 0xb5, 0x4b, 0x09, 0x9b, 0x67, 0x97, 0xb6,
+	0x0f, 0x0d, 0x27, 0x1c, 0xa0, 0x78, 0xc2, 0xa2, 0xb9, 0x5c, 0x96, 0x63, 0x94, 0x96, 0x90, 0x6d,
+	0xd6, 0x9d, 0x70, 0xdf, 0x3b, 0x88, 0x59, 0xa9, 0xa1, 0xa3, 0xf8, 0x95, 0x87, 0x8e, 0xd2, 0x1b,
+	0x0d, 0x1d, 0xff, 0x2a, 0x42, 0x95, 0x00, 0xc5, 0xb0, 0x5d, 0xdb, 0x0c, 0x6d, 0xcd, 0x20, 0xd9,
+	0x4f, 0x1f, 0x07, 0x31, 0x6e, 0x1e, 0x2c, 0x1a, 0x1f, 0x88, 0x71, 0x83, 0x3b, 0xe5, 0x66, 0x30,
+	0x24, 0x07, 0x50, 0x22, 0x53, 0x62, 0x32, 0xfe, 0x3f, 0x5c, 0xd4, 0x60, 0x3d, 0x99, 0x3a, 0xa9,
+	0xd1, 0x22, 0x79, 0x42, 0x8b, 0x77, 0x92, 0xe2, 0xc8, 0x20, 0x24, 0x15, 0x87, 0xd3, 0x57, 0xca,
+	0xe1, 0x8f, 0x61, 0x99, 0x5a, 0x98, 0xf2, 0xfe, 0x44, 0xd1, 0x90, 0xaa, 0x4f, 0x9c, 0xd5, 0xd6,
+	0xd1, 0xd0, 0xba, 0xb4, 0xaa, 0xd0, 0x91, 0x1d, 0x58, 0x9b, 0xc8, 0xcd, 0xee, 0x21, 0x54, 0xf9,
+	0x51, 0xa5, 0x6b, 0xdf, 0x5b, 0x68, 0x46, 0x13, 0x05, 0x33, 0x66, 0xd2, 0x8a, 0xc9, 0xde, 0x30,
+	0x80, 0x63, 0x49, 0x71, 0x78, 0xc6, 0xab, 0x7c, 0x77, 0x51, 0xd7, 0x5c, 0x4b, 0x59, 0x1f, 0x2a,
+	0xf3, 0x51, 0xbc, 0x4e, 0xfb, 0x0c, 0x43, 0xba, 0x2c, 0x42, 0xca, 0xbe, 0x4f, 0xb1, 0xab, 0x86,
+	0x38, 0x3e, 0x8f, 0x7c, 0x9f, 0xb0, 0xda, 0xcd, 0x24, 0xfb, 0x15, 0x1d, 0x3c, 0x74, 0x20, 0xc9,
+	0x69, 0x0e, 0x0e, 0x7d, 0xa6, 0xeb, 0xb0, 0x8b, 0xe4, 0x50, 0xb4, 0x89, 0xc7, 0x8b, 0x6e, 0x5e,
+	0x4c, 0x86, 0x92, 0x09, 0x75, 0x32, 0x14, 0x0c, 0xdc, 0xfe, 0x23, 0x79, 0x29, 0x74, 0x30, 0xfb,
+	0x22, 0x71, 0x15, 0xad, 0x5c, 0x4e, 0x5b, 0x21, 0x1e, 0x4e, 0x74, 0x5b, 0x34, 0x36, 0x0e, 0xde,
+	0x1b, 0x05, 0x56, 0x20, 0x1d, 0x1b, 0x89, 0x89, 0x3e, 0xc3, 0x37, 0x91, 0xed, 0xef, 0xe1, 0x38,
+	0x8a, 0x6d, 0x8d, 0x14, 0xe2, 0x2a, 0x3d, 0x5a, 0x0d, 0x95, 0xca, 0x4c, 0xe9, 0x2e, 0x19, 0x3f,
+	0x19, 0x13, 0xe7, 0xa5, 0xba, 0x19, 0x8c, 0x4e, 0xf0, 0x36, 0x33, 0x18, 0xfb, 0xc1, 0x14, 0xb7,
+	0x57, 0x3b, 0x47, 0x7c, 0x99, 0xcb, 0x3c, 0xa6, 0x22, 0xfa, 0x1f, 0x73, 0x50, 0x3d, 0x9a, 0xb9,
+	0xbe, 0x69, 0x1d, 0xfa, 0xcf, 0x6c, 0x8f, 0xcc, 0xef, 0x11, 0x79, 0xe0, 0xe9, 0x26, 0xcd, 0x06,
+	0x94, 0xac, 0xcc, 0xef, 0x94, 0x42, 0x6a, 0x87, 0xfd, 0x62, 0xe6, 0x04, 0x76, 0x48, 0x3c, 0x92,
+	0x4d, 0xd7, 0x8e, 0x84, 0xa7, 0xd4, 0x0e, 0x4e, 0x46, 0xbf, 0x7c, 0x06, 0xa5, 0x79, 0x28, 0x97,
+	0xe0, 0xd6, 0xa2, 0x91, 0xe3, 0x8d, 0x91, 0x6b, 0x2b, 0x8d, 0x91, 0xd0, 0x30, 0x37, 0x3f, 0x4b,
+	0xb2, 0x3d, 0xff, 0x46, 0xb6, 0xb9, 0xb6, 0x7a, 0xd5, 0x65, 0x79, 0x8f, 0xed, 0xc7, 0xb3, 0x9f,
+	0xc7, 0xf1, 0x2c, 0xa4, 0xdb, 0x8f, 0xc4, 0x54, 0xb2, 0x01, 0xe9, 0xc7, 0xf1, 0x6c, 0x54, 0x99,
+	0x53, 0xdf, 0x0f, 0x22, 0x9f, 0xe7, 0x9c, 0x34, 0x00, 0xc6, 0x2c, 0x65, 0x56, 0x98, 0xf3, 0x60,
+	0xe9, 0x37, 0xe1, 0xd2, 0xb6, 0x1d, 0xf1, 0x4f, 0xa6, 0x86, 0x8d, 0x2d, 0x0d, 0x0b, 0x40, 0x3d,
+	0x69, 0xb1, 0xa4, 0x47, 0xea, 0x77, 0x60, 0x05, 0x85, 0xe8, 0x1d, 0x5a, 0x88, 0xbc, 0x0d, 0xe5,
+	0x11, 0x79, 0x8f, 0x6b, 0xaa, 0x51, 0xa2, 0xef, 0x3d, 0x4b, 0xff, 0x14, 0xae, 0x0b, 0xe9, 0xc0,
+	0xf6, 0x1e, 0x07, 0xfe, 0x34, 0x65, 0xfe, 0x3a, 0xc0, 0x8c, 0x51, 0x12, 0xed, 0x0a, 0xa7, 0xa0,
+	0xfe, 0x0f, 0xe0, 0x1a, 0xfb, 0xf2, 0x43, 0x4d, 0xb4, 0xe2, 0xcf, 0x41, 0x5f, 0xbe, 0xb4, 0xf6,
+	0x96, 0xfa, 0x39, 0x4d, 0xdc, 0xcb, 0xf5, 0x27, 0xb0, 0x7e, 0xd1, 0x96, 0xc2, 0x99, 0xef, 0x61,
+	0x97, 0x78, 0x9f, 0x1b, 0x0d, 0x28, 0x68, 0xc9, 0xb0, 0x57, 0x93, 0x3f, 0x1d, 0x18, 0x31, 0x57,
+	0xff, 0x25, 0xac, 0xa2, 0x2d, 0xa9, 0xc3, 0x88, 0x7d, 0x5d, 0x4d, 0x60, 0xc2, 0xb6, 0x25, 0x62,
+	0xdc, 0x4c, 0x6a, 0x7b, 0x96, 0xed, 0x57, 0xd4, 0x71, 0xe5, 0x03, 0x7b, 0xfd, 0xfe, 0x5a, 0x5c,
+	0xc0, 0xa8, 0x45, 0xb9, 0x8e, 0xf1, 0x0f, 0xec, 0xfa, 0x18, 0xb4, 0x3e, 0xb9, 0xe9, 0xb3, 0x8b,
+	0xfe, 0x02, 0x2e, 0x51, 0x9d, 0x9d, 0x4d, 0x39, 0x9b, 0x78, 0x8c, 0x7d, 0x4d, 0xa0, 0x5b, 0x40,
+	0x8f, 0xb1, 0x37, 0xfd, 0xd7, 0x59, 0x68, 0xc4, 0xdf, 0x4b, 0x16, 0x58, 0xe6, 0x6a, 0xaa, 0x23,
+	0xc6, 0x87, 0x7f, 0x08, 0xf9, 0xe8, 0x6c, 0x26, 0x4e, 0x78, 0x53, 0xea, 0x50, 0xb2, 0x69, 0x71,
+	0xe4, 0x43, 0x14, 0x35, 0xa8, 0x82, 0xb6, 0x96, 0xfe, 0x54, 0x29, 0x4d, 0xb8, 0x57, 0xa0, 0xc0,
+	0xbe, 0x80, 0x92, 0x7c, 0x29, 0x18, 0xec, 0x45, 0xdf, 0x85, 0xaa, 0x64, 0x46, 0x2b, 0x41, 0xae,
+	0xd5, 0xe9, 0x34, 0x96, 0xb4, 0x1a, 0x94, 0x5b, 0x5b, 0x87, 0xbd, 0xe3, 0xd6, 0x61, 0xb7, 0x91,
+	0x41, 0x70, 0x43, 0xa7, 0x1b, 0xbf, 0x67, 0x09, 0xb7, 0xdf, 0x3d, 0x3c, 0xec, 0xed, 0x6d, 0xf7,
+	0x1b, 0x39, 0xad, 0x02, 0x85, 0xde, 0x5e, 0xa7, 0xfb, 0xc3, 0x46, 0x5e, 0x77, 0x60, 0xe5, 0x60,
+	0x3e, 0x74, 0x9d, 0xf0, 0x24, 0x46, 0x89, 0xc6, 0x0f, 0x93, 0xa1, 0xcb, 0xb2, 0x7d, 0x62, 0x74,
+	0xf9, 0x4f, 0x3b, 0x22, 0xba, 0xfc, 0x15, 0x31, 0xc5, 0xab, 0x60, 0x8e, 0x76, 0x67, 0x8d, 0x9f,
+	0x5d, 0x2a, 0x94, 0xbc, 0xfa, 0xe9, 0xbf, 0x82, 0x95, 0x63, 0x5e, 0xe4, 0xbf, 0x14, 0x4d, 0xef,
+	0x02, 0xed, 0xd6, 0x03, 0x15, 0x52, 0x55, 0x42, 0x3b, 0x8e, 0x61, 0x55, 0x21, 0x75, 0x43, 0x86,
+	0xd6, 0x79, 0xbd, 0xd1, 0x28, 0xa3, 0x14, 0x7d, 0xc2, 0x04, 0xa9, 0xc7, 0xa0, 0x66, 0xeb, 0x6f,
+	0x9c, 0x73, 0xe3, 0x55, 0xa6, 0xde, 0x8b, 0x22, 0xae, 0xff, 0x27, 0x03, 0x8d, 0x1d, 0x27, 0xa4,
+	0xd6, 0x42, 0x61, 0x6e, 0x3b, 0xdd, 0xb2, 0x33, 0x74, 0x5b, 0x3a, 0xdf, 0x56, 0x5a, 0x7e, 0xb3,
+	0xe7, 0xe1, 0xf0, 0xcb, 0x76, 0xa9, 0xf6, 0x69, 0x0c, 0xbd, 0xeb, 0x60, 0x25, 0xa3, 0x8b, 0x62,
+	0xe8, 0xe9, 0x0b, 0x81, 0xb1, 0x3f, 0x1e, 0x23, 0x3e, 0xd8, 0x37, 0x71, 0x83, 0xbf, 0xe9, 0x53,
+	0x80, 0xc4, 0x12, 0x45, 0xc4, 0xde, 0x8f, 0x10, 0x11, 0x55, 0x28, 0x6d, 0x19, 0x5d, 0x8c, 0x7f,
+	0x07, 0x01, 0xb1, 0x02, 0xd5, 0x4e, 0xf7, 0xb8, 0xbb, 0xb3, 0x7f, 0xb0, 0xdb, 0xdd, 0x3b, 0x44,
+	0x44, 0x20, 0xf7, 0x69, 0xab, 0x47, 0x10, 0x81, 0x80, 0x40, 0x78, 0x18, 0xdd, 0x27, 0xdd, 0x2d,
+	0x22, 0x9b, 0xd7, 0x96, 0xa1, 0x72, 0xdc, 0xda, 0xe9, 0x75, 0xa8, 0x6a, 0x81, 0x60, 0xe9, 0xc0,
+	0xd8, 0xef, 0x1c, 0x21, 0x9a, 0xf6, 0xf7, 0x1a, 0x45, 0xfd, 0x37, 0x59, 0x28, 0x93, 0xa3, 0xf4,
+	0xb0, 0xd0, 0x5e, 0x1c, 0xc1, 0x8d, 0x73, 0xae, 0x1c, 0x8a, 0x6b, 0x6f, 0x41, 0xdd, 0xc5, 0xfd,
+	0x86, 0x49, 0x9f, 0xa7, 0x3d, 0xcd, 0x58, 0x66, 0x54, 0x11, 0xe6, 0x0f, 0xc9, 0xbc, 0x4c, 0xc5,
+	0x98, 0x4b, 0xf3, 0x17, 0x47, 0xba, 0xca, 0x04, 0x99, 0x1b, 0xee, 0x9e, 0x7b, 0xa1, 0xa0, 0xad,
+	0xe7, 0xbc, 0x7b, 0x42, 0x33, 0x99, 0x1c, 0x8a, 0x0c, 0xe0, 0x62, 0x56, 0xb8, 0xf5, 0xca, 0xac,
+	0x50, 0x62, 0xfb, 0x54, 0xa7, 0x83, 0x09, 0x34, 0x11, 0x5c, 0x3b, 0xf2, 0xde, 0x63, 0x5c, 0xc4,
+	0x15, 0x30, 0xb3, 0x60, 0x05, 0x24, 0x45, 0x88, 0xbb, 0x35, 0x44, 0xd7, 0xe5, 0xc8, 0x7e, 0x98,
+	0x5f, 0x43, 0xdd, 0x42, 0x14, 0xe3, 0x63, 0xcb, 0xb3, 0xc4, 0xde, 0xdf, 0xa0, 0x26, 0x63, 0x74,
+	0x22, 0x33, 0x18, 0x9a, 0xae, 0x3b, 0x98, 0x07, 0x2e, 0xf7, 0x3c, 0x70, 0xd2, 0x51, 0xe0, 0xea,
+	0xdb, 0x70, 0x65, 0x3b, 0x49, 0xb6, 0x30, 0x2e, 0x0e, 0xf7, 0xa0, 0x84, 0xb3, 0x08, 0xde, 0x59,
+	0x43, 0xde, 0x41, 0x56, 0xa5, 0x62, 0x97, 0xec, 0xc9, 0x10, 0x52, 0x7a, 0x1d, 0x6a, 0xf4, 0x57,
+	0x19, 0x7e, 0x58, 0xfd, 0x13, 0xa8, 0xf5, 0x6d, 0xe2, 0x3a, 0x83, 0x0a, 0x5c, 0xbc, 0x79, 0xcc,
+	0x81, 0x70, 0xe4, 0x07, 0x0c, 0x3a, 0x19, 0x83, 0xbd, 0xe8, 0x4f, 0x61, 0x59, 0xa8, 0x33, 0xdf,
+	0xa2, 0x18, 0x3e, 0x04, 0x67, 0x5c, 0x9b, 0xbd, 0x24, 0x1e, 0xcf, 0x2e, 0xda, 0x73, 0xfa, 0x50,
+	0x8f, 0xf7, 0x75, 0x71, 0x1d, 0xbc, 0x9b, 0x1c, 0x3f, 0xab, 0x7c, 0x2d, 0x91, 0xcf, 0x94, 0x1c,
+	0xfe, 0x23, 0xcc, 0xab, 0x37, 0x2a, 0xab, 0xb7, 0xbf, 0x05, 0x45, 0xf6, 0x63, 0x02, 0x49, 0xd4,
+	0xa3, 0xbd, 0xef, 0xef, 0xed, 0x3f, 0xdd, 0xc3, 0x9c, 0x2e, 0x43, 0x7e, 0xb7, 0xb5, 0x43, 0x2a,
+	0x3c, 0x40, 0xf1, 0x71, 0x97, 0x3e, 0x67, 0x6f, 0x8f, 0xa1, 0x26, 0x1f, 0x49, 0xce, 0xfc, 0xa5,
+	0x74, 0xe6, 0x67, 0xe4, 0xcc, 0xcf, 0x2a, 0x99, 0x9f, 0x53, 0x33, 0x3f, 0x9f, 0xca, 0xfc, 0xc2,
+	0xed, 0x8f, 0xe1, 0xf2, 0x39, 0x1e, 0xc4, 0x10, 0x34, 0x12, 0xb1, 0x41, 0xff, 0x90, 0xb4, 0x9c,
+	0x25, 0xa2, 0xdc, 0xda, 0xd9, 0x61, 0xaf, 0xfd, 0x46, 0xa6, 0xbd, 0xf6, 0xf2, 0xef, 0xeb, 0x4b,
+	0x2f, 0xff, 0xb1, 0x9e, 0xf9, 0x33, 0xfe, 0xfd, 0x0d, 0xff, 0x3e, 0xff, 0xe7, 0xfa, 0xd2, 0x6f,
+	0xb3, 0xb9, 0xfd, 0xc3, 0xfe, 0xb0, 0x48, 0xff, 0x23, 0xe0, 0xc1, 0xff, 0x02, 0x00, 0x00, 0xff,
+	0xff, 0x0f, 0xfb, 0x3e, 0xca, 0x40, 0x20, 0x00, 0x00,
+}

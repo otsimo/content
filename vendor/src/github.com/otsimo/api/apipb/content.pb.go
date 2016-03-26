@@ -42,6 +42,9 @@ var ContentListRequest_ListStatus_value = map[string]int32{
 func (x ContentListRequest_ListStatus) String() string {
 	return proto.EnumName(ContentListRequest_ListStatus_name, int32(x))
 }
+func (ContentListRequest_ListStatus) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptorContent, []int{1, 0}
+}
 
 type ContentListRequest_SortBy int32
 
@@ -62,25 +65,53 @@ var ContentListRequest_SortBy_value = map[string]int32{
 func (x ContentListRequest_SortBy) String() string {
 	return proto.EnumName(ContentListRequest_SortBy_name, int32(x))
 }
-
-type Content struct {
-	Slug      string   `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
-	Title     string   `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Language  string   `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
-	Date      int64    `protobuf:"varint,4,opt,name=date,proto3" json:"date,omitempty"`
-	Draft     bool     `protobuf:"varint,5,opt,name=draft,proto3" json:"draft,omitempty"`
-	WrittenAt string   `protobuf:"bytes,6,opt,name=written_at,proto3" json:"written_at,omitempty"`
-	Author    string   `protobuf:"bytes,7,opt,name=author,proto3" json:"author,omitempty"`
-	Category  string   `protobuf:"bytes,8,opt,name=category,proto3" json:"category,omitempty"`
-	Url       string   `protobuf:"bytes,9,opt,name=url,proto3" json:"url,omitempty"`
-	Weight    int32    `protobuf:"varint,10,opt,name=weight,proto3" json:"weight,omitempty"`
-	Keywords  []string `protobuf:"bytes,11,rep,name=keywords" json:"keywords,omitempty"`
-	Markdown  []byte   `protobuf:"bytes,13,opt,name=markdown,proto3" json:"markdown,omitempty"`
+func (ContentListRequest_SortBy) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptorContent, []int{1, 1}
 }
 
-func (m *Content) Reset()         { *m = Content{} }
-func (m *Content) String() string { return proto.CompactTextString(m) }
-func (*Content) ProtoMessage()    {}
+type ContentListRequest_SortOrder int32
+
+const (
+	ContentListRequest_DSC ContentListRequest_SortOrder = 0
+	ContentListRequest_ASC ContentListRequest_SortOrder = 1
+)
+
+var ContentListRequest_SortOrder_name = map[int32]string{
+	0: "DSC",
+	1: "ASC",
+}
+var ContentListRequest_SortOrder_value = map[string]int32{
+	"DSC": 0,
+	"ASC": 1,
+}
+
+func (x ContentListRequest_SortOrder) String() string {
+	return proto.EnumName(ContentListRequest_SortOrder_name, int32(x))
+}
+func (ContentListRequest_SortOrder) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptorContent, []int{1, 2}
+}
+
+type Content struct {
+	Slug           string   `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
+	Title          string   `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Language       string   `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
+	Date           int64    `protobuf:"varint,4,opt,name=date,proto3" json:"date,omitempty"`
+	Draft          bool     `protobuf:"varint,5,opt,name=draft,proto3" json:"draft,omitempty"`
+	WrittenAt      string   `protobuf:"bytes,6,opt,name=written_at,json=writtenAt,proto3" json:"written_at,omitempty"`
+	Author         string   `protobuf:"bytes,7,opt,name=author,proto3" json:"author,omitempty"`
+	Category       string   `protobuf:"bytes,8,opt,name=category,proto3" json:"category,omitempty"`
+	Url            string   `protobuf:"bytes,9,opt,name=url,proto3" json:"url,omitempty"`
+	Weight         int32    `protobuf:"varint,10,opt,name=weight,proto3" json:"weight,omitempty"`
+	Keywords       []string `protobuf:"bytes,11,rep,name=keywords" json:"keywords,omitempty"`
+	CategoryWeight int32    `protobuf:"varint,12,opt,name=category_weight,json=categoryWeight,proto3" json:"category_weight,omitempty"`
+	Markdown       []byte   `protobuf:"bytes,13,opt,name=markdown,proto3" json:"markdown,omitempty"`
+}
+
+func (m *Content) Reset()                    { *m = Content{} }
+func (m *Content) String() string            { return proto.CompactTextString(m) }
+func (*Content) ProtoMessage()               {}
+func (*Content) Descriptor() ([]byte, []int) { return fileDescriptorContent, []int{0} }
 
 type ContentListRequest struct {
 	Status        ContentListRequest_ListStatus `protobuf:"varint,1,opt,name=status,proto3,enum=apipb.ContentListRequest_ListStatus" json:"status,omitempty"`
@@ -88,24 +119,27 @@ type ContentListRequest struct {
 	Category      string                        `protobuf:"bytes,3,opt,name=category,proto3" json:"category,omitempty"`
 	Offset        int32                         `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
 	Language      string                        `protobuf:"bytes,5,opt,name=language,proto3" json:"language,omitempty"`
-	OnlyHtmlUrl   bool                          `protobuf:"varint,6,opt,name=only_html_url,proto3" json:"only_html_url,omitempty"`
+	OnlyHtmlUrl   bool                          `protobuf:"varint,6,opt,name=only_html_url,json=onlyHtmlUrl,proto3" json:"only_html_url,omitempty"`
 	Sort          ContentListRequest_SortBy     `protobuf:"varint,7,opt,name=sort,proto3,enum=apipb.ContentListRequest_SortBy" json:"sort,omitempty"`
-	ProfileId     string                        `protobuf:"bytes,10,opt,name=profile_id,proto3" json:"profile_id,omitempty"`
-	ClientVersion string                        `protobuf:"bytes,11,opt,name=client_version,proto3" json:"client_version,omitempty"`
+	Order         ContentListRequest_SortOrder  `protobuf:"varint,8,opt,name=order,proto3,enum=apipb.ContentListRequest_SortOrder" json:"order,omitempty"`
+	ProfileId     string                        `protobuf:"bytes,10,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
+	ClientVersion string                        `protobuf:"bytes,11,opt,name=client_version,json=clientVersion,proto3" json:"client_version,omitempty"`
 }
 
-func (m *ContentListRequest) Reset()         { *m = ContentListRequest{} }
-func (m *ContentListRequest) String() string { return proto.CompactTextString(m) }
-func (*ContentListRequest) ProtoMessage()    {}
+func (m *ContentListRequest) Reset()                    { *m = ContentListRequest{} }
+func (m *ContentListRequest) String() string            { return proto.CompactTextString(m) }
+func (*ContentListRequest) ProtoMessage()               {}
+func (*ContentListRequest) Descriptor() ([]byte, []int) { return fileDescriptorContent, []int{1} }
 
 type ContentListResponse struct {
 	Contents     []*Content `protobuf:"bytes,1,rep,name=contents" json:"contents,omitempty"`
-	AssetVersion int32      `protobuf:"varint,2,opt,name=asset_version,proto3" json:"asset_version,omitempty"`
+	AssetVersion int32      `protobuf:"varint,2,opt,name=asset_version,json=assetVersion,proto3" json:"asset_version,omitempty"`
 }
 
-func (m *ContentListResponse) Reset()         { *m = ContentListResponse{} }
-func (m *ContentListResponse) String() string { return proto.CompactTextString(m) }
-func (*ContentListResponse) ProtoMessage()    {}
+func (m *ContentListResponse) Reset()                    { *m = ContentListResponse{} }
+func (m *ContentListResponse) String() string            { return proto.CompactTextString(m) }
+func (*ContentListResponse) ProtoMessage()               {}
+func (*ContentListResponse) Descriptor() ([]byte, []int) { return fileDescriptorContent, []int{2} }
 
 func (m *ContentListResponse) GetContents() []*Content {
 	if m != nil {
@@ -118,13 +152,19 @@ type ContentGetRequest struct {
 	Slug string `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
 }
 
-func (m *ContentGetRequest) Reset()         { *m = ContentGetRequest{} }
-func (m *ContentGetRequest) String() string { return proto.CompactTextString(m) }
-func (*ContentGetRequest) ProtoMessage()    {}
+func (m *ContentGetRequest) Reset()                    { *m = ContentGetRequest{} }
+func (m *ContentGetRequest) String() string            { return proto.CompactTextString(m) }
+func (*ContentGetRequest) ProtoMessage()               {}
+func (*ContentGetRequest) Descriptor() ([]byte, []int) { return fileDescriptorContent, []int{3} }
 
 func init() {
+	proto.RegisterType((*Content)(nil), "apipb.Content")
+	proto.RegisterType((*ContentListRequest)(nil), "apipb.ContentListRequest")
+	proto.RegisterType((*ContentListResponse)(nil), "apipb.ContentListResponse")
+	proto.RegisterType((*ContentGetRequest)(nil), "apipb.ContentGetRequest")
 	proto.RegisterEnum("apipb.ContentListRequest_ListStatus", ContentListRequest_ListStatus_name, ContentListRequest_ListStatus_value)
 	proto.RegisterEnum("apipb.ContentListRequest_SortBy", ContentListRequest_SortBy_name, ContentListRequest_SortBy_value)
+	proto.RegisterEnum("apipb.ContentListRequest_SortOrder", ContentListRequest_SortOrder_name, ContentListRequest_SortOrder_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -307,6 +347,11 @@ func (m *Content) MarshalTo(data []byte) (int, error) {
 			i += copy(data[i:], s)
 		}
 	}
+	if m.CategoryWeight != 0 {
+		data[i] = 0x60
+		i++
+		i = encodeVarintContent(data, i, uint64(m.CategoryWeight))
+	}
 	if m.Markdown != nil {
 		if len(m.Markdown) > 0 {
 			data[i] = 0x6a
@@ -374,6 +419,11 @@ func (m *ContentListRequest) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x38
 		i++
 		i = encodeVarintContent(data, i, uint64(m.Sort))
+	}
+	if m.Order != 0 {
+		data[i] = 0x40
+		i++
+		i = encodeVarintContent(data, i, uint64(m.Order))
 	}
 	if len(m.ProfileId) > 0 {
 		data[i] = 0x52
@@ -522,6 +572,9 @@ func (m *Content) Size() (n int) {
 			n += 1 + l + sovContent(uint64(l))
 		}
 	}
+	if m.CategoryWeight != 0 {
+		n += 1 + sovContent(uint64(m.CategoryWeight))
+	}
 	if m.Markdown != nil {
 		l = len(m.Markdown)
 		if l > 0 {
@@ -556,6 +609,9 @@ func (m *ContentListRequest) Size() (n int) {
 	}
 	if m.Sort != 0 {
 		n += 1 + sovContent(uint64(m.Sort))
+	}
+	if m.Order != 0 {
+		n += 1 + sovContent(uint64(m.Order))
 	}
 	l = len(m.ProfileId)
 	if l > 0 {
@@ -925,6 +981,25 @@ func (m *Content) Unmarshal(data []byte) error {
 			}
 			m.Keywords = append(m.Keywords, string(data[iNdEx:postIndex]))
 			iNdEx = postIndex
+		case 12:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CategoryWeight", wireType)
+			}
+			m.CategoryWeight = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowContent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.CategoryWeight |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		case 13:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Markdown", wireType)
@@ -951,7 +1026,10 @@ func (m *Content) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Markdown = append([]byte{}, data[iNdEx:postIndex]...)
+			m.Markdown = append(m.Markdown[:0], data[iNdEx:postIndex]...)
+			if m.Markdown == nil {
+				m.Markdown = []byte{}
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1153,6 +1231,25 @@ func (m *ContentListRequest) Unmarshal(data []byte) error {
 				b := data[iNdEx]
 				iNdEx++
 				m.Sort |= (ContentListRequest_SortBy(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Order", wireType)
+			}
+			m.Order = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowContent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Order |= (ContentListRequest_SortOrder(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1519,3 +1616,48 @@ var (
 	ErrInvalidLengthContent = fmt.Errorf("proto: negative length found during unmarshaling")
 	ErrIntOverflowContent   = fmt.Errorf("proto: integer overflow")
 )
+
+var fileDescriptorContent = []byte{
+	// 655 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x7c, 0x54, 0xcf, 0x4e, 0xdb, 0x4e,
+	0x10, 0xc6, 0x71, 0x6c, 0x92, 0x81, 0xf8, 0x17, 0xf6, 0x57, 0xa1, 0x6d, 0x24, 0x10, 0x32, 0xad,
+	0x40, 0x3d, 0xa4, 0x52, 0xda, 0x0b, 0x52, 0x7b, 0x08, 0x7f, 0x0a, 0x48, 0xb4, 0x41, 0x9b, 0x14,
+	0xd4, 0x93, 0x65, 0x92, 0x4d, 0xb0, 0x30, 0x76, 0x6a, 0xaf, 0x89, 0x72, 0xeb, 0x0b, 0x54, 0xea,
+	0x33, 0xf4, 0x69, 0x7a, 0xec, 0xad, 0xd7, 0xaa, 0x7d, 0x91, 0xce, 0xee, 0x3a, 0x46, 0xa1, 0xd0,
+	0x83, 0xa5, 0xfd, 0xbe, 0x99, 0xf9, 0x76, 0x67, 0xbe, 0x49, 0xa0, 0xd6, 0x8f, 0x23, 0xc1, 0x23,
+	0xd1, 0x1c, 0x27, 0xb1, 0x88, 0x89, 0xe5, 0x8f, 0x83, 0xf1, 0x85, 0xfb, 0xa3, 0x04, 0x8b, 0x7b,
+	0x3a, 0x40, 0x08, 0x94, 0xd3, 0x30, 0x1b, 0x51, 0x63, 0xc3, 0xd8, 0xae, 0x32, 0x75, 0x26, 0x8f,
+	0xc0, 0x12, 0x81, 0x08, 0x39, 0x2d, 0x29, 0x52, 0x03, 0xd2, 0x80, 0x4a, 0xe8, 0x47, 0xa3, 0xcc,
+	0x1f, 0x71, 0x6a, 0xaa, 0x40, 0x81, 0xa5, 0xca, 0xc0, 0x17, 0x9c, 0x96, 0x91, 0x37, 0x99, 0x3a,
+	0x4b, 0x95, 0x41, 0xe2, 0x0f, 0x05, 0xb5, 0x90, 0xac, 0x30, 0x0d, 0xc8, 0x1a, 0xc0, 0x24, 0x09,
+	0x04, 0xde, 0xed, 0xf9, 0x82, 0xda, 0x4a, 0xa7, 0x9a, 0x33, 0x6d, 0x41, 0x56, 0xc1, 0xf6, 0x33,
+	0x71, 0x19, 0x27, 0x74, 0x51, 0x85, 0x72, 0x24, 0x2f, 0xef, 0xa3, 0xe8, 0x28, 0x4e, 0xa6, 0xb4,
+	0xa2, 0x2f, 0x9f, 0x61, 0x52, 0x07, 0x33, 0x4b, 0x42, 0x5a, 0x55, 0xb4, 0x3c, 0x4a, 0x95, 0x09,
+	0x0f, 0x46, 0x97, 0x82, 0x02, 0x92, 0x16, 0xcb, 0x91, 0x54, 0xb9, 0xe2, 0xd3, 0x49, 0x9c, 0x0c,
+	0x52, 0xba, 0xb4, 0x61, 0x4a, 0x95, 0x19, 0x26, 0x5b, 0xf0, 0xdf, 0x4c, 0xd1, 0xcb, 0x8b, 0x97,
+	0x55, 0xb1, 0x33, 0xa3, 0xcf, 0x0b, 0x91, 0x6b, 0x3f, 0xb9, 0x1a, 0xc4, 0x93, 0x88, 0xd6, 0x30,
+	0x63, 0x99, 0x15, 0xd8, 0xfd, 0x5c, 0x06, 0x92, 0x4f, 0xf6, 0x24, 0x48, 0x05, 0xe3, 0x1f, 0x33,
+	0x9e, 0x0a, 0xf2, 0x0a, 0xec, 0x54, 0xf8, 0x22, 0x4b, 0xd5, 0x98, 0x9d, 0xd6, 0x93, 0xa6, 0x32,
+	0xa2, 0xf9, 0x77, 0x6a, 0x53, 0x9e, 0xbb, 0x2a, 0x97, 0xe5, 0x35, 0x72, 0x90, 0x61, 0x70, 0x1d,
+	0x08, 0x65, 0x87, 0xc5, 0x34, 0x98, 0x9b, 0x88, 0x79, 0x67, 0x22, 0xd8, 0x7f, 0x3c, 0x1c, 0xa6,
+	0x5c, 0x28, 0x43, 0xb0, 0x7f, 0x8d, 0xe6, 0x2c, 0xb4, 0xee, 0x58, 0xe8, 0x42, 0x2d, 0x8e, 0xc2,
+	0xa9, 0x77, 0x29, 0xae, 0x43, 0x4f, 0xce, 0xd3, 0x56, 0xb6, 0x2d, 0x49, 0xf2, 0x08, 0xb9, 0xf7,
+	0x38, 0xd7, 0x97, 0xb8, 0x2c, 0x71, 0x22, 0x94, 0x37, 0x4e, 0x6b, 0xe3, 0xe1, 0x2e, 0xba, 0x98,
+	0xb5, 0x3b, 0x65, 0x2a, 0x9b, 0xec, 0x80, 0x85, 0x13, 0xe6, 0x89, 0x32, 0xce, 0x69, 0x6d, 0xfe,
+	0xbb, 0xac, 0x23, 0x53, 0x99, 0xae, 0x90, 0xdb, 0x82, 0x9b, 0x3b, 0x0c, 0x42, 0xee, 0x05, 0x03,
+	0x65, 0x26, 0x6e, 0x4b, 0xce, 0x1c, 0x0f, 0xc8, 0x53, 0x70, 0xfa, 0x61, 0x80, 0x22, 0xde, 0x0d,
+	0x4f, 0xd2, 0x20, 0x8e, 0xd0, 0x55, 0x99, 0x52, 0xd3, 0xec, 0x99, 0x26, 0xdd, 0x1d, 0x80, 0xdb,
+	0xb1, 0x92, 0x0a, 0x94, 0x77, 0x3b, 0xbd, 0xa3, 0xfa, 0x02, 0x71, 0x00, 0x3a, 0xef, 0x4e, 0x3e,
+	0x78, 0xfb, 0xac, 0xfd, 0xa6, 0x57, 0x37, 0xc8, 0x0a, 0xd4, 0x14, 0x6e, 0x9f, 0x9e, 0xb2, 0xce,
+	0xd9, 0xc1, 0x7e, 0xbd, 0xe4, 0xae, 0x83, 0xad, 0x7b, 0x21, 0x00, 0xf6, 0xf9, 0xc1, 0xf1, 0xe1,
+	0x51, 0x0f, 0x0b, 0x51, 0xa2, 0x77, 0xfc, 0xf6, 0xa0, 0x6e, 0xb8, 0x6b, 0x50, 0x2d, 0x1e, 0x4d,
+	0x16, 0xc1, 0xdc, 0xef, 0xee, 0x61, 0x1c, 0x0f, 0x6d, 0x3c, 0x18, 0xee, 0x10, 0xfe, 0x9f, 0x6b,
+	0x33, 0x1d, 0xc7, 0x51, 0xca, 0xc9, 0x33, 0xf4, 0x4e, 0xd3, 0x72, 0x23, 0xcc, 0xed, 0xa5, 0x96,
+	0x33, 0x3f, 0x14, 0x56, 0xc4, 0xc9, 0x26, 0xd4, 0xfc, 0x14, 0xcd, 0x2b, 0x5a, 0xd4, 0x5b, 0xb0,
+	0xac, 0xc8, 0x59, 0x87, 0x5b, 0xb0, 0x92, 0x57, 0x1e, 0xf2, 0x62, 0xeb, 0xee, 0xf9, 0x69, 0xb7,
+	0x3e, 0x19, 0xe0, 0xe4, 0x99, 0x5d, 0x9e, 0xdc, 0x04, 0x7d, 0x4e, 0x5e, 0x43, 0x59, 0x3e, 0x8e,
+	0x3c, 0x7e, 0xd0, 0x97, 0x46, 0xe3, 0xbe, 0x50, 0xde, 0xcb, 0x73, 0x30, 0xf1, 0x4e, 0x42, 0xe7,
+	0x53, 0x6e, 0x9f, 0xd1, 0xb8, 0xd3, 0xda, 0xee, 0xea, 0xb7, 0x5f, 0xeb, 0xc6, 0x77, 0xfc, 0x7e,
+	0xe2, 0xf7, 0xe5, 0xf7, 0xfa, 0xc2, 0xd7, 0x92, 0xd9, 0xe9, 0x75, 0x2f, 0x6c, 0xf5, 0x1f, 0xf5,
+	0xe2, 0x4f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x49, 0x32, 0xf1, 0x77, 0xb4, 0x04, 0x00, 0x00,
+}

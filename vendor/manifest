@@ -110,7 +110,7 @@
 		{
 			"importpath": "github.com/gogo/protobuf/proto",
 			"repository": "https://github.com/gogo/protobuf",
-			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"revision": "4168943e65a2802828518e95310aeeed6d84c4e5",
 			"branch": "master",
 			"path": "/proto"
 		},
@@ -124,7 +124,7 @@
 		{
 			"importpath": "github.com/gogo/protobuf/sortkeys",
 			"repository": "https://github.com/gogo/protobuf",
-			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"revision": "4168943e65a2802828518e95310aeeed6d84c4e5",
 			"branch": "master",
 			"path": "/sortkeys"
 		},
@@ -188,7 +188,7 @@
 		{
 			"importpath": "github.com/otsimo/api/apipb",
 			"repository": "https://github.com/otsimo/api",
-			"revision": "bfd936acf38ac9bafaeabbf8ddc3127432d35226",
+			"revision": "40f6796b3f39d9dc0c47516e09e455d32c1cd39d",
 			"branch": "master",
 			"path": "/apipb"
 		},

@@ -2,6 +2,7 @@ package content
 
 import (
 	"errors"
+	"sort"
 
 	"github.com/otsimo/api/apipb"
 	"golang.org/x/net/context"
@@ -9,6 +10,44 @@ import (
 
 type contentGrpcServer struct {
 	server *Server
+}
+type contentSorter struct {
+	contents     []*apipb.Content
+	orderAsc     bool
+	sortByWeight bool
+	category     bool
+}
+
+func (slice contentSorter) Len() int {
+	return len(slice.contents)
+}
+
+func (slice contentSorter) Less(i, j int) bool {
+	if slice.sortByWeight {
+		if slice.category {
+			if slice.orderAsc {
+				return slice.contents[i].CategoryWeight < slice.contents[j].CategoryWeight
+			} else {
+				return slice.contents[i].CategoryWeight > slice.contents[j].CategoryWeight
+			}
+		} else {
+			if slice.orderAsc {
+				return slice.contents[i].Weight < slice.contents[j].Weight
+			} else {
+				return slice.contents[i].Weight > slice.contents[j].Weight
+			}
+		}
+	} else {
+		if slice.orderAsc {
+			return slice.contents[i].Date < slice.contents[j].Date
+		} else {
+			return slice.contents[i].Date > slice.contents[j].Date
+		}
+	}
+}
+
+func (slice contentSorter) Swap(i, j int) {
+	slice.contents[i], slice.contents[j] = slice.contents[j], slice.contents[i]
 }
 
 func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRequest) (*apipb.ContentListResponse, error) {
@@ -30,9 +69,16 @@ func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRe
 
 		contents = append(contents, c)
 	}
+	sorter := &contentSorter{
+		contents:     contents,
+		orderAsc:     (query.Order == apipb.ContentListRequest_ASC),
+		sortByWeight: (query.Sort == apipb.ContentListRequest_WEIGHT),
+		category:     (query.Category != ""),
+	}
+	sort.Sort(sorter)
 	return &apipb.ContentListResponse{
 		AssetVersion: w.server.Content.assetVersion,
-		Contents:     contents,
+		Contents:     sorter.contents,
 	}, nil
 }
 

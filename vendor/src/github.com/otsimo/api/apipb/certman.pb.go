@@ -21,23 +21,30 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 type ServiceInfo struct {
-	DomainName string `protobuf:"bytes,1,opt,name=domain_name,proto3" json:"domain_name,omitempty"`
+	DomainName string `protobuf:"bytes,1,opt,name=domain_name,json=domainName,proto3" json:"domain_name,omitempty"`
 }
 
-func (m *ServiceInfo) Reset()         { *m = ServiceInfo{} }
-func (m *ServiceInfo) String() string { return proto.CompactTextString(m) }
-func (*ServiceInfo) ProtoMessage()    {}
+func (m *ServiceInfo) Reset()                    { *m = ServiceInfo{} }
+func (m *ServiceInfo) String() string            { return proto.CompactTextString(m) }
+func (*ServiceInfo) ProtoMessage()               {}
+func (*ServiceInfo) Descriptor() ([]byte, []int) { return fileDescriptorCertman, []int{0} }
 
 type Certificate struct {
-	DomainName string `protobuf:"bytes,1,opt,name=domain_name,proto3" json:"domain_name,omitempty"`
+	DomainName string `protobuf:"bytes,1,opt,name=domain_name,json=domainName,proto3" json:"domain_name,omitempty"`
 	Cert       []byte `protobuf:"bytes,2,opt,name=cert,proto3" json:"cert,omitempty"`
 	Key        []byte `protobuf:"bytes,3,opt,name=key,proto3" json:"key,omitempty"`
-	ExpiresAt  int64  `protobuf:"varint,4,opt,name=expires_at,proto3" json:"expires_at,omitempty"`
+	ExpiresAt  int64  `protobuf:"varint,4,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
 }
 
-func (m *Certificate) Reset()         { *m = Certificate{} }
-func (m *Certificate) String() string { return proto.CompactTextString(m) }
-func (*Certificate) ProtoMessage()    {}
+func (m *Certificate) Reset()                    { *m = Certificate{} }
+func (m *Certificate) String() string            { return proto.CompactTextString(m) }
+func (*Certificate) ProtoMessage()               {}
+func (*Certificate) Descriptor() ([]byte, []int) { return fileDescriptorCertman, []int{1} }
+
+func init() {
+	proto.RegisterType((*ServiceInfo)(nil), "apipb.ServiceInfo")
+	proto.RegisterType((*Certificate)(nil), "apipb.Certificate")
+}
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
@@ -407,7 +414,10 @@ func (m *Certificate) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Cert = append([]byte{}, data[iNdEx:postIndex]...)
+			m.Cert = append(m.Cert[:0], data[iNdEx:postIndex]...)
+			if m.Cert == nil {
+				m.Cert = []byte{}
+			}
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -435,7 +445,10 @@ func (m *Certificate) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Key = append([]byte{}, data[iNdEx:postIndex]...)
+			m.Key = append(m.Key[:0], data[iNdEx:postIndex]...)
+			if m.Key == nil {
+				m.Key = []byte{}
+			}
 			iNdEx = postIndex
 		case 4:
 			if wireType != 0 {
@@ -581,3 +594,21 @@ var (
 	ErrInvalidLengthCertman = fmt.Errorf("proto: negative length found during unmarshaling")
 	ErrIntOverflowCertman   = fmt.Errorf("proto: integer overflow")
 )
+
+var fileDescriptorCertman = []byte{
+	// 211 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0xe2, 0x4d, 0x4e, 0x2d, 0x2a,
+	0xc9, 0x4d, 0xcc, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x4d, 0x2c, 0xc8, 0x2c, 0x48,
+	0x52, 0xd2, 0xe3, 0xe2, 0x0e, 0x4e, 0x2d, 0x2a, 0xcb, 0x4c, 0x4e, 0xf5, 0xcc, 0x4b, 0xcb, 0x17,
+	0x92, 0xe7, 0xe2, 0x4e, 0xc9, 0xcf, 0x4d, 0xcc, 0xcc, 0x8b, 0xcf, 0x4b, 0xcc, 0x4d, 0x95, 0x60,
+	0x54, 0x60, 0xd4, 0xe0, 0x0c, 0xe2, 0x82, 0x08, 0xf9, 0x01, 0x45, 0x94, 0x8a, 0xb9, 0xb8, 0x9d,
+	0x81, 0xe6, 0x64, 0xa6, 0x65, 0x26, 0x27, 0x96, 0xa4, 0x12, 0x54, 0x2f, 0x24, 0xc4, 0xc5, 0x02,
+	0xb2, 0x57, 0x82, 0x09, 0x28, 0xc3, 0x13, 0x04, 0x66, 0x0b, 0x09, 0x70, 0x31, 0x67, 0xa7, 0x56,
+	0x4a, 0x30, 0x83, 0x85, 0x40, 0x4c, 0x21, 0x59, 0x2e, 0xae, 0xd4, 0x8a, 0x82, 0xcc, 0xa2, 0xd4,
+	0xe2, 0xf8, 0xc4, 0x12, 0x09, 0x16, 0xa0, 0x04, 0x73, 0x10, 0x27, 0x54, 0xc4, 0xb1, 0xc4, 0xc8,
+	0x99, 0x4b, 0x08, 0xc9, 0x52, 0xdf, 0xc4, 0xbc, 0xc4, 0xf4, 0xd4, 0x22, 0x21, 0x5d, 0x2e, 0x66,
+	0xf7, 0xd4, 0x12, 0x21, 0x21, 0x3d, 0xb0, 0x4f, 0xf4, 0x90, 0xbc, 0x21, 0x05, 0x13, 0x43, 0xd2,
+	0xe5, 0x24, 0x70, 0xe2, 0x91, 0x1c, 0xe3, 0x05, 0x20, 0x7e, 0x00, 0xc4, 0x13, 0x1e, 0xcb, 0x31,
+	0x24, 0xb1, 0x81, 0x43, 0xc2, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x23, 0x1a, 0x64, 0x92, 0x1a,
+	0x01, 0x00, 0x00,
+}
