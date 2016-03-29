@@ -4,7 +4,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/otsimo/api/apipb"
+	apipb "github.com/otsimo/otsimopb"
 )
 
 func TestAscWeightSorting(t *testing.T) {

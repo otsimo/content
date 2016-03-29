@@ -13,7 +13,7 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/otsimo/api/apipb"
+	apipb "github.com/otsimo/otsimopb"
 )
 
 type ContentConfig struct {

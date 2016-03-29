@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sort"
 
-	"github.com/otsimo/api/apipb"
+	apipb "github.com/otsimo/otsimopb"
 	"golang.org/x/net/context"
 )
 

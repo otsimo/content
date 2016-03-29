@@ -11,7 +11,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/otsimo/api/apipb"
+	apipb "github.com/otsimo/otsimopb"
 	"github.com/russross/blackfriday"
 )
 
