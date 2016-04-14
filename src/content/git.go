@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
+	"bytes"
 )
 
 const (
@@ -21,23 +22,31 @@ type GitClient struct {
 func (gc GitClient) Clone() error {
 	log.Debugf("git.go: starting to clone %s to %s", gc.GitUrl, gc.Path)
 	cmd := exec.Command(gitPath, "clone", gc.GitUrl, gc.Path)
-	cmd.Stdout = os.Stdout
-	return cmd.Run()
+	var buf bytes.Buffer
+	cmd.Stdout = &buf
+	err := cmd.Run()
+	log.Infof("git.go: clone output='%s'", buf.String())
+	return err
 }
 
 func (gc GitClient) FetchAndPull() error {
 	cmd := exec.Command(gitPath, "fetch")
 	cmd.Dir = gc.Path
-	cmd.Stdout = os.Stdout
+	var buf1 bytes.Buffer
+	cmd.Stdout = &buf1
 	err := cmd.Run()
+	log.Infof("git.go: fetch output='%s'", buf1.String())
 	if err != nil {
 		return err
 	}
 
 	cmd = exec.Command(gitPath, "pull")
 	cmd.Dir = gc.Path
-	cmd.Stdout = os.Stdout
-	return cmd.Run()
+	var buf bytes.Buffer
+	cmd.Stdout = &buf
+	err = cmd.Run()
+	log.Infof("git.go: pull output='%s'", buf.String())
+	return err
 }
 
 func (gc GitClient) CommitHash() (string, error) {
@@ -60,13 +69,17 @@ func (gc GitClient) HasCommitHash(sha1 string) bool {
 	err := cmd.Run()
 	return err == nil
 }
+
 func (gc GitClient) Checkout(arg ...string) error {
 	args := append([]string{"checkout"}, arg...)
 	log.Debugf("git.go: starting to checkout %s at path %s and args %+v", gc.GitUrl, gc.Path, args)
 	cmd := exec.Command(gitPath, args...)
 	cmd.Dir = gc.Path
-	cmd.Stdout = os.Stdout
-	return cmd.Run()
+	var buf bytes.Buffer
+	cmd.Stdout = &buf
+	err := cmd.Run()
+	log.Infof("git.go: checkout output='%s'", buf.String())
+	return err
 }
 
 func (gc GitClient) RemoteUrl(path string) (string, error) {

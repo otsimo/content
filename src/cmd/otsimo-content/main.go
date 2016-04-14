@@ -91,7 +91,8 @@ func main() {
 }
 
 func init() {
-	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
+	log.SetFormatter(&log.TextFormatter{FullTimestamp: true, DisableColors:true})
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.InfoLevel)
+	
 }

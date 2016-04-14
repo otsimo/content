@@ -7,10 +7,11 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
+	"os"
 )
 
 const (
-	WikiEndpoint    = "/wiki"
+	WikiEndpoint = "/wiki"
 	WebhookEndpoint = "/webhook"
 )
 
@@ -60,7 +61,13 @@ func (s *Server) HttpServer() *echo.Echo {
 		e.Debug()
 	}
 	// Logger
-	e.Use(logger())
+	cnf := mw.LoggerConfig{
+		Format: "time=\"${time_rfc3339}\" remote_ip=${remote_ip} method=${method} " +
+		"uri=${uri} status=${status} took=${response_time}, sent=${response_size} bytes\n",
+		Output: os.Stdout,
+	}
+
+	e.Use(mw.LoggerWithConfig(cnf))
 	e.Use(mw.Recover())
 
 	e.Post(WebhookEndpoint, s.webhookHandler)
