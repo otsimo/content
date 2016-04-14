@@ -19,14 +19,11 @@ var _ = Describe("Commands", func() {
 	var client *redis.Client
 
 	BeforeEach(func() {
-		client = redis.NewClient(&redis.Options{
-			Addr:        redisAddr,
-			PoolTimeout: 30 * time.Second,
-		})
+		client = redis.NewClient(redisOptions())
+		Expect(client.FlushDb().Err()).NotTo(HaveOccurred())
 	})
 
 	AfterEach(func() {
-		Expect(client.FlushDb().Err()).NotTo(HaveOccurred())
 		Expect(client.Close()).NotTo(HaveOccurred())
 	})
 
@@ -57,16 +54,20 @@ var _ = Describe("Commands", func() {
 		})
 
 		It("should BgRewriteAOF", func() {
-			r := client.BgRewriteAOF()
-			Expect(r.Err()).NotTo(HaveOccurred())
-			Expect(r.Val()).To(ContainSubstring("Background append only file rewriting"))
+			Skip("flaky test")
+
+			val, err := client.BgRewriteAOF().Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(val).To(ContainSubstring("Background append only file rewriting"))
 		})
 
 		It("should BgSave", func() {
+			Skip("flaky test")
+
 			// workaround for "ERR Can't BGSAVE while AOF log rewriting is in progress"
 			Eventually(func() string {
 				return client.BgSave().Val()
-			}, "10s").Should(Equal("Background saving started"))
+			}, "30s").Should(Equal("Background saving started"))
 		})
 
 		It("should ClientKill", func() {
@@ -295,7 +296,7 @@ var _ = Describe("Commands", func() {
 		})
 
 		It("should Move", func() {
-			move := client.Move("key", 1)
+			move := client.Move("key", 2)
 			Expect(move.Err()).NotTo(HaveOccurred())
 			Expect(move.Val()).To(Equal(false))
 
@@ -303,7 +304,7 @@ var _ = Describe("Commands", func() {
 			Expect(set.Err()).NotTo(HaveOccurred())
 			Expect(set.Val()).To(Equal("OK"))
 
-			move = client.Move("key", 1)
+			move = client.Move("key", 2)
 			Expect(move.Err()).NotTo(HaveOccurred())
 			Expect(move.Val()).To(Equal(true))
 
@@ -311,7 +312,7 @@ var _ = Describe("Commands", func() {
 			Expect(get.Err()).To(Equal(redis.Nil))
 			Expect(get.Val()).To(Equal(""))
 
-			sel := client.Select(1)
+			sel := client.Select(2)
 			Expect(sel.Err()).NotTo(HaveOccurred())
 			Expect(sel.Val()).To(Equal("OK"))
 
@@ -319,7 +320,7 @@ var _ = Describe("Commands", func() {
 			Expect(get.Err()).NotTo(HaveOccurred())
 			Expect(get.Val()).To(Equal("hello"))
 			Expect(client.FlushDb().Err()).NotTo(HaveOccurred())
-			Expect(client.Select(0).Err()).NotTo(HaveOccurred())
+			Expect(client.Select(1).Err()).NotTo(HaveOccurred())
 		})
 
 		It("should Object", func() {
@@ -1300,9 +1301,16 @@ var _ = Describe("Commands", func() {
 		})
 
 		It("should BLPop timeout", func() {
-			bLPop := client.BLPop(time.Second, "list1")
-			Expect(bLPop.Val()).To(BeNil())
-			Expect(bLPop.Err()).To(Equal(redis.Nil))
+			val, err := client.BLPop(time.Second, "list1").Result()
+			Expect(err).To(Equal(redis.Nil))
+			Expect(val).To(BeNil())
+
+			Expect(client.Ping().Err()).NotTo(HaveOccurred())
+
+			stats := client.PoolStats()
+			Expect(stats.Requests).To(Equal(uint32(3)))
+			Expect(stats.Hits).To(Equal(uint32(2)))
+			Expect(stats.Timeouts).To(Equal(uint32(0)))
 		})
 
 		It("should BRPop", func() {

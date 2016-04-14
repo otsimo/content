@@ -27,7 +27,7 @@ type PublicDirEntry struct {
 	//Path is shown on http url
 	Path string
 	//Dir is real path where folder is located
-	Dir  string
+	Dir string
 }
 
 type ContentManager struct {

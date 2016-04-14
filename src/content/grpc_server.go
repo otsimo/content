@@ -66,8 +66,9 @@ func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRe
 		if query.Category != "" && query.Category != c.Category {
 			continue
 		}
-
-		contents = append(contents, c)
+		cp := *c
+		cp.Markdown = []byte{}
+		contents = append(contents, &cp)
 	}
 	sorter := &contentSorter{
 		contents:     contents,

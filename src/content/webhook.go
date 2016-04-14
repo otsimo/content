@@ -31,25 +31,24 @@ func (s *Server) ignoreRef(rawRef string) bool {
 	return rawRef[:11] != "refs/heads/"
 }
 
-func (s *Server) webhookHandler(ctx *echo.Context) error {
+func (s *Server) webhookHandler(ctx echo.Context) error {
 	req := ctx.Request()
-	defer req.Body.Close()
 
-	eventType := ctx.Request().Header.Get("X-GitHub-Event")
+	eventType := ctx.Request().Header().Get("X-GitHub-Event")
 	if eventType == "" {
 		return ctx.JSON(http.StatusBadRequest, &ErrorResponse{Message: "400 Bad Request - Missing X-GitHub-Event Header"})
 	}
 	if eventType != "push" && eventType != "pull_request" {
 		return ctx.JSON(http.StatusBadRequest, &ErrorResponse{Message: "400 Bad Request - Unknown Event Type " + eventType})
 	}
-	body, err := ioutil.ReadAll(req.Body)
+	body, err := ioutil.ReadAll(req.Body())
 	if err != nil {
 		return err
 	}
 
 	// If we have a Secret set, we should check the MAC
 	if s.Secret != "" {
-		sig := req.Header.Get("X-Hub-Signature")
+		sig := req.Header().Get("X-Hub-Signature")
 
 		if sig == "" {
 			return ctx.JSON(http.StatusForbidden, &ErrorResponse{Message: "403 Forbidden - Missing X-Hub-Signature required for HMAC verification"})

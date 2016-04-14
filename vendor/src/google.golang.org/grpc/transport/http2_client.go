@@ -236,9 +236,9 @@ func (t *http2Client) NewStream(ctx context.Context, callHdr *CallHdr) (_ *Strea
 	var timeout time.Duration
 	if dl, ok := ctx.Deadline(); ok {
 		timeout = dl.Sub(time.Now())
-		if timeout <= 0 {
-			return nil, ContextErr(context.DeadlineExceeded)
-		}
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, ContextErr(err)
 	}
 	pr := &peer.Peer{
 		Addr: t.conn.RemoteAddr(),
@@ -330,6 +330,8 @@ func (t *http2Client) NewStream(ctx context.Context, callHdr *CallHdr) (_ *Strea
 		t.hEnc.WriteField(hpack.HeaderField{Name: "grpc-timeout", Value: timeoutEncode(timeout)})
 	}
 	for k, v := range authData {
+		// Capital header names are illegal in HTTP/2.
+		k = strings.ToLower(k)
 		t.hEnc.WriteField(hpack.HeaderField{Name: k, Value: v})
 	}
 	var (
@@ -569,11 +571,19 @@ func (t *http2Client) updateWindow(s *Stream, n uint32) {
 
 func (t *http2Client) handleData(f *http2.DataFrame) {
 	// Select the right stream to dispatch.
+	size := len(f.Data())
 	s, ok := t.getStream(f)
 	if !ok {
+		cwu, err := t.fc.adjustConnPendingUpdate(uint32(size))
+		if err != nil {
+			t.notifyError(err)
+			return
+		}
+		if cwu > 0 {
+			t.controlBuf.put(&windowUpdate{0, cwu})
+		}
 		return
 	}
-	size := len(f.Data())
 	if size > 0 {
 		if err := s.fc.onData(uint32(size)); err != nil {
 			if _, ok := err.(ConnectionError); ok {
@@ -634,6 +644,7 @@ func (t *http2Client) handleRSTStream(f *http2.RSTStreamFrame) {
 	s.statusCode, ok = http2ErrConvTab[http2.ErrCode(f.ErrCode)]
 	if !ok {
 		grpclog.Println("transport: http2Client.handleRSTStream found no mapped gRPC status for the received http2 error ", f.ErrCode)
+		s.statusCode = codes.Unknown
 	}
 	s.mu.Unlock()
 	s.write(recvMsg{err: io.EOF})
@@ -719,14 +730,14 @@ func (t *http2Client) operateHeaders(frame *http2.MetaHeadersFrame) {
 	s.write(recvMsg{err: io.EOF})
 }
 
-func handleMalformedHTTP2(s *Stream, err http2.StreamError) {
+func handleMalformedHTTP2(s *Stream, err error) {
 	s.mu.Lock()
 	if !s.headerDone {
 		close(s.headerChan)
 		s.headerDone = true
 	}
 	s.mu.Unlock()
-	s.write(recvMsg{err: StreamErrorf(http2ErrConvTab[err.Code], "%v", err)})
+	s.write(recvMsg{err: err})
 }
 
 // reader runs as a separate goroutine in charge of reading data from network
@@ -761,7 +772,8 @@ func (t *http2Client) reader() {
 				s := t.activeStreams[se.StreamID]
 				t.mu.Unlock()
 				if s != nil {
-					handleMalformedHTTP2(s, se)
+					// use error detail to provide better err message
+					handleMalformedHTTP2(s, StreamErrorf(http2ErrConvTab[se.Code], "%v", t.framer.errorDetail()))
 				}
 				continue
 			} else {

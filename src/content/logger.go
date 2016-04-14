@@ -11,14 +11,14 @@ import (
 
 func logger() echo.MiddlewareFunc {
 	return func(h echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) error {
+		return func(c echo.Context) error {
 			req := c.Request()
 			res := c.Response()
 
-			remoteAddr := req.RemoteAddr
-			if ip := req.Header.Get(echo.XRealIP); ip != "" {
+			remoteAddr := req.RemoteAddress()
+			if ip := req.Header().Get(echo.HeaderXRealIP); ip != "" {
 				remoteAddr = ip
-			} else if ip = req.Header.Get(echo.XForwardedFor); ip != "" {
+			} else if ip = req.Header().Get(echo.HeaderXForwardedFor); ip != "" {
 				remoteAddr = ip
 			}
 			remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
@@ -29,7 +29,7 @@ func logger() echo.MiddlewareFunc {
 			}
 			stop := time.Now()
 			method := req.Method
-			path := req.URL.Path
+			path := req.URL().Path()
 			if path == "" {
 				path = "/"
 			}

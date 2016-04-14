@@ -14,12 +14,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
+	"github.com/labstack/echo/engine/standard"
 )
 
 type Server struct {
-	Config  *Config
-	Content *ContentManager
-	Redis   *RedisClient
+	Config     *Config
+	Content    *ContentManager
+	Redis      *RedisClient
 
 	Secret     string     // Option secret key for authenticating via HMAC
 	IgnoreTags bool       // If set to false, also execute command if tag is pushed
@@ -91,7 +92,7 @@ func (s *Server) TrackEvent() {
 			if e.Type != "push" {
 				continue
 			}
-			//todo(sercan) check repo
+		//todo(sercan) check repo
 			log.Infof("updating repo by event %+v", e)
 
 			err := s.Content.Update(e.Commit)
@@ -108,9 +109,9 @@ func (s *Server) TrackEvent() {
 
 func grpcLog(req *http.Request) {
 	remoteAddr := req.RemoteAddr
-	if ip := req.Header.Get(echo.XRealIP); ip != "" {
+	if ip := req.Header.Get(echo.HeaderXRealIP); ip != "" {
 		remoteAddr = ip
-	} else if ip = req.Header.Get(echo.XForwardedFor); ip != "" {
+	} else if ip = req.Header.Get(echo.HeaderXForwardedFor); ip != "" {
 		remoteAddr = ip
 	}
 	remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
@@ -152,8 +153,11 @@ func (s *Server) Listen() {
 
 		// Create your protocol servers.
 		grpcS := s.GRPCServer()
+		httpS := standard.New(s.Config.GetPortString())
+
 		echo := s.HttpServer()
-		httpS := echo.Server(s.Config.GetPortString())
+		httpS.SetHandler(echo)
+		httpS.SetLogger(echo.Logger())
 
 		go grpcS.Serve(grpcL)
 		go httpS.Serve(httpL)
@@ -166,9 +170,13 @@ func (s *Server) Listen() {
 		log.Infoln("Starting TLS server")
 		gserver := s.GRPCServer()
 		echo := s.HttpServer()
+		httpS := standard.New(s.Config.GetPortString())
+		httpS.SetHandler(echo)
+		httpS.SetLogger(echo.Logger())
+
 		srv := &http.Server{
 			Addr:    s.Config.GetPortString(),
-			Handler: s.grpcHandlerFunc(gserver, echo),
+			Handler: s.grpcHandlerFunc(gserver, httpS),
 		}
 		if err := srv.ListenAndServeTLS(s.Config.TlsCertFile, s.Config.TlsKeyFile); err != nil {
 			panic(err)

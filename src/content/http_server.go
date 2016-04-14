@@ -33,17 +33,17 @@ func NewErrorResponse(resType int, message string) *Response {
 	}
 }
 
-func httpErrorHandler(err error, c *echo.Context) {
+func httpErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
 	msg := http.StatusText(code)
 	if he, ok := err.(*echo.HTTPError); ok {
-		code = he.Code()
+		code = he.Code
 		msg = he.Error()
 	}
 	r := c.Response()
 	if !r.Committed() {
 		b, _ := json.Marshal(NewErrorResponse(code, msg))
-		r.Header().Set(echo.ContentType, echo.ApplicationJSONCharsetUTF8)
+		r.Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		r.WriteHeader(code)
 		r.Write(b)
 	}

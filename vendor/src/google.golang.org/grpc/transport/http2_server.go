@@ -246,6 +246,16 @@ func (t *http2Server) HandleStreams(handle func(*Stream)) {
 	for {
 		frame, err := t.framer.readFrame()
 		if err != nil {
+			if se, ok := err.(http2.StreamError); ok {
+				t.mu.Lock()
+				s := t.activeStreams[se.StreamID]
+				t.mu.Unlock()
+				if s != nil {
+					t.closeStream(s)
+				}
+				t.controlBuf.put(&resetStream{se.StreamID, se.Code})
+				continue
+			}
 			t.Close()
 			return
 		}
@@ -308,11 +318,20 @@ func (t *http2Server) updateWindow(s *Stream, n uint32) {
 
 func (t *http2Server) handleData(f *http2.DataFrame) {
 	// Select the right stream to dispatch.
+	size := len(f.Data())
 	s, ok := t.getStream(f)
 	if !ok {
+		cwu, err := t.fc.adjustConnPendingUpdate(uint32(size))
+		if err != nil {
+			grpclog.Printf("transport: http2Server %v", err)
+			t.Close()
+			return
+		}
+		if cwu > 0 {
+			t.controlBuf.put(&windowUpdate{0, cwu})
+		}
 		return
 	}
-	size := len(f.Data())
 	if size > 0 {
 		if err := s.fc.onData(uint32(size)); err != nil {
 			if _, ok := err.(ConnectionError); ok {
