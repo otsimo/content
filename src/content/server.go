@@ -9,18 +9,18 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
 	pb "github.com/otsimo/otsimopb"
 	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
-	"github.com/labstack/echo/engine/standard"
 )
 
 type Server struct {
-	Config     *Config
-	Content    *ContentManager
-	Redis      *RedisClient
+	Config  *Config
+	Content *ContentManager
+	Redis   *RedisClient
 
 	Secret     string     // Option secret key for authenticating via HMAC
 	IgnoreTags bool       // If set to false, also execute command if tag is pushed
@@ -92,7 +92,7 @@ func (s *Server) TrackEvent() {
 			if e.Type != "push" {
 				continue
 			}
-		//todo(sercan) check repo
+			//todo(sercan) check repo
 			log.Infof("updating repo by event %+v", e)
 
 			err := s.Content.Update(e.Commit)

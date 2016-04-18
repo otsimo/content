@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"os"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
-	"os"
 )
 
 const (
-	WikiEndpoint = "/wiki"
+	WikiEndpoint    = "/wiki"
 	WebhookEndpoint = "/webhook"
 )
 
@@ -63,7 +64,7 @@ func (s *Server) HttpServer() *echo.Echo {
 	// Logger
 	cnf := mw.LoggerConfig{
 		Format: "time=\"${time_rfc3339}\" remote_ip=${remote_ip} method=${method} " +
-		"uri=${uri} status=${status} took=${response_time}, sent=${response_size} bytes\n",
+			"uri=${uri} status=${status} took=${response_time}, sent=${response_size} bytes\n",
 		Output: os.Stdout,
 	}
 

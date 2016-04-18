@@ -70,11 +70,15 @@
 		DataSet
 		OtsimoServices
 		DiscoveryRequest
+		SelfLearningSegment
+		SelfLearningConfig
 		DeviceInfo
 		GameInfo
 		Point
 		Event
 		AppEventData
+		BatchEventData
+		BatchEvent
 		EventResponse
 		GetProfileRequest
 		GetChildRequest

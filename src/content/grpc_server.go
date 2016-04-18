@@ -50,7 +50,7 @@ func (slice contentSorter) Swap(i, j int) {
 	slice.contents[i], slice.contents[j] = slice.contents[j], slice.contents[i]
 }
 
-func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRequest) (*apipb.ContentListResponse, error) {
+func (w *contentGrpcServer) List(_ context.Context, query *apipb.ContentListRequest) (*apipb.ContentListResponse, error) {
 	var contents []*apipb.Content
 
 	for _, c := range w.server.Content.contents {
@@ -66,6 +66,33 @@ func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRe
 		if query.Category != "" && query.Category != c.Category {
 			continue
 		}
+
+		if len(query.Categories) > 0 {
+			founded := false
+			for _, cat := range query.Categories {
+				if cat == c.Category {
+					founded = true
+					break
+				}
+			}
+			if !founded {
+				continue
+			}
+		}
+
+		if len(query.ExceptCategories) > 0 {
+			founded := false
+			for _, cat := range query.ExceptCategories {
+				if cat == c.Category {
+					founded = true
+					break
+				}
+			}
+			if founded {
+				continue
+			}
+		}
+
 		cp := *c
 		cp.Markdown = []byte{}
 		contents = append(contents, &cp)
@@ -83,7 +110,7 @@ func (w *contentGrpcServer) List(ctx context.Context, query *apipb.ContentListRe
 	}, nil
 }
 
-func (w *contentGrpcServer) Get(ctx context.Context, in *apipb.ContentGetRequest) (*apipb.Content, error) {
+func (w *contentGrpcServer) Get(_ context.Context, in *apipb.ContentGetRequest) (*apipb.Content, error) {
 	for _, c := range w.server.Content.contents {
 		if c.Slug == in.Slug {
 			return c, nil

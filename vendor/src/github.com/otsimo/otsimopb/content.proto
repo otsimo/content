@@ -52,6 +52,8 @@ message ContentListRequest{
     SortOrder order = 8;
     string profile_id = 10;
     string client_version = 11;
+    repeated string categories = 12;
+    repeated string except_categories = 13;
 }
 
 message ContentListResponse{

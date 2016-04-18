@@ -14,6 +14,8 @@ import (
 	grpc "google.golang.org/grpc"
 )
 
+import errors "errors"
+
 import io "io"
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -34,11 +36,12 @@ type OtsimoServices struct {
 	DashboardGrpc string `protobuf:"bytes,10,opt,name=dashboard_grpc,json=dashboardGrpc,proto3" json:"dashboard_grpc,omitempty"`
 	ApiGrpc       string `protobuf:"bytes,11,opt,name=api_grpc,json=apiGrpc,proto3" json:"api_grpc,omitempty"`
 	// GameContent is registry service http url
-	GameContent          string            `protobuf:"bytes,12,opt,name=game_content,json=gameContent,proto3" json:"game_content,omitempty"`
-	Accounts             string            `protobuf:"bytes,13,opt,name=accounts,proto3" json:"accounts,omitempty"`
-	AnalyticsGrpc        string            `protobuf:"bytes,14,opt,name=analytics_grpc,json=analyticsGrpc,proto3" json:"analytics_grpc,omitempty"`
-	Services             map[string]string `protobuf:"bytes,20,rep,name=services" json:"services,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	GameStorageProviders map[string]string `protobuf:"bytes,21,rep,name=game_storage_providers,json=gameStorageProviders" json:"game_storage_providers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	GameContent          string                         `protobuf:"bytes,12,opt,name=game_content,json=gameContent,proto3" json:"game_content,omitempty"`
+	Accounts             string                         `protobuf:"bytes,13,opt,name=accounts,proto3" json:"accounts,omitempty"`
+	AnalyticsGrpc        string                         `protobuf:"bytes,14,opt,name=analytics_grpc,json=analyticsGrpc,proto3" json:"analytics_grpc,omitempty"`
+	Services             map[string]string              `protobuf:"bytes,20,rep,name=services" json:"services,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	GameStorageProviders map[string]string              `protobuf:"bytes,21,rep,name=game_storage_providers,json=gameStorageProviders" json:"game_storage_providers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	SelfLearningConfigs  map[string]*SelfLearningConfig `protobuf:"bytes,22,rep,name=self_learning_configs,json=selfLearningConfigs" json:"self_learning_configs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value"`
 }
 
 func (m *OtsimoServices) Reset()                    { *m = OtsimoServices{} }
@@ -47,10 +50,12 @@ func (*OtsimoServices) ProtoMessage()               {}
 func (*OtsimoServices) Descriptor() ([]byte, []int) { return fileDescriptorDiscovery, []int{0} }
 
 type DiscoveryRequest struct {
-	Environment string `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
-	SdkVersion  string `protobuf:"bytes,2,opt,name=sdk_version,json=sdkVersion,proto3" json:"sdk_version,omitempty"`
-	OsName      string `protobuf:"bytes,3,opt,name=os_name,json=osName,proto3" json:"os_name,omitempty"`
-	CountryCode string `protobuf:"bytes,4,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
+	Environment      string `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
+	SdkVersion       string `protobuf:"bytes,2,opt,name=sdk_version,json=sdkVersion,proto3" json:"sdk_version,omitempty"`
+	OsName           string `protobuf:"bytes,3,opt,name=os_name,json=osName,proto3" json:"os_name,omitempty"`
+	CountryCode      string `protobuf:"bytes,4,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
+	AppBundleId      string `protobuf:"bytes,5,opt,name=app_bundle_id,json=appBundleId,proto3" json:"app_bundle_id,omitempty"`
+	AppBundleVersion string `protobuf:"bytes,6,opt,name=app_bundle_version,json=appBundleVersion,proto3" json:"app_bundle_version,omitempty"`
 }
 
 func (m *DiscoveryRequest) Reset()                    { *m = DiscoveryRequest{} }
@@ -58,9 +63,31 @@ func (m *DiscoveryRequest) String() string            { return proto.CompactText
 func (*DiscoveryRequest) ProtoMessage()               {}
 func (*DiscoveryRequest) Descriptor() ([]byte, []int) { return fileDescriptorDiscovery, []int{1} }
 
+type SelfLearningSegment struct {
+	Title     string              `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	BaseQuery *ContentListRequest `protobuf:"bytes,2,opt,name=base_query,json=baseQuery" json:"base_query,omitempty"`
+}
+
+func (m *SelfLearningSegment) Reset()                    { *m = SelfLearningSegment{} }
+func (m *SelfLearningSegment) String() string            { return proto.CompactTextString(m) }
+func (*SelfLearningSegment) ProtoMessage()               {}
+func (*SelfLearningSegment) Descriptor() ([]byte, []int) { return fileDescriptorDiscovery, []int{2} }
+
+type SelfLearningConfig struct {
+	Language string                 `protobuf:"bytes,1,opt,name=language,proto3" json:"language,omitempty"`
+	Segments []*SelfLearningSegment `protobuf:"bytes,2,rep,name=segments" json:"segments,omitempty"`
+}
+
+func (m *SelfLearningConfig) Reset()                    { *m = SelfLearningConfig{} }
+func (m *SelfLearningConfig) String() string            { return proto.CompactTextString(m) }
+func (*SelfLearningConfig) ProtoMessage()               {}
+func (*SelfLearningConfig) Descriptor() ([]byte, []int) { return fileDescriptorDiscovery, []int{3} }
+
 func init() {
 	proto.RegisterType((*OtsimoServices)(nil), "apipb.OtsimoServices")
 	proto.RegisterType((*DiscoveryRequest)(nil), "apipb.DiscoveryRequest")
+	proto.RegisterType((*SelfLearningSegment)(nil), "apipb.SelfLearningSegment")
+	proto.RegisterType((*SelfLearningConfig)(nil), "apipb.SelfLearningConfig")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -269,6 +296,33 @@ func (m *OtsimoServices) MarshalTo(data []byte) (int, error) {
 			i += copy(data[i:], v)
 		}
 	}
+	if len(m.SelfLearningConfigs) > 0 {
+		for k, _ := range m.SelfLearningConfigs {
+			data[i] = 0xb2
+			i++
+			data[i] = 0x1
+			i++
+			v := m.SelfLearningConfigs[k]
+			if v == nil {
+				return 0, errors.New("proto: map has nil element")
+			}
+			msgSize := v.Size()
+			mapSize := 1 + len(k) + sovDiscovery(uint64(len(k))) + 1 + msgSize + sovDiscovery(uint64(msgSize))
+			i = encodeVarintDiscovery(data, i, uint64(mapSize))
+			data[i] = 0xa
+			i++
+			i = encodeVarintDiscovery(data, i, uint64(len(k)))
+			i += copy(data[i:], k)
+			data[i] = 0x12
+			i++
+			i = encodeVarintDiscovery(data, i, uint64(v.Size()))
+			n1, err := v.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n1
+		}
+	}
 	return i, nil
 }
 
@@ -310,6 +364,88 @@ func (m *DiscoveryRequest) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintDiscovery(data, i, uint64(len(m.CountryCode)))
 		i += copy(data[i:], m.CountryCode)
+	}
+	if len(m.AppBundleId) > 0 {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintDiscovery(data, i, uint64(len(m.AppBundleId)))
+		i += copy(data[i:], m.AppBundleId)
+	}
+	if len(m.AppBundleVersion) > 0 {
+		data[i] = 0x32
+		i++
+		i = encodeVarintDiscovery(data, i, uint64(len(m.AppBundleVersion)))
+		i += copy(data[i:], m.AppBundleVersion)
+	}
+	return i, nil
+}
+
+func (m *SelfLearningSegment) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *SelfLearningSegment) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Title) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintDiscovery(data, i, uint64(len(m.Title)))
+		i += copy(data[i:], m.Title)
+	}
+	if m.BaseQuery != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintDiscovery(data, i, uint64(m.BaseQuery.Size()))
+		n2, err := m.BaseQuery.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
+	return i, nil
+}
+
+func (m *SelfLearningConfig) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *SelfLearningConfig) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Language) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintDiscovery(data, i, uint64(len(m.Language)))
+		i += copy(data[i:], m.Language)
+	}
+	if len(m.Segments) > 0 {
+		for _, msg := range m.Segments {
+			data[i] = 0x12
+			i++
+			i = encodeVarintDiscovery(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
 	}
 	return i, nil
 }
@@ -414,6 +550,18 @@ func (m *OtsimoServices) Size() (n int) {
 			n += mapEntrySize + 2 + sovDiscovery(uint64(mapEntrySize))
 		}
 	}
+	if len(m.SelfLearningConfigs) > 0 {
+		for k, v := range m.SelfLearningConfigs {
+			_ = k
+			_ = v
+			l = 0
+			if v != nil {
+				l = v.Size()
+			}
+			mapEntrySize := 1 + len(k) + sovDiscovery(uint64(len(k))) + 1 + l + sovDiscovery(uint64(l))
+			n += mapEntrySize + 2 + sovDiscovery(uint64(mapEntrySize))
+		}
+	}
 	return n
 }
 
@@ -435,6 +583,44 @@ func (m *DiscoveryRequest) Size() (n int) {
 	l = len(m.CountryCode)
 	if l > 0 {
 		n += 1 + l + sovDiscovery(uint64(l))
+	}
+	l = len(m.AppBundleId)
+	if l > 0 {
+		n += 1 + l + sovDiscovery(uint64(l))
+	}
+	l = len(m.AppBundleVersion)
+	if l > 0 {
+		n += 1 + l + sovDiscovery(uint64(l))
+	}
+	return n
+}
+
+func (m *SelfLearningSegment) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovDiscovery(uint64(l))
+	}
+	if m.BaseQuery != nil {
+		l = m.BaseQuery.Size()
+		n += 1 + l + sovDiscovery(uint64(l))
+	}
+	return n
+}
+
+func (m *SelfLearningConfig) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Language)
+	if l > 0 {
+		n += 1 + l + sovDiscovery(uint64(l))
+	}
+	if len(m.Segments) > 0 {
+		for _, e := range m.Segments {
+			l = e.Size()
+			n += 1 + l + sovDiscovery(uint64(l))
+		}
 	}
 	return n
 }
@@ -1091,6 +1277,122 @@ func (m *OtsimoServices) Unmarshal(data []byte) error {
 			}
 			m.GameStorageProviders[mapkey] = mapvalue
 			iNdEx = postIndex
+		case 22:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SelfLearningConfigs", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var keykey uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				keykey |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			var stringLenmapkey uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLenmapkey |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLenmapkey := int(stringLenmapkey)
+			if intStringLenmapkey < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			postStringIndexmapkey := iNdEx + intStringLenmapkey
+			if postStringIndexmapkey > l {
+				return io.ErrUnexpectedEOF
+			}
+			mapkey := string(data[iNdEx:postStringIndexmapkey])
+			iNdEx = postStringIndexmapkey
+			var valuekey uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				valuekey |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			var mapmsglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				mapmsglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if mapmsglen < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			postmsgIndex := iNdEx + mapmsglen
+			if mapmsglen < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			if postmsgIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			mapvalue := &SelfLearningConfig{}
+			if err := mapvalue.Unmarshal(data[iNdEx:postmsgIndex]); err != nil {
+				return err
+			}
+			iNdEx = postmsgIndex
+			if m.SelfLearningConfigs == nil {
+				m.SelfLearningConfigs = make(map[string]*SelfLearningConfig)
+			}
+			m.SelfLearningConfigs[mapkey] = mapvalue
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDiscovery(data[iNdEx:])
@@ -1257,6 +1559,286 @@ func (m *DiscoveryRequest) Unmarshal(data []byte) error {
 			}
 			m.CountryCode = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppBundleId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AppBundleId = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppBundleVersion", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AppBundleVersion = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDiscovery(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SelfLearningSegment) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDiscovery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SelfLearningSegment: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SelfLearningSegment: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BaseQuery", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.BaseQuery == nil {
+				m.BaseQuery = &ContentListRequest{}
+			}
+			if err := m.BaseQuery.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDiscovery(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SelfLearningConfig) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDiscovery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SelfLearningConfig: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SelfLearningConfig: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Language", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Language = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Segments", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDiscovery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDiscovery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Segments = append(m.Segments, &SelfLearningSegment{})
+			if err := m.Segments[len(m.Segments)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDiscovery(data[iNdEx:])
@@ -1384,41 +1966,53 @@ var (
 )
 
 var fileDescriptorDiscovery = []byte{
-	// 575 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x94, 0x54, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0x6e, 0x1a, 0xf2, 0x37, 0xf9, 0xa1, 0xb2, 0xd2, 0xd6, 0x8d, 0x44, 0x08, 0xa9, 0x90, 0x7a,
-	0x21, 0x91, 0x8a, 0x90, 0x10, 0x1c, 0x90, 0x5a, 0x50, 0x6e, 0x50, 0xa5, 0x88, 0x03, 0x17, 0x6b,
-	0x6d, 0x2f, 0xce, 0xaa, 0x8e, 0x37, 0xec, 0xac, 0x83, 0xf2, 0x10, 0x48, 0xf0, 0x56, 0x3d, 0xf6,
-	0x11, 0xf8, 0x79, 0x11, 0xd6, 0xb3, 0xb6, 0x45, 0x51, 0x90, 0xe0, 0xb0, 0xd2, 0x7e, 0xdf, 0x7c,
-	0xf3, 0xed, 0xc4, 0x33, 0x13, 0xb8, 0x1b, 0x0a, 0x0c, 0xe4, 0x9a, 0xab, 0xcd, 0x64, 0xa5, 0xa4,
-	0x96, 0x4e, 0x8d, 0xad, 0xc4, 0xca, 0x1f, 0x3c, 0x8a, 0x84, 0x5e, 0xa4, 0xfe, 0x24, 0x90, 0xcb,
-	0x69, 0x24, 0x23, 0x39, 0xa5, 0xa8, 0x9f, 0x7e, 0x20, 0x44, 0x80, 0x6e, 0x36, 0x6b, 0xfc, 0xb9,
-	0x0e, 0xbd, 0x37, 0x1a, 0xc5, 0x52, 0x5e, 0x72, 0xb5, 0x16, 0x01, 0x47, 0x67, 0x04, 0x6d, 0x9e,
-	0xac, 0x85, 0x92, 0xc9, 0x92, 0x27, 0xda, 0xad, 0x8c, 0x2a, 0x27, 0xad, 0xf9, 0xef, 0x94, 0x73,
-	0x00, 0x75, 0x81, 0x98, 0x72, 0xe5, 0xee, 0x52, 0x30, 0x47, 0xce, 0x31, 0x74, 0x05, 0x7a, 0xc6,
-	0x38, 0x4c, 0x03, 0x2d, 0x64, 0xe2, 0x56, 0x4d, 0xb8, 0x39, 0xef, 0x08, 0xbc, 0x28, 0x39, 0xe7,
-	0x10, 0x1a, 0x29, 0x72, 0x4f, 0xc7, 0xe8, 0xde, 0xa1, 0x70, 0xdd, 0xc0, 0xb7, 0x31, 0x66, 0xd9,
-	0x8a, 0x47, 0x02, 0xb5, 0xda, 0x78, 0x91, 0x5a, 0x05, 0x6e, 0x8d, 0xcc, 0x3b, 0x05, 0x39, 0x33,
-	0x5c, 0x26, 0x8a, 0x0d, 0xe2, 0x09, 0x57, 0x56, 0x54, 0xb7, 0xa2, 0x82, 0x24, 0xd1, 0x3d, 0x80,
-	0x4f, 0x4c, 0x07, 0x0b, 0xab, 0x68, 0x90, 0xa2, 0x45, 0x0c, 0x85, 0x1f, 0x40, 0x27, 0x60, 0x9a,
-	0xc5, 0x32, 0xb2, 0x82, 0xa6, 0xfd, 0x85, 0x39, 0x57, 0x4a, 0x64, 0x62, 0x1c, 0xb5, 0x95, 0xb4,
-	0x72, 0x89, 0xe5, 0x48, 0xf2, 0x10, 0x7a, 0x21, 0xc3, 0x85, 0x2f, 0x99, 0x0a, 0xad, 0x08, 0x48,
-	0xd4, 0x2d, 0x59, 0x92, 0x1d, 0x41, 0xd3, 0x34, 0xc6, 0x0a, 0xda, 0x24, 0x68, 0x18, 0x5c, 0x3c,
-	0x12, 0xb1, 0x25, 0xf7, 0x72, 0x57, 0xb7, 0x63, 0x1f, 0xc9, 0xb8, 0x73, 0x4b, 0x39, 0x03, 0x93,
-	0x1d, 0x04, 0x32, 0x4d, 0x34, 0xba, 0x5d, 0x0a, 0x97, 0x38, 0x2b, 0x80, 0x25, 0x2c, 0xde, 0x68,
-	0x11, 0xa0, 0xf5, 0xef, 0xd9, 0x02, 0x4a, 0x96, 0x5e, 0x79, 0x01, 0x4d, 0xcc, 0x5b, 0xeb, 0xf6,
-	0x47, 0xd5, 0x93, 0xf6, 0xe9, 0xf1, 0x84, 0x46, 0x65, 0x72, 0xbb, 0xef, 0x93, 0xe2, 0xf2, 0x2a,
-	0x31, 0x1f, 0x7b, 0x5e, 0x26, 0x39, 0x1c, 0x0e, 0xa8, 0x4c, 0xd4, 0x52, 0xb1, 0x88, 0x67, 0xfd,
-	0x5d, 0x8b, 0x90, 0x2b, 0x74, 0xf7, 0xc9, 0x6e, 0xba, 0xdd, 0x6e, 0x66, 0x72, 0x2e, 0x6d, 0xca,
-	0x45, 0x91, 0x61, 0xad, 0xfb, 0xd1, 0x96, 0xd0, 0xe0, 0x39, 0x74, 0x6f, 0x55, 0xe0, 0xec, 0x41,
-	0xf5, 0x8a, 0x6f, 0xf2, 0xf9, 0xcb, 0xae, 0x4e, 0x1f, 0x6a, 0x6b, 0x16, 0xa7, 0x3c, 0x1f, 0x3b,
-	0x0b, 0x9e, 0xed, 0x3e, 0xad, 0x0c, 0x66, 0x70, 0xf4, 0xd7, 0xf7, 0xfe, 0xc7, 0x68, 0xfc, 0xb5,
-	0x02, 0x7b, 0x2f, 0x8b, 0xcd, 0x9a, 0xf3, 0x8f, 0x29, 0x47, 0xfd, 0x0f, 0x1b, 0x71, 0x1f, 0xda,
-	0x18, 0x5e, 0x79, 0x26, 0x09, 0xb3, 0xb9, 0xb7, 0xb6, 0x60, 0xa8, 0x77, 0x96, 0xc9, 0xa6, 0x5e,
-	0xa2, 0x97, 0x98, 0x1a, 0x69, 0x29, 0xcc, 0xce, 0x48, 0x7c, 0x6d, 0x90, 0x9d, 0xb4, 0x34, 0xab,
-	0xd3, 0xcc, 0x41, 0xc8, 0x69, 0x27, 0x68, 0xd2, 0x88, 0x3b, 0x37, 0xd4, 0xe9, 0x19, 0xb4, 0xca,
-	0x92, 0x9c, 0x27, 0x50, 0x9d, 0x71, 0xed, 0x1c, 0xe6, 0x1f, 0xfd, 0xcf, 0x5a, 0x07, 0xfb, 0x5b,
-	0xbb, 0x71, 0x36, 0xbe, 0xfe, 0x3e, 0xdc, 0xb9, 0x31, 0xe7, 0xfa, 0xc7, 0xb0, 0x72, 0x63, 0xce,
-	0x37, 0x73, 0xbe, 0xfc, 0x1c, 0xee, 0xbc, 0x6f, 0x4a, 0x52, 0xae, 0x7c, 0xbf, 0x4e, 0x7f, 0x09,
-	0x8f, 0x7f, 0x05, 0x00, 0x00, 0xff, 0xff, 0x65, 0x04, 0xb9, 0xaa, 0x5b, 0x04, 0x00, 0x00,
+	// 758 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x94, 0x54, 0xdd, 0x6a, 0x1b, 0x39,
+	0x14, 0x8e, 0xe3, 0x8d, 0x7f, 0x8e, 0xed, 0x6c, 0x50, 0xfe, 0x26, 0x86, 0xcd, 0x66, 0x1d, 0x16,
+	0x72, 0xb1, 0x6b, 0x43, 0x96, 0x2d, 0xa1, 0xbd, 0x28, 0x24, 0x2d, 0xa6, 0x10, 0xda, 0xd4, 0x29,
+	0xbd, 0xe8, 0xcd, 0xa0, 0x99, 0x91, 0xc7, 0x22, 0xe3, 0x91, 0x3b, 0xd2, 0xb8, 0xf8, 0x2d, 0xfa,
+	0x58, 0xb9, 0xcc, 0x45, 0x1f, 0xa0, 0x6d, 0x5e, 0xa4, 0xd2, 0x91, 0x3c, 0x38, 0x89, 0x03, 0xed,
+	0xc5, 0xc0, 0x9c, 0xef, 0x7c, 0xe7, 0x47, 0xe7, 0xe8, 0x13, 0xfc, 0x1e, 0x71, 0x19, 0x8a, 0x29,
+	0xcb, 0x66, 0xdd, 0x49, 0x26, 0x94, 0x20, 0x6b, 0x74, 0xc2, 0x27, 0x41, 0xfb, 0xdf, 0x98, 0xab,
+	0x51, 0x1e, 0x74, 0x43, 0x31, 0xee, 0xc5, 0x22, 0x16, 0x3d, 0xf4, 0x06, 0xf9, 0x10, 0x2d, 0x34,
+	0xf0, 0xcf, 0x46, 0xb5, 0x5b, 0xa1, 0x48, 0x15, 0x4b, 0x95, 0x35, 0x3b, 0x5f, 0xaa, 0xb0, 0xfe,
+	0x46, 0x49, 0x3e, 0x16, 0x97, 0x2c, 0x9b, 0xf2, 0x90, 0x49, 0x72, 0x00, 0x0d, 0x96, 0x4e, 0x79,
+	0x26, 0xd2, 0xb1, 0xe6, 0x79, 0xa5, 0x83, 0xd2, 0x51, 0x7d, 0xb0, 0x08, 0x91, 0x1d, 0xa8, 0x70,
+	0x29, 0x73, 0x96, 0x79, 0xab, 0xe8, 0x74, 0x16, 0x39, 0x84, 0x16, 0x97, 0xbe, 0x4e, 0x1c, 0xe5,
+	0xa1, 0xe2, 0x22, 0xf5, 0xca, 0xda, 0x5d, 0x1b, 0x34, 0xb9, 0xbc, 0x28, 0x30, 0xb2, 0x0b, 0xd5,
+	0x5c, 0x32, 0x5f, 0x25, 0xd2, 0xfb, 0x0d, 0xdd, 0x15, 0x6d, 0xbe, 0x4b, 0xa4, 0x89, 0xce, 0x58,
+	0xcc, 0xa5, 0xca, 0x66, 0x7e, 0x9c, 0x4d, 0x42, 0x6f, 0x0d, 0x93, 0x37, 0xe7, 0x60, 0x5f, 0x63,
+	0x86, 0x94, 0x68, 0x8b, 0xa5, 0x2c, 0xb3, 0xa4, 0x8a, 0x25, 0xcd, 0x41, 0x24, 0xfd, 0x01, 0xf0,
+	0x89, 0xaa, 0x70, 0x64, 0x19, 0x55, 0x64, 0xd4, 0x11, 0x41, 0xf7, 0x5f, 0xd0, 0x0c, 0xa9, 0xa2,
+	0x89, 0x88, 0x2d, 0xa1, 0x66, 0x4f, 0xe8, 0xb0, 0x82, 0x62, 0xe7, 0x64, 0x29, 0x75, 0x47, 0xb1,
+	0x18, 0x52, 0xfe, 0x86, 0xf5, 0x88, 0xca, 0x51, 0x20, 0x68, 0x16, 0x59, 0x12, 0x20, 0xa9, 0x55,
+	0xa0, 0x48, 0xdb, 0x83, 0x9a, 0xde, 0x93, 0x25, 0x34, 0x90, 0x50, 0xd5, 0xf6, 0xbc, 0x48, 0x4c,
+	0xc7, 0xcc, 0x77, 0x59, 0xbd, 0xa6, 0x2d, 0x62, 0xb0, 0x33, 0x0b, 0x91, 0xb6, 0x8e, 0x0e, 0x43,
+	0x91, 0xa7, 0x4a, 0x7a, 0x2d, 0x74, 0x17, 0xb6, 0x69, 0x80, 0xa6, 0x34, 0x99, 0x29, 0x1e, 0x4a,
+	0x9b, 0x7f, 0xdd, 0x36, 0x50, 0xa0, 0x58, 0xe5, 0x39, 0xd4, 0xa4, 0x5b, 0xad, 0xb7, 0x75, 0x50,
+	0x3e, 0x6a, 0x1c, 0x1f, 0x76, 0xf1, 0xe6, 0x74, 0xef, 0xee, 0xbd, 0x3b, 0xff, 0x79, 0x99, 0xea,
+	0x61, 0x0f, 0x8a, 0x20, 0xc2, 0x60, 0x07, 0xdb, 0x94, 0x4a, 0x64, 0x34, 0x66, 0x66, 0xbf, 0x53,
+	0x1e, 0xb1, 0x4c, 0x7a, 0xdb, 0x98, 0xae, 0xb7, 0x3c, 0x5d, 0x5f, 0xc7, 0x5c, 0xda, 0x90, 0x8b,
+	0x79, 0x84, 0x4d, 0xbd, 0x15, 0x2f, 0x71, 0x91, 0x00, 0xb6, 0x25, 0x4b, 0x86, 0x7e, 0xc2, 0x68,
+	0x96, 0xf2, 0x34, 0x36, 0x63, 0x19, 0xf2, 0x58, 0x7a, 0x3b, 0x58, 0xa5, 0xfb, 0x58, 0xd3, 0xc9,
+	0xf0, 0xdc, 0x45, 0x9c, 0xd9, 0x00, 0x5b, 0x64, 0x53, 0x3e, 0xf4, 0xb4, 0x9f, 0x41, 0xeb, 0xce,
+	0x29, 0xc9, 0x06, 0x94, 0xaf, 0xd8, 0xcc, 0xdd, 0x71, 0xf3, 0x4b, 0xb6, 0x60, 0x6d, 0x4a, 0x93,
+	0x9c, 0xb9, 0xab, 0x6d, 0x8d, 0xa7, 0xab, 0x27, 0xa5, 0x76, 0x1f, 0xf6, 0x1e, 0x3d, 0xd3, 0x2f,
+	0x25, 0xa2, 0xe0, 0x3d, 0xd6, 0xf6, 0x92, 0x3c, 0xbd, 0xc5, 0x3c, 0x8d, 0xe3, 0x3d, 0x37, 0x87,
+	0x87, 0x19, 0x16, 0x4a, 0x74, 0x6e, 0x4b, 0xb0, 0xf1, 0x62, 0xfe, 0x5e, 0x0c, 0xd8, 0xc7, 0x9c,
+	0x49, 0xf5, 0x13, 0xc2, 0xfe, 0x13, 0x1a, 0x32, 0xba, 0xf2, 0x75, 0x90, 0x34, 0xf2, 0xb5, 0x9d,
+	0x83, 0x86, 0xde, 0x5b, 0xc4, 0x88, 0x57, 0x48, 0x3f, 0xd5, 0x63, 0x40, 0x6d, 0x6b, 0xe9, 0x0b,
+	0xf9, 0x5a, 0x5b, 0x56, 0x30, 0xb9, 0x39, 0x82, 0xde, 0x5b, 0xc4, 0x50, 0xda, 0x28, 0x18, 0xc4,
+	0xce, 0x34, 0x44, 0x3a, 0xd0, 0xa2, 0x93, 0x89, 0x1f, 0xe4, 0x69, 0x94, 0x30, 0x9f, 0x47, 0x4e,
+	0xdf, 0x0d, 0x0d, 0x9e, 0x22, 0xf6, 0x2a, 0x22, 0xff, 0x00, 0x59, 0xe0, 0xcc, 0xfb, 0xb0, 0x1a,
+	0xdf, 0x28, 0x88, 0xae, 0x9b, 0x0e, 0x83, 0xcd, 0xc5, 0x31, 0x5c, 0xb2, 0x18, 0x4f, 0xa1, 0x27,
+	0xaf, 0xb8, 0x4a, 0x98, 0x3b, 0xa1, 0x35, 0xc8, 0x09, 0x40, 0x40, 0xf5, 0xc3, 0xa3, 0x67, 0x91,
+	0xcd, 0xee, 0x0d, 0xd3, 0xc9, 0xed, 0x5c, 0x3f, 0x22, 0x6e, 0x58, 0x83, 0xba, 0x21, 0xbf, 0x35,
+	0xdc, 0xce, 0x08, 0xc8, 0xc3, 0x69, 0x1b, 0x69, 0x26, 0x34, 0x8d, 0x73, 0x7d, 0x17, 0x5c, 0xa1,
+	0xc2, 0x26, 0x4f, 0x8c, 0xe6, 0xb0, 0x19, 0xa9, 0x2b, 0x99, 0xeb, 0xdb, 0x5e, 0xb2, 0x36, 0xd7,
+	0xef, 0xa0, 0xe0, 0x1e, 0x9f, 0x42, 0xbd, 0xd8, 0x1a, 0xf9, 0x1f, 0xca, 0x7d, 0xa6, 0xc8, 0xae,
+	0x8b, 0xbc, 0xbf, 0xce, 0xf6, 0xf6, 0x52, 0x45, 0x9c, 0x76, 0xae, 0xbf, 0xed, 0xaf, 0xdc, 0xe8,
+	0xef, 0xfa, 0xfb, 0x7e, 0xe9, 0x46, 0x7f, 0x5f, 0xf5, 0xf7, 0xf9, 0x76, 0x7f, 0xe5, 0x43, 0x4d,
+	0x20, 0x73, 0x12, 0x04, 0x15, 0x7c, 0xfc, 0xff, 0xfb, 0x11, 0x00, 0x00, 0xff, 0xff, 0x54, 0xea,
+	0x8d, 0xd4, 0x54, 0x06, 0x00, 0x00,
 }

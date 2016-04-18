@@ -6,8 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	log "github.com/Sirupsen/logrus"
 	"bytes"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 const (
