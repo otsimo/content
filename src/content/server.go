@@ -169,13 +169,13 @@ func (s *Server) Listen() {
 		log.Infoln("Starting TLS server")
 		gserver := s.GRPCServer()
 		echo := s.HttpServer()
-		httpS := standard.New(s.Config.GetPortString())
-		httpS.SetHandler(echo)
-		httpS.SetLogger(echo.Logger())
+		other := standard.New(s.Config.GetPortString())
+		other.SetHandler(echo)
+		other.SetLogger(echo.Logger())
 
 		srv := &http.Server{
 			Addr:    s.Config.GetPortString(),
-			Handler: s.grpcHandlerFunc(gserver, httpS),
+			Handler: s.grpcHandlerFunc(gserver, other),
 		}
 		if err := srv.ListenAndServeTLS(s.Config.TlsCertFile, s.Config.TlsKeyFile); err != nil {
 			panic(err)

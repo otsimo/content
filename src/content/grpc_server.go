@@ -6,6 +6,7 @@ import (
 
 	apipb "github.com/otsimo/otsimopb"
 	"golang.org/x/net/context"
+	"github.com/Sirupsen/logrus"
 )
 
 type contentGrpcServer struct {
@@ -51,6 +52,7 @@ func (slice contentSorter) Swap(i, j int) {
 }
 
 func (w *contentGrpcServer) List(_ context.Context, query *apipb.ContentListRequest) (*apipb.ContentListResponse, error) {
+	logrus.Infoln("grpc_server.go: List query.Language='%s'", query.Language)
 	var contents []*apipb.Content
 	if query.Language == "" {
 		query.Language = w.server.Config.DefaultLanguage
@@ -113,6 +115,7 @@ func (w *contentGrpcServer) List(_ context.Context, query *apipb.ContentListRequ
 }
 
 func (w *contentGrpcServer) Get(_ context.Context, in *apipb.ContentGetRequest) (*apipb.Content, error) {
+	logrus.Infoln("grpc_server.go: Get slug='%v'", in.Slug)
 	for _, c := range w.server.Content.contents {
 		if c.Slug == in.Slug {
 			return c, nil

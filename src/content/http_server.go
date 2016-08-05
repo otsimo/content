@@ -3,17 +3,16 @@ package content
 import (
 	"encoding/json"
 	"net/http"
-
 	"os"
-
 	"github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
 )
 
 const (
-	WikiEndpoint    = "/wiki"
+	WikiEndpoint = "/wiki"
 	WebhookEndpoint = "/webhook"
+	HealthEndpoint = "/health"
 )
 
 type Response struct {
@@ -52,6 +51,10 @@ func httpErrorHandler(err error, c echo.Context) {
 	logrus.Errorln(err)
 }
 
+func (s *Server) healthHandler(ctx echo.Context) error {
+	return ctx.String(http.StatusOK, "OK")
+}
+
 func (s *Server) HttpServer() *echo.Echo {
 	// Echo instance
 	e := echo.New()
@@ -68,9 +71,10 @@ func (s *Server) HttpServer() *echo.Echo {
 		Output: os.Stdout,
 	}
 
-	e.Use(mw.LoggerWithConfig(cnf))
+	e.Use(LoggerWithConfig(cnf))
 	e.Use(mw.Recover())
 
+	e.Get(HealthEndpoint, s.healthHandler)
 	e.Post(WebhookEndpoint, s.webhookHandler)
 	for _, v := range s.Content.GitPublicDirs {
 		e.Static(v.Path, v.Dir)
