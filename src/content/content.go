@@ -3,14 +3,13 @@ package content
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
-
-	"fmt"
 
 	log "github.com/Sirupsen/logrus"
 	apipb "github.com/otsimo/otsimopb"

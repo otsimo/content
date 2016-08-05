@@ -52,7 +52,9 @@ func (slice contentSorter) Swap(i, j int) {
 
 func (w *contentGrpcServer) List(_ context.Context, query *apipb.ContentListRequest) (*apipb.ContentListResponse, error) {
 	var contents []*apipb.Content
-
+	if query.Language == "" {
+		query.Language = w.server.Config.DefaultLanguage
+	}
 	for _, c := range w.server.Content.contents {
 		if c.Language != query.Language {
 			continue

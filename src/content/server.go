@@ -2,10 +2,9 @@ package content
 
 import (
 	"net"
+	"net/http"
 	"os"
 	"strings"
-
-	"net/http"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"

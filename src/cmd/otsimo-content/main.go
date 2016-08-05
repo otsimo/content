@@ -27,6 +27,7 @@ func RunAction(c *cli.Context) {
 	config.Port = c.Int("port")
 	config.TlsCertFile = c.String("tls-cert-file")
 	config.TlsKeyFile = c.String("tls-key-file")
+	config.DefaultLanguage = c.String("default-lang")
 
 	if config.Debug {
 		log.SetLevel(log.DebugLevel)
@@ -74,6 +75,7 @@ func main() {
 		cli.StringFlag{Name: "redis-addr", Value: "localhost:6379", Usage: "redis address"},
 		cli.StringFlag{Name: "redis-password", Value: "", Usage: "redis password"},
 		cli.StringFlag{Name: "webhook-secret", Value: "", Usage: "the webhook secret"},
+		cli.StringFlag{Name: "default-lang", Value: "tr", Usage: "the default language"},
 
 		cli.IntFlag{Name: "redis-db", Value: 0, Usage: "redis db"},
 		cli.BoolFlag{Name: "no-redis", Usage: "don't use redis"},
