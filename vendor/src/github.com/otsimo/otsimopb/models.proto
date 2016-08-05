@@ -9,6 +9,8 @@ option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.goproto_getters_all) = false;
 option objc_class_prefix = "OTS";
 option go_package = "otsimopb";
+option java_package = "com.otsimo.grpc";
+option java_multiple_files = true;
 
 // Data models
 
@@ -40,6 +42,8 @@ message ChildGameEntry{
     int64 added_at = 5              [(gogoproto.moretags) = "bson:\"added_at\""];
     int64 activation_changed_at = 6 [(gogoproto.moretags) = "bson:\"activation_changed_at\""];
     int64 updated_at = 7            [(gogoproto.moretags) = "bson:\"updated_at\""];
+    bytes local_settings = 8        [(gogoproto.moretags) = "bson:\"local_settings\""];
+    int64 local_settings_version= 9 [(gogoproto.moretags) = "bson:\"local_settings_version\""];
 }
 
 enum Gender{
@@ -121,6 +125,8 @@ message GameManifest{
     string developer_name = 17              [(gogoproto.moretags) = "bson:\"developer_name,omitempty\""];
     //DefaultLanguage
     string default_language = 18            [(gogoproto.moretags) = "bson:\"default_language,omitempty\""];
+    //Loading Background Color of the Game
+    string loading_color = 19               [(gogoproto.moretags) = "bson:\"loading_color,omitempty\""];
 }
 
 message Game{

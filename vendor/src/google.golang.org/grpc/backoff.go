@@ -8,7 +8,7 @@ import (
 // DefaultBackoffConfig uses values specified for backoff in
 // https://github.com/grpc/grpc/blob/master/doc/connection-backoff.md.
 var (
-	DefaultBackoffConfig = &BackoffConfig{
+	DefaultBackoffConfig = BackoffConfig{
 		MaxDelay:  120 * time.Second,
 		baseDelay: 1.0 * time.Second,
 		factor:    1.6,
@@ -19,7 +19,7 @@ var (
 // backoffStrategy defines the methodology for backing off after a grpc
 // connection failure.
 //
-// This is unexported until the GRPC project decides whether or not to allow
+// This is unexported until the gRPC project decides whether or not to allow
 // alternative backoff strategies. Once a decision is made, this type and its
 // method may be exported.
 type backoffStrategy interface {
@@ -28,12 +28,15 @@ type backoffStrategy interface {
 	backoff(retries int) time.Duration
 }
 
-// BackoffConfig defines the parameters for the default GRPC backoff strategy.
+// BackoffConfig defines the parameters for the default gRPC backoff strategy.
 type BackoffConfig struct {
 	// MaxDelay is the upper bound of backoff delay.
 	MaxDelay time.Duration
 
-	// TODO(stevvooe): The following fields are not exported, as allowing changes
+	// TODO(stevvooe): The following fields are not exported, as allowing
+	// changes would violate the current gRPC specification for backoff. If
+	// gRPC decides to allow more interesting backoff strategies, these fields
+	// may be opened up in the future.
 
 	// baseDelay is the amount of time to wait before retrying after the first
 	// failure.
@@ -46,7 +49,16 @@ type BackoffConfig struct {
 	jitter float64
 }
 
-func (bc *BackoffConfig) backoff(retries int) (t time.Duration) {
+func setDefaults(bc *BackoffConfig) {
+	md := bc.MaxDelay
+	*bc = DefaultBackoffConfig
+
+	if md > 0 {
+		bc.MaxDelay = md
+	}
+}
+
+func (bc BackoffConfig) backoff(retries int) (t time.Duration) {
 	if retries == 0 {
 		return bc.baseDelay
 	}

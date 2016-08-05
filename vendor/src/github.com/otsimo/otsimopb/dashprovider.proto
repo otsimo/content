@@ -11,11 +11,18 @@ option (gogoproto.goproto_getters_all) = false;
 option (gogoproto.goproto_unrecognized_all) = false;
 option (gogoproto.goproto_enum_prefix_all) = false;
 option go_package = "otsimopb";
+option java_multiple_files = true;
+option java_package = "com.otsimo.grpc";
+
+message ProviderGetRequest{
+    DashboardGetRequest request = 1;
+    repeated string user_groups = 2;
+}
 
 // DashboardProvider
 service DashboardProvider {
     rpc Info(ProviderInfoRequest) returns (ProviderInfo);
-    rpc Get(DashboardGetRequest) returns (ProviderItems);
+    rpc Get(ProviderGetRequest) returns (ProviderItems);
 }
 
 message ProviderItem{
@@ -44,7 +51,7 @@ message ProviderInfoRequest{
 }
 
 message ProviderInfo{
-    //todo add some information about provider service,    
+    repeated string serves_for = 1;
 }
 
 

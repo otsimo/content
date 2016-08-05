@@ -1,3 +1,17 @@
+// Copyright 2016 The CMux Authors. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+// implied. See the License for the specific language governing
+// permissions and limitations under the License.
+
 package cmux
 
 import (
@@ -94,7 +108,16 @@ func HTTP1HeaderField(name, value string) Matcher {
 // headers frame.
 func HTTP2HeaderField(name, value string) Matcher {
 	return func(r io.Reader) bool {
-		return matchHTTP2Field(r, name, value)
+		return matchHTTP2Field(ioutil.Discard, r, name, value)
+	}
+}
+
+// HTTP2MatchHeaderFieldSendSettings matches the header field and writes the
+// settings to the server. Prefer HTTP2HeaderField over this one, if the client
+// does not block on receiving a SETTING frame.
+func HTTP2MatchHeaderFieldSendSettings(name, value string) MatchWriter {
+	return func(w io.Writer, r io.Reader) bool {
+		return matchHTTP2Field(w, r, name, value)
 	}
 }
 
@@ -116,12 +139,12 @@ func matchHTTP1Field(r io.Reader, name, value string) (matched bool) {
 	return req.Header.Get(name) == value
 }
 
-func matchHTTP2Field(r io.Reader, name, value string) (matched bool) {
+func matchHTTP2Field(w io.Writer, r io.Reader, name, value string) (matched bool) {
 	if !hasHTTP2Preface(r) {
 		return false
 	}
 
-	framer := http2.NewFramer(ioutil.Discard, r)
+	framer := http2.NewFramer(w, r)
 	hdec := hpack.NewDecoder(uint32(4<<10), func(hf hpack.HeaderField) {
 		if hf.Name == name && hf.Value == value {
 			matched = true
@@ -134,6 +157,10 @@ func matchHTTP2Field(r io.Reader, name, value string) (matched bool) {
 		}
 
 		switch f := f.(type) {
+		case *http2.SettingsFrame:
+			if err := framer.WriteSettings(); err != nil {
+				return false
+			}
 		case *http2.HeadersFrame:
 			if _, err := hdec.Write(f.HeaderBlockFragment()); err != nil {
 				return false

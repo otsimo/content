@@ -1,0 +1,16 @@
+version: 0.4
+outputdir: ./bin
+scripts:
+  fmt: goimports -w src
+projects:
+  - name: content
+    type: go
+    root: src/cmd/otsimo-content
+    imageName: gcr.io/otsimocloud/content
+    dockerfile: ./Dockerfile
+    run: ./content --debug --git-path ./project --host http://127.0.0.1:18859
+    golang:
+      package: cmd/otsimo-content
+      cgoEnabled: false
+      ldflags: "-w -X main.Version=${BUILD_VERSION}"
+      builder: gb

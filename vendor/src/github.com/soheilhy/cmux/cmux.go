@@ -1,3 +1,17 @@
+// Copyright 2016 The CMux Authors. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+// implied. See the License for the specific language governing
+// permissions and limitations under the License.
+
 package cmux
 
 import (
@@ -9,6 +23,9 @@ import (
 
 // Matcher matches a connection based on its content.
 type Matcher func(io.Reader) bool
+
+// MatchWriter is a match that can also write response (say to do handshake).
+type MatchWriter func(io.Writer, io.Reader) bool
 
 // ErrorHandler handles an error and returns whether
 // the mux should continue serving the listener.
@@ -60,6 +77,14 @@ type CMux interface {
 	//
 	// The order used to call Match determines the priority of matchers.
 	Match(...Matcher) net.Listener
+	// MatchWithWriters returns a net.Listener that accepts only the
+	// connections that matched by at least of the matcher writers.
+	//
+	// Prefer Matchers over MatchWriters, since the latter can write on the
+	// connection before the actual handler.
+	//
+	// The order used to call Match determines the priority of matchers.
+	MatchWithWriters(...MatchWriter) net.Listener
 	// Serve starts multiplexing the listener. Serve blocks and perhaps
 	// should be invoked concurrently within a go routine.
 	Serve() error
@@ -68,7 +93,7 @@ type CMux interface {
 }
 
 type matchersListener struct {
-	ss []Matcher
+	ss []MatchWriter
 	l  muxListener
 }
 
@@ -80,7 +105,22 @@ type cMux struct {
 	sls    []matchersListener
 }
 
+func matchersToMatchWriters(matchers []Matcher) []MatchWriter {
+	mws := make([]MatchWriter, 0, len(matchers))
+	for _, m := range matchers {
+		mws = append(mws, func(w io.Writer, r io.Reader) bool {
+			return m(r)
+		})
+	}
+	return mws
+}
+
 func (m *cMux) Match(matchers ...Matcher) net.Listener {
+	mws := matchersToMatchWriters(matchers)
+	return m.MatchWithWriters(mws...)
+}
+
+func (m *cMux) MatchWithWriters(matchers ...MatchWriter) net.Listener {
 	ml := muxListener{
 		Listener: m.root,
 		connc:    make(chan net.Conn, m.bufLen),
@@ -125,9 +165,9 @@ func (m *cMux) serve(c net.Conn, donec <-chan struct{}, wg *sync.WaitGroup) {
 	muc := newMuxConn(c)
 	for _, sl := range m.sls {
 		for _, s := range sl.ss {
-			matched := s(muc.sniffer())
-			muc.reset()
+			matched := s(muc.Conn, muc.startSniffing())
 			if matched {
+				muc.doneSniffing()
 				select {
 				case sl.l.connc <- muc:
 				case <-donec:
@@ -177,12 +217,13 @@ func (l muxListener) Accept() (net.Conn, error) {
 // MuxConn wraps a net.Conn and provides transparent sniffing of connection data.
 type MuxConn struct {
 	net.Conn
-	buf buffer
+	buf bufferedReader
 }
 
 func newMuxConn(c net.Conn) *MuxConn {
 	return &MuxConn{
 		Conn: c,
+		buf:  bufferedReader{source: c},
 	}
 }
 
@@ -196,22 +237,15 @@ func newMuxConn(c net.Conn) *MuxConn {
 // a non-zero number of bytes at the end of the input stream may
 // return either err == EOF or err == nil.  The next Read should
 // return 0, EOF.
-//
-// This function implements the latter behaviour, returning the
-// (non-nil) error from the same call.
 func (m *MuxConn) Read(p []byte) (int, error) {
-	n1, err := m.buf.Read(p)
-	if err != io.EOF {
-		return n1, err
-	}
-	n2, err := m.Conn.Read(p[n1:])
-	return n1 + n2, err
+	return m.buf.Read(p)
 }
 
-func (m *MuxConn) sniffer() io.Reader {
-	return io.MultiReader(&m.buf, io.TeeReader(m.Conn, &m.buf))
+func (m *MuxConn) startSniffing() io.Reader {
+	m.buf.reset(true)
+	return &m.buf
 }
 
-func (m *MuxConn) reset() {
-	m.buf.resetRead()
+func (m *MuxConn) doneSniffing() {
+	m.buf.reset(false)
 }

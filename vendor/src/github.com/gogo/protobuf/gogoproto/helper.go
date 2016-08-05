@@ -1,4 +1,6 @@
-// Copyright (c) 2013, Vastech SA (PTY) LTD. All rights reserved.
+// Protocol Buffers for Go with Gadgets
+//
+// Copyright (c) 2013, The GoGo Authors. All rights reserved.
 // http://github.com/gogo/protobuf
 //
 // Redistribution and use in source and binary forms, with or without
@@ -301,4 +303,8 @@ func IsProto3(file *google_protobuf.FileDescriptorProto) bool {
 
 func ImportsGoGoProto(file *google_protobuf.FileDescriptorProto) bool {
 	return proto.GetBoolExtension(file.Options, E_GogoprotoImport, true)
+}
+
+func HasCompare(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
+	return proto.GetBoolExtension(message.Options, E_Compare, proto.GetBoolExtension(file.Options, E_CompareAll, false))
 }
