@@ -2,6 +2,20 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "cloud.google.com/go/compute/metadata",
+			"repository": "https://code.googlesource.com/gocloud",
+			"revision": "f9495dc7d5d062d1b04f594f06347c9a38be96bb",
+			"branch": "master",
+			"path": "/compute/metadata"
+		},
+		{
+			"importpath": "cloud.google.com/go/internal",
+			"repository": "https://code.googlesource.com/gocloud",
+			"revision": "f9495dc7d5d062d1b04f594f06347c9a38be96bb",
+			"branch": "master",
+			"path": "/internal"
+		},
+		{
 			"importpath": "github.com/BurntSushi/toml",
 			"repository": "https://github.com/BurntSushi/toml",
 			"revision": "99064174e013895bbd9b025c31100bd1d9b590ca",
@@ -266,8 +280,7 @@
 		{
 			"importpath": "google.golang.org/grpc",
 			"repository": "https://github.com/grpc/grpc-go",
-			"revision": "35896af9ad39c1fb1b1cd925fe3621be361e3d81",
-			"branch": "master"
+			"revision": "5c7e717663448ccc1c9ff4d9ce75cdb1cca28121",
 		},
 		{
 			"importpath": "gopkg.in/airbrake/gobrake.v2",
