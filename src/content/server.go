@@ -55,6 +55,7 @@ func (s *Server) Start() error {
 	}
 
 	go s.TrackEvent()
+	go s.listenHTTP()
 	return s.listenGRPC()
 }
 
