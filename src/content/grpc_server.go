@@ -52,7 +52,7 @@ func (slice contentSorter) Swap(i, j int) {
 }
 
 func (w *contentGrpcServer) List(_ context.Context, query *apipb.ContentListRequest) (*apipb.ContentListResponse, error) {
-	logrus.Infoln("grpc_server.go: List query.Language='%s'", query.Language)
+	logrus.Infof("grpc_server.go: List query.Language='%s'", query.Language)
 	var contents []*apipb.Content
 	if query.Language == "" {
 		query.Language = w.server.Config.DefaultLanguage
