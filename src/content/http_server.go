@@ -65,7 +65,7 @@ func (s *Server) HttpServer() *echo.Echo {
 		e.Debug()
 	}
 	// Logger
-	cnf := mw.LoggerConfig{
+	cnf := LoggerConfig{
 		Format: "time=\"${time_rfc3339}\" remote_ip=${remote_ip} method=${method} " +
 			"uri=${uri} status=${status} took=${response_time}, sent=${response_size} bytes\n",
 		Output: os.Stdout,
