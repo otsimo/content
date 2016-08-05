@@ -13,7 +13,7 @@ import (
 var Version string
 var config *content.Config = content.NewConfig()
 
-func RunAction(c *cli.Context) {
+func RunAction(c *cli.Context) error {
 	config.Debug = c.Bool("debug")
 	config.NoRedis = c.Bool("no-redis")
 	config.GitUrl = c.String("git-url")
@@ -24,7 +24,8 @@ func RunAction(c *cli.Context) {
 	config.RedisAddr = c.String("redis-addr")
 	config.RedisDB = int64(c.Int("redis-db"))
 	config.RedisPassword = c.String("redis-password")
-	config.Port = c.Int("port")
+	config.HttpPort = c.Int("http-port")
+	config.GrpcPort = c.Int("grpc-port")
 	config.TlsCertFile = c.String("tls-cert-file")
 	config.TlsKeyFile = c.String("tls-key-file")
 	config.DefaultLanguage = c.String("default-lang")
@@ -34,7 +35,7 @@ func RunAction(c *cli.Context) {
 	}
 
 	server := content.NewServer(config)
-	server.Start()
+	return server.Start()
 }
 
 func withEnvs(prefix string, flags []cli.Flag) []cli.Flag {
@@ -66,7 +67,8 @@ func main() {
 	var flags []cli.Flag
 
 	flags = []cli.Flag{
-		cli.IntFlag{Name: "port", Value: content.DefaultPort, Usage: "server port"},
+		cli.IntFlag{Name: "grpc-port", Value: config.GrpcPort, Usage: "server port"},
+		cli.IntFlag{Name: "http-port", Value: config.HttpPort, Usage: "server port"},
 		cli.StringFlag{Name: "git-url", Value: "https://github.com/otsimo/wiki.git", Usage: "the content wiki git project url"},
 		cli.StringFlag{Name: "host", Value: "https://content.otsimo.com", Usage: "services' host url"},
 		cli.StringFlag{Name: "git-path", Value: "/opt/otsimo/project", Usage: "where to put git project"},
@@ -89,12 +91,13 @@ func main() {
 
 	log.Infoln("running", app.Name, "version:", app.Version)
 
-	app.Run(os.Args)
+	if err := app.Run(os.Args); err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func init() {
 	log.SetFormatter(&log.TextFormatter{FullTimestamp: true, DisableColors: true})
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.InfoLevel)
-
 }

@@ -2,31 +2,27 @@ package content
 
 import (
 	"net"
-	"net/http"
 	"os"
-	"strings"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 	pb "github.com/otsimo/otsimopb"
-	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
+	"github.com/labstack/echo/engine/standard"
 )
 
 type Server struct {
-	Config  *Config
-	Content *ContentManager
-	Redis   *RedisClient
+	Config     *Config
+	Content    *ContentManager
+	Redis      *RedisClient
 
 	Secret     string     // Option secret key for authenticating via HMAC
 	IgnoreTags bool       // If set to false, also execute command if tag is pushed
 	Events     chan Event // Channel of events. Read from this channel to get push events as they happen.
 }
 
-func (s *Server) GRPCServer() *grpc.Server {
+func init() {
 	var l = &log.Logger{
 		Out:       os.Stdout,
 		Formatter: &log.TextFormatter{FullTimestamp: true},
@@ -34,24 +30,6 @@ func (s *Server) GRPCServer() *grpc.Server {
 		Level:     log.GetLevel(),
 	}
 	grpclog.SetLogger(l)
-
-	var opts []grpc.ServerOption
-	if s.Config.TlsCertFile != "" && s.Config.TlsKeyFile != "" {
-		creds, err := credentials.NewServerTLSFromFile(s.Config.TlsCertFile, s.Config.TlsKeyFile)
-		if err != nil {
-			log.Fatalf("server.go: Failed to generate credentials %v", err)
-		}
-		opts = []grpc.ServerOption{grpc.Creds(creds)}
-	}
-	grpcServer := grpc.NewServer(opts...)
-
-	contentGrpc := &contentGrpcServer{
-		server: s,
-	}
-
-	pb.RegisterContentServiceServer(grpcServer, contentGrpc)
-	log.Infof("server.go: Binding %s for grpc", s.Config.GetPortString())
-	return grpcServer
 }
 
 func NewServer(config *Config) *Server {
@@ -65,7 +43,7 @@ func NewServer(config *Config) *Server {
 	return server
 }
 
-func (s *Server) Start() {
+func (s *Server) Start() error {
 	err := s.Content.Init()
 
 	if err != nil {
@@ -77,7 +55,7 @@ func (s *Server) Start() {
 	}
 
 	go s.TrackEvent()
-	s.Listen()
+	return s.listenGRPC()
 }
 
 func (s *Server) TrackEvent() {
@@ -91,7 +69,7 @@ func (s *Server) TrackEvent() {
 			if e.Type != "push" {
 				continue
 			}
-			//todo(sercan) check repo
+		//todo(sercan) check repo
 			log.Infof("updating repo by event %+v", e)
 
 			err := s.Content.Update(e.Commit)
@@ -106,80 +84,40 @@ func (s *Server) TrackEvent() {
 	}
 }
 
-func grpcLog(req *http.Request) {
-	remoteAddr := req.RemoteAddr
-	if ip := req.Header.Get(echo.HeaderXRealIP); ip != "" {
-		remoteAddr = ip
-	} else if ip = req.Header.Get(echo.HeaderXForwardedFor); ip != "" {
-		remoteAddr = ip
+func (s *Server) listenGRPC() error {
+	grpcPort := s.Config.GetGrpcPortString()
+	//Listen
+	lis, err := net.Listen("tcp", grpcPort)
+	if err != nil {
+		log.Errorf("server.go: failed to listen %v for grpc", err)
+		return err
 	}
-	remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
-	path := req.URL.Path
-	if path == "" {
-		path = "/"
-	}
-	log.Printf("%s %s %s", remoteAddr, "GRPC", path)
-}
-
-func (s *Server) grpcHandlerFunc(rpcServer *grpc.Server, otherHandler http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
-			go grpcLog(r)
-			rpcServer.ServeHTTP(w, r)
-		} else {
-			log.Infoln("serving http", r.URL.String())
-			otherHandler.ServeHTTP(w, r)
-		}
-	})
-}
-
-func (s *Server) Listen() {
-	//Non-TLS
-	if s.Config.TlsCertFile == "" || s.Config.TlsKeyFile == "" {
-		log.Infoln("Starting without TLS")
-		// Create the main listener.
-		l, err := net.Listen("tcp", s.Config.GetPortString())
+	var opts []grpc.ServerOption
+	if s.Config.TlsCertFile != "" && s.Config.TlsKeyFile != "" {
+		creds, err := credentials.NewServerTLSFromFile(s.Config.TlsCertFile, s.Config.TlsKeyFile)
 		if err != nil {
-			log.Fatalf("server.go: failed to listen %v", err)
+			log.Fatalf("server.go: Failed to generate credentials %v", err)
 		}
+		opts = []grpc.ServerOption{grpc.Creds(creds)}
+	}
+	grpcServer := grpc.NewServer(opts...)
 
-		// Create a cmux.
-		m := cmux.New(l)
+	//register services
+	contentGrpc := &contentGrpcServer{
+		server: s,
+	}
+	pb.RegisterContentServiceServer(grpcServer, contentGrpc)
 
-		// Match connections in order:
-		grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
-		httpL := m.Match(cmux.HTTP1Fast())
+	log.Infof("server.go: Binding %s for grpc", grpcPort)
+	//Serve
+	return grpcServer.Serve(lis)
+}
 
-		// Create your protocol servers.
-		grpcS := s.GRPCServer()
-		httpS := standard.New(s.Config.GetPortString())
-
-		echo := s.HttpServer()
-		httpS.SetHandler(echo)
-		httpS.SetLogger(echo.Logger())
-
-		go grpcS.Serve(grpcL)
-		go httpS.Serve(httpL)
-
-		if err := m.Serve(); !strings.Contains(err.Error(), "use of closed network connection") {
-			panic(err)
-		}
+func (s *Server) listenHTTP() {
+	e := s.HttpServer()
+	if s.Config.TlsCertFile != "" && s.Config.TlsKeyFile != "" {
+		e.Run(standard.WithTLS(s.Config.GetHttpPortString(), s.Config.TlsCertFile, s.Config.TlsKeyFile))
 	} else {
-		//TLS
-		log.Infoln("Starting TLS server")
-		gserver := s.GRPCServer()
-		echo := s.HttpServer()
-		other := standard.New(s.Config.GetPortString())
-		other.SetHandler(echo)
-		other.SetLogger(echo.Logger())
-
-		srv := &http.Server{
-			Addr:    s.Config.GetPortString(),
-			Handler: s.grpcHandlerFunc(gserver, other),
-		}
-		if err := srv.ListenAndServeTLS(s.Config.TlsCertFile, s.Config.TlsKeyFile); err != nil {
-			panic(err)
-		}
-		log.Infoln("closing server")
+		e.Run(standard.New(s.Config.GetHttpPortString()))
 	}
 }
