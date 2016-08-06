@@ -3,23 +3,26 @@ package content
 import (
 	"net"
 	"os"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/labstack/echo/engine/standard"
+	"github.com/otsimo/health"
+	"github.com/otsimo/health/tls"
 	pb "github.com/otsimo/otsimopb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
-	"github.com/labstack/echo/engine/standard"
 )
 
 type Server struct {
 	Config     *Config
 	Content    *ContentManager
 	Redis      *RedisClient
-
 	Secret     string     // Option secret key for authenticating via HMAC
 	IgnoreTags bool       // If set to false, also execute command if tag is pushed
 	Events     chan Event // Channel of events. Read from this channel to get push events as they happen.
+	checks     []health.Checkable
 }
 
 func init() {
@@ -39,6 +42,7 @@ func NewServer(config *Config) *Server {
 		IgnoreTags: true,
 		Events:     make(chan Event, 10), // buffered to 10 items
 		Secret:     config.Secret,
+		checks:     []health.Checkable{},
 	}
 	return server
 }
@@ -70,7 +74,7 @@ func (s *Server) TrackEvent() {
 			if e.Type != "push" {
 				continue
 			}
-		//todo(sercan) check repo
+			//todo(sercan) check repo
 			log.Infof("updating repo by event %+v", e)
 
 			err := s.Content.Update(e.Commit)
@@ -104,9 +108,7 @@ func (s *Server) listenGRPC() error {
 	grpcServer := grpc.NewServer(opts...)
 
 	//register services
-	contentGrpc := &contentGrpcServer{
-		server: s,
-	}
+	contentGrpc := &contentGrpcServer{server: s}
 	pb.RegisterContentServiceServer(grpcServer, contentGrpc)
 
 	log.Infof("server.go: Binding %s for grpc", grpcPort)
@@ -117,6 +119,7 @@ func (s *Server) listenGRPC() error {
 func (s *Server) listenHTTP() {
 	e := s.HttpServer()
 	if s.Config.TlsCertFile != "" && s.Config.TlsKeyFile != "" {
+		s.checks = append(s.checks, tls.New(s.Config.TlsCertFile, s.Config.TlsKeyFile, time.Hour*24*14))
 		e.Run(standard.WithTLS(s.Config.GetHttpPortString(), s.Config.TlsCertFile, s.Config.TlsKeyFile))
 	} else {
 		e.Run(standard.New(s.Config.GetHttpPortString()))

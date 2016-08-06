@@ -186,6 +186,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/otsimo/health",
+			"repository": "https://github.com/otsimo/health",
+			"revision": "b4a8225e5a189ce1480f88f635d569d169077e40",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/otsimo/otsimopb",
 			"repository": "https://github.com/otsimo/otsimopb",
 			"revision": "7f513dcf6e98acf2e132d0de5c31d5cca5918c90",
@@ -281,6 +287,7 @@
 			"importpath": "google.golang.org/grpc",
 			"repository": "https://github.com/grpc/grpc-go",
 			"revision": "5c7e717663448ccc1c9ff4d9ce75cdb1cca28121",
+			"branch": "master"
 		},
 		{
 			"importpath": "gopkg.in/airbrake/gobrake.v2",

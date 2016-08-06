@@ -31,11 +31,11 @@ type (
 		// Example "${remote_id} ${status}"
 		//
 		// Optional with default value as `DefaultLoggerConfig.Format`.
-		Format   string
+		Format string
 
 		// Output is the writer where logs are written.
 		// Optional with default value as os.Stdout.
-		Output   io.Writer
+		Output io.Writer
 
 		template *fasttemplate.Template
 		color    *color.Color

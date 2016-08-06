@@ -34,5 +34,5 @@ func (c *Config) GetHttpPortString() string {
 }
 
 func NewConfig() *Config {
-	return &Config{GrpcPort:DefaultGrpcPort, HttpPort:DefaultHttpPort}
+	return &Config{GrpcPort: DefaultGrpcPort, HttpPort: DefaultHttpPort}
 }

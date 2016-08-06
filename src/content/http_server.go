@@ -4,15 +4,17 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
+	"github.com/otsimo/health"
 )
 
 const (
-	WikiEndpoint = "/wiki"
+	WikiEndpoint    = "/wiki"
 	WebhookEndpoint = "/webhook"
-	HealthEndpoint = "/health"
+	HealthEndpoint  = "/health"
 )
 
 type Response struct {
@@ -52,7 +54,19 @@ func httpErrorHandler(err error, c echo.Context) {
 }
 
 func (s *Server) healthHandler(ctx echo.Context) error {
-	return ctx.String(http.StatusOK, "OK")
+	if err := health.Check(s.checks); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, health.StatusResponse{
+			Status: "error",
+			Details: &health.StatusResponseDetails{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			},
+		})
+	} else {
+		return ctx.JSON(http.StatusOK, health.StatusResponse{
+			Status: "ok",
+		})
+	}
 }
 
 func (s *Server) HttpServer() *echo.Echo {
