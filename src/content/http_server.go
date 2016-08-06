@@ -55,6 +55,7 @@ func httpErrorHandler(err error, c echo.Context) {
 
 func (s *Server) healthHandler(ctx echo.Context) error {
 	if err := health.Check(s.checks); err != nil {
+		logrus.Errorf("health check failed, %v", err)
 		return ctx.JSON(http.StatusInternalServerError, health.StatusResponse{
 			Status: "error",
 			Details: &health.StatusResponseDetails{
