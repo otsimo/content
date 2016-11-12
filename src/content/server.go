@@ -1,18 +1,15 @@
 package content
 
 import (
-	"net"
-	"os"
-	"time"
-
 	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/otsimo/health"
-	"github.com/otsimo/health/tls"
 	pb "github.com/otsimo/otsimopb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
+	"net"
+	"os"
 )
 
 type Server struct {
@@ -118,8 +115,8 @@ func (s *Server) listenGRPC() error {
 
 func (s *Server) listenHTTP() {
 	e := s.HttpServer()
+	log.Infof("server.go: Binding %s for http", s.Config.GetHttpPortString())
 	if s.Config.TlsCertFile != "" && s.Config.TlsKeyFile != "" {
-		s.checks = append(s.checks, tls.New(s.Config.TlsCertFile, s.Config.TlsKeyFile, time.Hour*24*14))
 		e.Run(standard.WithTLS(s.Config.GetHttpPortString(), s.Config.TlsCertFile, s.Config.TlsKeyFile))
 	} else {
 		e.Run(standard.New(s.Config.GetHttpPortString()))

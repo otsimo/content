@@ -3,7 +3,6 @@ package content
 import (
 	"fmt"
 	"io"
-	"net"
 	"os"
 	"strconv"
 	"time"
@@ -90,16 +89,6 @@ func LoggerWithConfig(config LoggerConfig) echo.MiddlewareFunc {
 				switch tag {
 				case "time_rfc3339":
 					return w.Write([]byte(time.Now().Format(time.RFC3339)))
-				case "remote_ip":
-					ra := rq.RemoteAddress()
-					if ip := rq.Header().Get(echo.HeaderXRealIP); ip != "" {
-						ra = ip
-					} else if ip = rq.Header().Get(echo.HeaderXForwardedFor); ip != "" {
-						ra = ip
-					} else {
-						ra, _, _ = net.SplitHostPort(ra)
-					}
-					return w.Write([]byte(ra))
 				case "uri":
 					return w.Write([]byte(rq.URI()))
 				case "method":
