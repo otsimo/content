@@ -18,11 +18,12 @@ const (
 type GitClient struct {
 	Path   string
 	GitUrl string
+	Branch string
 }
 
 func (gc GitClient) Clone() error {
 	log.Debugf("git.go: starting to clone %s to %s", gc.GitUrl, gc.Path)
-	cmd := exec.Command(gitPath, "clone", gc.GitUrl, gc.Path)
+	cmd := exec.Command(gitPath, "clone", gc.GitUrl, "-b", gc.Branch, gc.Path)
 	var buf bytes.Buffer
 	cmd.Stdout = &buf
 	err := cmd.Run()
@@ -116,6 +117,6 @@ func (gc GitClient) HasGitRepository(dir string) bool {
 
 //git rev-parse HEAD
 //git log 491652ab004e4b3fee6976f48838c2e78d580294 -n 1
-func NewGitClient(folder, url string) *GitClient {
-	return &GitClient{Path: folder, GitUrl: url}
+func NewGitClient(folder, url, branch string) *GitClient {
+	return &GitClient{Path: folder, GitUrl: url, Branch: branch}
 }

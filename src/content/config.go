@@ -15,6 +15,7 @@ type Config struct {
 	TlsKeyFile      string
 	NoRedis         bool
 	GitUrl          string
+	GitBranch       string
 	GitFolder       string
 	RedisAddr       string
 	RedisPassword   string

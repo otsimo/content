@@ -17,6 +17,7 @@ func RunAction(c *cli.Context) error {
 	config.Debug = c.Bool("debug")
 	config.NoRedis = c.Bool("no-redis")
 	config.GitUrl = c.String("git-url")
+	config.GitBranch = c.String("git-branch")
 	config.GitFolder = c.String("git-path")
 	config.PublicDir = c.String("public-dir")
 	config.Host = c.String("host")
@@ -72,6 +73,7 @@ func main() {
 		cli.StringFlag{Name: "git-url", Value: "https://github.com/otsimo/wiki.git", Usage: "the content wiki git project url"},
 		cli.StringFlag{Name: "host", Value: "https://content.otsimo.com", Usage: "services' host url"},
 		cli.StringFlag{Name: "git-path", Value: "/opt/otsimo/project", Usage: "where to put git project"},
+		cli.StringFlag{Name: "git-branch", Value: "master", Usage: "git branch to clone"},
 		cli.StringFlag{Name: "tls-cert-file", Value: "", Usage: "the server's certificate file for TLS connection"},
 		cli.StringFlag{Name: "tls-key-file", Value: "", Usage: "the server's private key file for TLS connection"},
 		cli.StringFlag{Name: "redis-addr", Value: "localhost:6379", Usage: "redis address"},

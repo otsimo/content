@@ -41,7 +41,7 @@ type ContentManager struct {
 }
 
 func NewContentManager(config *Config) *ContentManager {
-	git := NewGitClient(config.GitFolder, config.GitUrl)
+	git := NewGitClient(config.GitFolder, config.GitUrl, config.GitBranch)
 
 	return &ContentManager{
 		Git:           git,
