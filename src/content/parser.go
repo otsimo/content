@@ -2,12 +2,10 @@ package content
 
 import (
 	"encoding/json"
-	"os"
-	"text/template"
-
-	"path/filepath"
-
 	"fmt"
+	"os"
+	"path/filepath"
+	"text/template"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -59,9 +57,13 @@ func parseMarkdownFile(filep string, cm *ContentManager, tpl *template.Template)
 	data := struct {
 		Title   string
 		Content string
+		Params  map[string]string
+		Author  string
 	}{
 		Title:   content.Title,
 		Content: string(out),
+		Params:  content.Params,
+		Author:  content.Author,
 	}
 	outfilepath := filepath.Join(cm.publicDir, cm.contentHtmlFilename(&content))
 	ofile, err := os.Create(outfilepath)
@@ -72,7 +74,7 @@ func parseMarkdownFile(filep string, cm *ContentManager, tpl *template.Template)
 
 	err = tpl.Execute(ofile, data)
 	if err != nil {
-		log.Errorf("failed to execute template")
+		log.Errorf("failed to execute template: %v", err)
 	}
 
 	return &content, nil
