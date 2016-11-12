@@ -14,3 +14,14 @@ projects:
       cgoEnabled: false
       ldflags: "-w -X main.Version=${BUILD_VERSION}"
       builder: gb
+    develop:
+      keepdata: false
+      ports:
+        - "18859:18859"
+      command:
+        - /opt/otsimo/content
+        - --debug
+        - --git-path
+        - /opt/wiki
+        - --host
+        - http://192.168.64.8:18859

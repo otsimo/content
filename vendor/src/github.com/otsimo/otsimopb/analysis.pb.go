@@ -12,8 +12,9 @@
 		content.proto
 		dashboard.proto
 		dashprovider.proto
-		dataset.proto
+		datasetmodels.proto
 		discovery.proto
+		file.proto
 		listener.proto
 		messages.proto
 		models.proto
@@ -25,11 +26,8 @@
 		TimeRange
 		ChildAndProfileIds
 		ChildAndTimeRange
-		AnalysisDataField
-		AnalysisMetadata
 		GameWithVersions
 		PlayedGamesList
-		AvailableAnalysisResult
 		QuerySort
 		Aggregation
 		GroupInterval
@@ -41,6 +39,10 @@
 		ActiveUsersResult
 		RetentionRequest
 		RetentionResult
+		InactiveUsersRequest
+		GetActiveUsersRequest
+		ActiveOnRangeRequest
+		GameInfoResponse
 		CatalogItem
 		Catalog
 		CatalogPullRequest
@@ -73,6 +75,13 @@
 		DiscoveryRequest
 		SelfLearningSegment
 		SelfLearningConfig
+		FileMetadata
+		UploadRequest
+		UploadResponse
+		StoreRequest
+		StoreResponse
+		LookupRequest
+		LookupResponse
 		DeviceInfo
 		GameInfo
 		Point
@@ -113,6 +122,7 @@
 		Game
 		GameRelease
 		UploadToken
+		AllGameReleases
 		EmitRequest
 		EmitResponse
 		WatchRequest
@@ -121,7 +131,7 @@
 */
 package otsimopb
 
-import proto "github.com/gogo/protobuf/proto"
+import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
@@ -140,36 +150,9 @@ var _ = math.Inf
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
-const _ = proto.GoGoProtoPackageIsVersion1
-
-type AnalysisDataField_Type int32
-
-const (
-	AnalysisDataField_STRING  AnalysisDataField_Type = 0
-	AnalysisDataField_INTEGER AnalysisDataField_Type = 1
-	AnalysisDataField_FLOAT   AnalysisDataField_Type = 2
-	AnalysisDataField_BOOL    AnalysisDataField_Type = 3
-)
-
-var AnalysisDataField_Type_name = map[int32]string{
-	0: "STRING",
-	1: "INTEGER",
-	2: "FLOAT",
-	3: "BOOL",
-}
-var AnalysisDataField_Type_value = map[string]int32{
-	"STRING":  0,
-	"INTEGER": 1,
-	"FLOAT":   2,
-	"BOOL":    3,
-}
-
-func (x AnalysisDataField_Type) String() string {
-	return proto.EnumName(AnalysisDataField_Type_name, int32(x))
-}
-func (AnalysisDataField_Type) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptorAnalysis, []int{3, 0}
-}
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type QuerySort_SortOrder int32
 
@@ -191,7 +174,7 @@ func (x QuerySort_SortOrder) String() string {
 	return proto.EnumName(QuerySort_SortOrder_name, int32(x))
 }
 func (QuerySort_SortOrder) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptorAnalysis, []int{8, 0}
+	return fileDescriptorAnalysis, []int{5, 0}
 }
 
 type Aggregation_Accumulator int32
@@ -226,7 +209,7 @@ func (x Aggregation_Accumulator) String() string {
 	return proto.EnumName(Aggregation_Accumulator_name, int32(x))
 }
 func (Aggregation_Accumulator) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptorAnalysis, []int{9, 0}
+	return fileDescriptorAnalysis, []int{6, 0}
 }
 
 type QueryGroup_GroupType int32
@@ -266,7 +249,7 @@ func (x QueryGroup_GroupType) String() string {
 	return proto.EnumName(QueryGroup_GroupType_name, int32(x))
 }
 func (QueryGroup_GroupType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptorAnalysis, []int{11, 0}
+	return fileDescriptorAnalysis, []int{8, 0}
 }
 
 type ActiveUsersRequest_Type int32
@@ -295,7 +278,7 @@ func (x ActiveUsersRequest_Type) String() string {
 	return proto.EnumName(ActiveUsersRequest_Type_name, int32(x))
 }
 func (ActiveUsersRequest_Type) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptorAnalysis, []int{15, 0}
+	return fileDescriptorAnalysis, []int{12, 0}
 }
 
 type RetentionRequest_Type int32
@@ -321,7 +304,39 @@ func (x RetentionRequest_Type) String() string {
 	return proto.EnumName(RetentionRequest_Type_name, int32(x))
 }
 func (RetentionRequest_Type) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptorAnalysis, []int{17, 0}
+	return fileDescriptorAnalysis, []int{14, 0}
+}
+
+type GameInfoResponse_FieldType int32
+
+const (
+	GameInfoResponse_UNKNOWN GameInfoResponse_FieldType = 0
+	GameInfoResponse_STRING  GameInfoResponse_FieldType = 1
+	GameInfoResponse_INTEGER GameInfoResponse_FieldType = 2
+	GameInfoResponse_FLOAT   GameInfoResponse_FieldType = 3
+	GameInfoResponse_BOOL    GameInfoResponse_FieldType = 4
+)
+
+var GameInfoResponse_FieldType_name = map[int32]string{
+	0: "UNKNOWN",
+	1: "STRING",
+	2: "INTEGER",
+	3: "FLOAT",
+	4: "BOOL",
+}
+var GameInfoResponse_FieldType_value = map[string]int32{
+	"UNKNOWN": 0,
+	"STRING":  1,
+	"INTEGER": 2,
+	"FLOAT":   3,
+	"BOOL":    4,
+}
+
+func (x GameInfoResponse_FieldType) String() string {
+	return proto.EnumName(GameInfoResponse_FieldType_name, int32(x))
+}
+func (GameInfoResponse_FieldType) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptorAnalysis, []int{19, 0}
 }
 
 type TimeRange struct {
@@ -362,34 +377,6 @@ func (m *ChildAndTimeRange) String() string            { return proto.CompactTex
 func (*ChildAndTimeRange) ProtoMessage()               {}
 func (*ChildAndTimeRange) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{2} }
 
-type AnalysisDataField struct {
-	// Name is the field name
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Type is fields type
-	Type AnalysisDataField_Type `protobuf:"varint,2,opt,name=type,proto3,enum=apipb.AnalysisDataField_Type" json:"type,omitempty"`
-}
-
-func (m *AnalysisDataField) Reset()                    { *m = AnalysisDataField{} }
-func (m *AnalysisDataField) String() string            { return proto.CompactTextString(m) }
-func (*AnalysisDataField) ProtoMessage()               {}
-func (*AnalysisDataField) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{3} }
-
-type AnalysisMetadata struct {
-	// GameId
-	GameId string `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
-	// GameVersion
-	Versions []string `protobuf:"bytes,2,rep,name=versions" json:"versions,omitempty"`
-	// Event
-	Event string `protobuf:"bytes,3,opt,name=event,proto3" json:"event,omitempty"`
-	// AnalysisLoad
-	Fields []*AnalysisDataField `protobuf:"bytes,4,rep,name=fields" json:"fields,omitempty"`
-}
-
-func (m *AnalysisMetadata) Reset()                    { *m = AnalysisMetadata{} }
-func (m *AnalysisMetadata) String() string            { return proto.CompactTextString(m) }
-func (*AnalysisMetadata) ProtoMessage()               {}
-func (*AnalysisMetadata) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{4} }
-
 type GameWithVersions struct {
 	// GameId
 	GameId string `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
@@ -400,26 +387,20 @@ type GameWithVersions struct {
 func (m *GameWithVersions) Reset()                    { *m = GameWithVersions{} }
 func (m *GameWithVersions) String() string            { return proto.CompactTextString(m) }
 func (*GameWithVersions) ProtoMessage()               {}
-func (*GameWithVersions) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{5} }
+func (*GameWithVersions) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{3} }
 
 type PlayedGamesList struct {
 	Games []*GameWithVersions `protobuf:"bytes,1,rep,name=games" json:"games,omitempty"`
+	// ChildId
+	ChildId string `protobuf:"bytes,2,opt,name=child_id,json=childId,proto3" json:"child_id,omitempty"`
+	// Range is the time range
+	Range *TimeRange `protobuf:"bytes,3,opt,name=range" json:"range,omitempty"`
 }
 
 func (m *PlayedGamesList) Reset()                    { *m = PlayedGamesList{} }
 func (m *PlayedGamesList) String() string            { return proto.CompactTextString(m) }
 func (*PlayedGamesList) ProtoMessage()               {}
-func (*PlayedGamesList) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{6} }
-
-type AvailableAnalysisResult struct {
-	// Analysis
-	Analysis []*AnalysisMetadata `protobuf:"bytes,1,rep,name=analysis" json:"analysis,omitempty"`
-}
-
-func (m *AvailableAnalysisResult) Reset()                    { *m = AvailableAnalysisResult{} }
-func (m *AvailableAnalysisResult) String() string            { return proto.CompactTextString(m) }
-func (*AvailableAnalysisResult) ProtoMessage()               {}
-func (*AvailableAnalysisResult) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{7} }
+func (*PlayedGamesList) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{4} }
 
 type QuerySort struct {
 	FieldName string              `protobuf:"bytes,1,opt,name=field_name,json=fieldName,proto3" json:"field_name,omitempty"`
@@ -429,7 +410,7 @@ type QuerySort struct {
 func (m *QuerySort) Reset()                    { *m = QuerySort{} }
 func (m *QuerySort) String() string            { return proto.CompactTextString(m) }
 func (*QuerySort) ProtoMessage()               {}
-func (*QuerySort) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{8} }
+func (*QuerySort) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{5} }
 
 type Aggregation struct {
 	FieldName   string                  `protobuf:"bytes,1,opt,name=field_name,json=fieldName,proto3" json:"field_name,omitempty"`
@@ -440,7 +421,7 @@ type Aggregation struct {
 func (m *Aggregation) Reset()                    { *m = Aggregation{} }
 func (m *Aggregation) String() string            { return proto.CompactTextString(m) }
 func (*Aggregation) ProtoMessage()               {}
-func (*Aggregation) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{9} }
+func (*Aggregation) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{6} }
 
 type GroupInterval struct {
 	// For ContinuesInterval
@@ -460,7 +441,7 @@ type GroupInterval struct {
 func (m *GroupInterval) Reset()                    { *m = GroupInterval{} }
 func (m *GroupInterval) String() string            { return proto.CompactTextString(m) }
 func (*GroupInterval) ProtoMessage()               {}
-func (*GroupInterval) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{10} }
+func (*GroupInterval) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{7} }
 
 type QueryGroup struct {
 	FieldName string               `protobuf:"bytes,1,opt,name=field_name,json=fieldName,proto3" json:"field_name,omitempty"`
@@ -473,40 +454,39 @@ type QueryGroup struct {
 func (m *QueryGroup) Reset()                    { *m = QueryGroup{} }
 func (m *QueryGroup) String() string            { return proto.CompactTextString(m) }
 func (*QueryGroup) ProtoMessage()               {}
-func (*QueryGroup) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{11} }
+func (*QueryGroup) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{8} }
 
 type Query struct {
-	Event        string         `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	Events       []string       `protobuf:"bytes,1,rep,name=events" json:"events,omitempty"`
 	Range        *TimeRange     `protobuf:"bytes,2,opt,name=range" json:"range,omitempty"`
 	Sort         []*QuerySort   `protobuf:"bytes,3,rep,name=sort" json:"sort,omitempty"`
 	Limit        int32          `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset       int32          `protobuf:"varint,5,opt,name=offset,proto3" json:"offset,omitempty"`
 	GroupBy      *QueryGroup    `protobuf:"bytes,6,opt,name=group_by,json=groupBy" json:"group_by,omitempty"`
 	Aggregations []*Aggregation `protobuf:"bytes,7,rep,name=aggregations" json:"aggregations,omitempty"`
+	RawQueries   [][]byte       `protobuf:"bytes,8,rep,name=raw_queries,json=rawQueries" json:"raw_queries,omitempty"`
 }
 
 func (m *Query) Reset()                    { *m = Query{} }
 func (m *Query) String() string            { return proto.CompactTextString(m) }
 func (*Query) ProtoMessage()               {}
-func (*Query) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{12} }
+func (*Query) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{9} }
 
 type AnalyzeRequest struct {
 	// ChildId
 	ChildId string `protobuf:"bytes,1,opt,name=child_id,json=childId,proto3" json:"child_id,omitempty"`
 	// ProfileId
 	ProfileId string `protobuf:"bytes,2,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
-	// GameId
-	GameId string `protobuf:"bytes,3,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
-	// Game Versions
-	GameVersions []string `protobuf:"bytes,4,rep,name=game_versions,json=gameVersions" json:"game_versions,omitempty"`
 	// Query is calculation query
 	Query *Query `protobuf:"bytes,6,opt,name=query" json:"query,omitempty"`
+	// Games are the compute this request on
+	Games []*GameWithVersions `protobuf:"bytes,7,rep,name=games" json:"games,omitempty"`
 }
 
 func (m *AnalyzeRequest) Reset()                    { *m = AnalyzeRequest{} }
 func (m *AnalyzeRequest) String() string            { return proto.CompactTextString(m) }
 func (*AnalyzeRequest) ProtoMessage()               {}
-func (*AnalyzeRequest) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{13} }
+func (*AnalyzeRequest) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{10} }
 
 type AnalyzeResult struct {
 	// Request
@@ -520,19 +500,19 @@ type AnalyzeResult struct {
 func (m *AnalyzeResult) Reset()                    { *m = AnalyzeResult{} }
 func (m *AnalyzeResult) String() string            { return proto.CompactTextString(m) }
 func (*AnalyzeResult) ProtoMessage()               {}
-func (*AnalyzeResult) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{14} }
+func (*AnalyzeResult) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{11} }
 
 // Active Users
 type ActiveUsersRequest struct {
 	Type  ActiveUsersRequest_Type `protobuf:"varint,1,opt,name=type,proto3,enum=apipb.ActiveUsersRequest_Type" json:"type,omitempty"`
-	Dates []int64                 `protobuf:"varint,2,rep,name=dates" json:"dates,omitempty"`
+	Dates []int64                 `protobuf:"varint,2,rep,packed,name=dates" json:"dates,omitempty"`
 	AppId string                  `protobuf:"bytes,3,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
 }
 
 func (m *ActiveUsersRequest) Reset()                    { *m = ActiveUsersRequest{} }
 func (m *ActiveUsersRequest) String() string            { return proto.CompactTextString(m) }
 func (*ActiveUsersRequest) ProtoMessage()               {}
-func (*ActiveUsersRequest) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{15} }
+func (*ActiveUsersRequest) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{12} }
 
 type ActiveUsersResult struct {
 	// Request
@@ -546,19 +526,19 @@ type ActiveUsersResult struct {
 func (m *ActiveUsersResult) Reset()                    { *m = ActiveUsersResult{} }
 func (m *ActiveUsersResult) String() string            { return proto.CompactTextString(m) }
 func (*ActiveUsersResult) ProtoMessage()               {}
-func (*ActiveUsersResult) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{16} }
+func (*ActiveUsersResult) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{13} }
 
 // Retention
 type RetentionRequest struct {
 	Type  RetentionRequest_Type `protobuf:"varint,1,opt,name=type,proto3,enum=apipb.RetentionRequest_Type" json:"type,omitempty"`
-	Dates []int64               `protobuf:"varint,2,rep,name=dates" json:"dates,omitempty"`
+	Dates []int64               `protobuf:"varint,2,rep,packed,name=dates" json:"dates,omitempty"`
 	AppId string                `protobuf:"bytes,3,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
 }
 
 func (m *RetentionRequest) Reset()                    { *m = RetentionRequest{} }
 func (m *RetentionRequest) String() string            { return proto.CompactTextString(m) }
 func (*RetentionRequest) ProtoMessage()               {}
-func (*RetentionRequest) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{17} }
+func (*RetentionRequest) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{14} }
 
 type RetentionResult struct {
 	// Request
@@ -572,17 +552,79 @@ type RetentionResult struct {
 func (m *RetentionResult) Reset()                    { *m = RetentionResult{} }
 func (m *RetentionResult) String() string            { return proto.CompactTextString(m) }
 func (*RetentionResult) ProtoMessage()               {}
-func (*RetentionResult) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{18} }
+func (*RetentionResult) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{15} }
+
+type InactiveUsersRequest struct {
+	AppId          string     `protobuf:"bytes,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
+	InactiveDuring *TimeRange `protobuf:"bytes,2,opt,name=inactive_during,json=inactiveDuring" json:"inactive_during,omitempty"`
+	ActiveDuring   *TimeRange `protobuf:"bytes,3,opt,name=active_during,json=activeDuring" json:"active_during,omitempty"`
+}
+
+func (m *InactiveUsersRequest) Reset()                    { *m = InactiveUsersRequest{} }
+func (m *InactiveUsersRequest) String() string            { return proto.CompactTextString(m) }
+func (*InactiveUsersRequest) ProtoMessage()               {}
+func (*InactiveUsersRequest) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{16} }
+
+type GetActiveUsersRequest struct {
+	AppId  string     `protobuf:"bytes,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
+	Period *TimeRange `protobuf:"bytes,2,opt,name=period" json:"period,omitempty"`
+}
+
+func (m *GetActiveUsersRequest) Reset()                    { *m = GetActiveUsersRequest{} }
+func (m *GetActiveUsersRequest) String() string            { return proto.CompactTextString(m) }
+func (*GetActiveUsersRequest) ProtoMessage()               {}
+func (*GetActiveUsersRequest) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{17} }
+
+type ActiveOnRangeRequest struct {
+	Range        *TimeRange `protobuf:"bytes,1,opt,name=range" json:"range,omitempty"`
+	CountryCodes []string   `protobuf:"bytes,2,rep,name=country_codes,json=countryCodes" json:"country_codes,omitempty"`
+}
+
+func (m *ActiveOnRangeRequest) Reset()                    { *m = ActiveOnRangeRequest{} }
+func (m *ActiveOnRangeRequest) String() string            { return proto.CompactTextString(m) }
+func (*ActiveOnRangeRequest) ProtoMessage()               {}
+func (*ActiveOnRangeRequest) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{18} }
+
+type GameInfoResponse struct {
+	GameId string                        `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
+	Events []*GameInfoResponse_EventInfo `protobuf:"bytes,2,rep,name=events" json:"events,omitempty"`
+}
+
+func (m *GameInfoResponse) Reset()                    { *m = GameInfoResponse{} }
+func (m *GameInfoResponse) String() string            { return proto.CompactTextString(m) }
+func (*GameInfoResponse) ProtoMessage()               {}
+func (*GameInfoResponse) Descriptor() ([]byte, []int) { return fileDescriptorAnalysis, []int{19} }
+
+type GameInfoResponse_FieldInfo struct {
+	Name string                     `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Type GameInfoResponse_FieldType `protobuf:"varint,2,opt,name=type,proto3,enum=apipb.GameInfoResponse_FieldType" json:"type,omitempty"`
+}
+
+func (m *GameInfoResponse_FieldInfo) Reset()         { *m = GameInfoResponse_FieldInfo{} }
+func (m *GameInfoResponse_FieldInfo) String() string { return proto.CompactTextString(m) }
+func (*GameInfoResponse_FieldInfo) ProtoMessage()    {}
+func (*GameInfoResponse_FieldInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptorAnalysis, []int{19, 0}
+}
+
+type GameInfoResponse_EventInfo struct {
+	Name   string                        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Fields []*GameInfoResponse_FieldInfo `protobuf:"bytes,2,rep,name=fields" json:"fields,omitempty"`
+}
+
+func (m *GameInfoResponse_EventInfo) Reset()         { *m = GameInfoResponse_EventInfo{} }
+func (m *GameInfoResponse_EventInfo) String() string { return proto.CompactTextString(m) }
+func (*GameInfoResponse_EventInfo) ProtoMessage()    {}
+func (*GameInfoResponse_EventInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptorAnalysis, []int{19, 1}
+}
 
 func init() {
 	proto.RegisterType((*TimeRange)(nil), "apipb.TimeRange")
 	proto.RegisterType((*ChildAndProfileIds)(nil), "apipb.ChildAndProfileIds")
 	proto.RegisterType((*ChildAndTimeRange)(nil), "apipb.ChildAndTimeRange")
-	proto.RegisterType((*AnalysisDataField)(nil), "apipb.AnalysisDataField")
-	proto.RegisterType((*AnalysisMetadata)(nil), "apipb.AnalysisMetadata")
 	proto.RegisterType((*GameWithVersions)(nil), "apipb.GameWithVersions")
 	proto.RegisterType((*PlayedGamesList)(nil), "apipb.PlayedGamesList")
-	proto.RegisterType((*AvailableAnalysisResult)(nil), "apipb.AvailableAnalysisResult")
 	proto.RegisterType((*QuerySort)(nil), "apipb.QuerySort")
 	proto.RegisterType((*Aggregation)(nil), "apipb.Aggregation")
 	proto.RegisterType((*GroupInterval)(nil), "apipb.GroupInterval")
@@ -594,12 +636,18 @@ func init() {
 	proto.RegisterType((*ActiveUsersResult)(nil), "apipb.ActiveUsersResult")
 	proto.RegisterType((*RetentionRequest)(nil), "apipb.RetentionRequest")
 	proto.RegisterType((*RetentionResult)(nil), "apipb.RetentionResult")
-	proto.RegisterEnum("apipb.AnalysisDataField_Type", AnalysisDataField_Type_name, AnalysisDataField_Type_value)
+	proto.RegisterType((*InactiveUsersRequest)(nil), "apipb.InactiveUsersRequest")
+	proto.RegisterType((*GetActiveUsersRequest)(nil), "apipb.GetActiveUsersRequest")
+	proto.RegisterType((*ActiveOnRangeRequest)(nil), "apipb.ActiveOnRangeRequest")
+	proto.RegisterType((*GameInfoResponse)(nil), "apipb.GameInfoResponse")
+	proto.RegisterType((*GameInfoResponse_FieldInfo)(nil), "apipb.GameInfoResponse.FieldInfo")
+	proto.RegisterType((*GameInfoResponse_EventInfo)(nil), "apipb.GameInfoResponse.EventInfo")
 	proto.RegisterEnum("apipb.QuerySort_SortOrder", QuerySort_SortOrder_name, QuerySort_SortOrder_value)
 	proto.RegisterEnum("apipb.Aggregation_Accumulator", Aggregation_Accumulator_name, Aggregation_Accumulator_value)
 	proto.RegisterEnum("apipb.QueryGroup_GroupType", QueryGroup_GroupType_name, QueryGroup_GroupType_value)
 	proto.RegisterEnum("apipb.ActiveUsersRequest_Type", ActiveUsersRequest_Type_name, ActiveUsersRequest_Type_value)
 	proto.RegisterEnum("apipb.RetentionRequest_Type", RetentionRequest_Type_name, RetentionRequest_Type_value)
+	proto.RegisterEnum("apipb.GameInfoResponse_FieldType", GameInfoResponse_FieldType_name, GameInfoResponse_FieldType_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -608,23 +656,26 @@ var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion3
+const _ = grpc.SupportPackageIsVersion4
 
 // Client API for AnalysisService service
 
 type AnalysisServiceClient interface {
 	// ActiveOnRange returns child ids who active given time range
-	ActiveOnRange(ctx context.Context, in *TimeRange, opts ...grpc.CallOption) (AnalysisService_ActiveOnRangeClient, error)
+	ActiveOnRange(ctx context.Context, in *ActiveOnRangeRequest, opts ...grpc.CallOption) (AnalysisService_ActiveOnRangeClient, error)
+	// Inactive calculates inactive users who was active given period but not after at given app
+	Inactive(ctx context.Context, in *InactiveUsersRequest, opts ...grpc.CallOption) (AnalysisService_InactiveClient, error)
+	// Active streams active user on given period
+	Active(ctx context.Context, in *GetActiveUsersRequest, opts ...grpc.CallOption) (AnalysisService_ActiveClient, error)
 	// PlayedGames returns games played during given time range
 	PlayedGames(ctx context.Context, in *ChildAndTimeRange, opts ...grpc.CallOption) (*PlayedGamesList, error)
-	// AvailableAnalysis returns analysis can be calculated
-	AvailableAnalysis(ctx context.Context, in *GameWithVersions, opts ...grpc.CallOption) (*AvailableAnalysisResult, error)
 	// Analyze calculates given request
 	Analyze(ctx context.Context, in *AnalyzeRequest, opts ...grpc.CallOption) (*AnalyzeResult, error)
 	// ActiveUsers calculates MAU, DAU
 	ActiveUsers(ctx context.Context, in *ActiveUsersRequest, opts ...grpc.CallOption) (*ActiveUsersResult, error)
 	// Retention returns retentation
 	Retention(ctx context.Context, in *RetentionRequest, opts ...grpc.CallOption) (*RetentionResult, error)
+	GameInfo(ctx context.Context, in *GameWithVersions, opts ...grpc.CallOption) (*GameInfoResponse, error)
 }
 
 type analysisServiceClient struct {
@@ -635,7 +686,7 @@ func NewAnalysisServiceClient(cc *grpc.ClientConn) AnalysisServiceClient {
 	return &analysisServiceClient{cc}
 }
 
-func (c *analysisServiceClient) ActiveOnRange(ctx context.Context, in *TimeRange, opts ...grpc.CallOption) (AnalysisService_ActiveOnRangeClient, error) {
+func (c *analysisServiceClient) ActiveOnRange(ctx context.Context, in *ActiveOnRangeRequest, opts ...grpc.CallOption) (AnalysisService_ActiveOnRangeClient, error) {
 	stream, err := grpc.NewClientStream(ctx, &_AnalysisService_serviceDesc.Streams[0], c.cc, "/apipb.AnalysisService/ActiveOnRange", opts...)
 	if err != nil {
 		return nil, err
@@ -667,18 +718,73 @@ func (x *analysisServiceActiveOnRangeClient) Recv() (*ChildAndProfileIds, error)
 	return m, nil
 }
 
-func (c *analysisServiceClient) PlayedGames(ctx context.Context, in *ChildAndTimeRange, opts ...grpc.CallOption) (*PlayedGamesList, error) {
-	out := new(PlayedGamesList)
-	err := grpc.Invoke(ctx, "/apipb.AnalysisService/PlayedGames", in, out, c.cc, opts...)
+func (c *analysisServiceClient) Inactive(ctx context.Context, in *InactiveUsersRequest, opts ...grpc.CallOption) (AnalysisService_InactiveClient, error) {
+	stream, err := grpc.NewClientStream(ctx, &_AnalysisService_serviceDesc.Streams[1], c.cc, "/apipb.AnalysisService/Inactive", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &analysisServiceInactiveClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
 }
 
-func (c *analysisServiceClient) AvailableAnalysis(ctx context.Context, in *GameWithVersions, opts ...grpc.CallOption) (*AvailableAnalysisResult, error) {
-	out := new(AvailableAnalysisResult)
-	err := grpc.Invoke(ctx, "/apipb.AnalysisService/AvailableAnalysis", in, out, c.cc, opts...)
+type AnalysisService_InactiveClient interface {
+	Recv() (*ChildAndProfileIds, error)
+	grpc.ClientStream
+}
+
+type analysisServiceInactiveClient struct {
+	grpc.ClientStream
+}
+
+func (x *analysisServiceInactiveClient) Recv() (*ChildAndProfileIds, error) {
+	m := new(ChildAndProfileIds)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *analysisServiceClient) Active(ctx context.Context, in *GetActiveUsersRequest, opts ...grpc.CallOption) (AnalysisService_ActiveClient, error) {
+	stream, err := grpc.NewClientStream(ctx, &_AnalysisService_serviceDesc.Streams[2], c.cc, "/apipb.AnalysisService/Active", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &analysisServiceActiveClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type AnalysisService_ActiveClient interface {
+	Recv() (*ChildAndProfileIds, error)
+	grpc.ClientStream
+}
+
+type analysisServiceActiveClient struct {
+	grpc.ClientStream
+}
+
+func (x *analysisServiceActiveClient) Recv() (*ChildAndProfileIds, error) {
+	m := new(ChildAndProfileIds)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *analysisServiceClient) PlayedGames(ctx context.Context, in *ChildAndTimeRange, opts ...grpc.CallOption) (*PlayedGamesList, error) {
+	out := new(PlayedGamesList)
+	err := grpc.Invoke(ctx, "/apipb.AnalysisService/PlayedGames", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -712,21 +818,33 @@ func (c *analysisServiceClient) Retention(ctx context.Context, in *RetentionRequ
 	return out, nil
 }
 
+func (c *analysisServiceClient) GameInfo(ctx context.Context, in *GameWithVersions, opts ...grpc.CallOption) (*GameInfoResponse, error) {
+	out := new(GameInfoResponse)
+	err := grpc.Invoke(ctx, "/apipb.AnalysisService/GameInfo", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for AnalysisService service
 
 type AnalysisServiceServer interface {
 	// ActiveOnRange returns child ids who active given time range
-	ActiveOnRange(*TimeRange, AnalysisService_ActiveOnRangeServer) error
+	ActiveOnRange(*ActiveOnRangeRequest, AnalysisService_ActiveOnRangeServer) error
+	// Inactive calculates inactive users who was active given period but not after at given app
+	Inactive(*InactiveUsersRequest, AnalysisService_InactiveServer) error
+	// Active streams active user on given period
+	Active(*GetActiveUsersRequest, AnalysisService_ActiveServer) error
 	// PlayedGames returns games played during given time range
 	PlayedGames(context.Context, *ChildAndTimeRange) (*PlayedGamesList, error)
-	// AvailableAnalysis returns analysis can be calculated
-	AvailableAnalysis(context.Context, *GameWithVersions) (*AvailableAnalysisResult, error)
 	// Analyze calculates given request
 	Analyze(context.Context, *AnalyzeRequest) (*AnalyzeResult, error)
 	// ActiveUsers calculates MAU, DAU
 	ActiveUsers(context.Context, *ActiveUsersRequest) (*ActiveUsersResult, error)
 	// Retention returns retentation
 	Retention(context.Context, *RetentionRequest) (*RetentionResult, error)
+	GameInfo(context.Context, *GameWithVersions) (*GameInfoResponse, error)
 }
 
 func RegisterAnalysisServiceServer(s *grpc.Server, srv AnalysisServiceServer) {
@@ -734,7 +852,7 @@ func RegisterAnalysisServiceServer(s *grpc.Server, srv AnalysisServiceServer) {
 }
 
 func _AnalysisService_ActiveOnRange_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(TimeRange)
+	m := new(ActiveOnRangeRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -754,6 +872,48 @@ func (x *analysisServiceActiveOnRangeServer) Send(m *ChildAndProfileIds) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _AnalysisService_Inactive_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(InactiveUsersRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(AnalysisServiceServer).Inactive(m, &analysisServiceInactiveServer{stream})
+}
+
+type AnalysisService_InactiveServer interface {
+	Send(*ChildAndProfileIds) error
+	grpc.ServerStream
+}
+
+type analysisServiceInactiveServer struct {
+	grpc.ServerStream
+}
+
+func (x *analysisServiceInactiveServer) Send(m *ChildAndProfileIds) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _AnalysisService_Active_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetActiveUsersRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(AnalysisServiceServer).Active(m, &analysisServiceActiveServer{stream})
+}
+
+type AnalysisService_ActiveServer interface {
+	Send(*ChildAndProfileIds) error
+	grpc.ServerStream
+}
+
+type analysisServiceActiveServer struct {
+	grpc.ServerStream
+}
+
+func (x *analysisServiceActiveServer) Send(m *ChildAndProfileIds) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 func _AnalysisService_PlayedGames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ChildAndTimeRange)
 	if err := dec(in); err != nil {
@@ -768,24 +928,6 @@ func _AnalysisService_PlayedGames_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AnalysisServiceServer).PlayedGames(ctx, req.(*ChildAndTimeRange))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AnalysisService_AvailableAnalysis_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GameWithVersions)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AnalysisServiceServer).AvailableAnalysis(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/apipb.AnalysisService/AvailableAnalysis",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalysisServiceServer).AvailableAnalysis(ctx, req.(*GameWithVersions))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -844,6 +986,24 @@ func _AnalysisService_Retention_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AnalysisService_GameInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GameWithVersions)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalysisServiceServer).GameInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apipb.AnalysisService/GameInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalysisServiceServer).GameInfo(ctx, req.(*GameWithVersions))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _AnalysisService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "apipb.AnalysisService",
 	HandlerType: (*AnalysisServiceServer)(nil),
@@ -851,10 +1011,6 @@ var _AnalysisService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlayedGames",
 			Handler:    _AnalysisService_PlayedGames_Handler,
-		},
-		{
-			MethodName: "AvailableAnalysis",
-			Handler:    _AnalysisService_AvailableAnalysis_Handler,
 		},
 		{
 			MethodName: "Analyze",
@@ -868,6 +1024,10 @@ var _AnalysisService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "Retention",
 			Handler:    _AnalysisService_Retention_Handler,
 		},
+		{
+			MethodName: "GameInfo",
+			Handler:    _AnalysisService_GameInfo_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -875,100 +1035,110 @@ var _AnalysisService_serviceDesc = grpc.ServiceDesc{
 			Handler:       _AnalysisService_ActiveOnRange_Handler,
 			ServerStreams: true,
 		},
+		{
+			StreamName:    "Inactive",
+			Handler:       _AnalysisService_Inactive_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "Active",
+			Handler:       _AnalysisService_Active_Handler,
+			ServerStreams: true,
+		},
 	},
-	Metadata: fileDescriptorAnalysis,
+	Metadata: "analysis.proto",
 }
 
-func (m *TimeRange) Marshal() (data []byte, err error) {
+func (m *TimeRange) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *TimeRange) MarshalTo(data []byte) (int, error) {
+func (m *TimeRange) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if m.From != 0 {
-		data[i] = 0x8
+		dAtA[i] = 0x8
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.From))
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.From))
 	}
 	if m.To != 0 {
-		data[i] = 0x10
+		dAtA[i] = 0x10
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.To))
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.To))
 	}
 	return i, nil
 }
 
-func (m *ChildAndProfileIds) Marshal() (data []byte, err error) {
+func (m *ChildAndProfileIds) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *ChildAndProfileIds) MarshalTo(data []byte) (int, error) {
+func (m *ChildAndProfileIds) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if len(m.ChildId) > 0 {
-		data[i] = 0xa
+		dAtA[i] = 0xa
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.ChildId)))
-		i += copy(data[i:], m.ChildId)
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.ChildId)))
+		i += copy(dAtA[i:], m.ChildId)
 	}
 	if len(m.ProfileId) > 0 {
-		data[i] = 0x12
+		dAtA[i] = 0x12
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.ProfileId)))
-		i += copy(data[i:], m.ProfileId)
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.ProfileId)))
+		i += copy(dAtA[i:], m.ProfileId)
 	}
 	return i, nil
 }
 
-func (m *ChildAndTimeRange) Marshal() (data []byte, err error) {
+func (m *ChildAndTimeRange) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *ChildAndTimeRange) MarshalTo(data []byte) (int, error) {
+func (m *ChildAndTimeRange) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if len(m.ChildId) > 0 {
-		data[i] = 0xa
+		dAtA[i] = 0xa
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.ChildId)))
-		i += copy(data[i:], m.ChildId)
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.ChildId)))
+		i += copy(dAtA[i:], m.ChildId)
 	}
 	if len(m.ProfileId) > 0 {
-		data[i] = 0x12
+		dAtA[i] = 0x12
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.ProfileId)))
-		i += copy(data[i:], m.ProfileId)
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.ProfileId)))
+		i += copy(dAtA[i:], m.ProfileId)
 	}
 	if m.Range != nil {
-		data[i] = 0x1a
+		dAtA[i] = 0x1a
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Range.Size()))
-		n1, err := m.Range.MarshalTo(data[i:])
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Range.Size()))
+		n1, err := m.Range.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
@@ -977,395 +1147,304 @@ func (m *ChildAndTimeRange) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
-func (m *AnalysisDataField) Marshal() (data []byte, err error) {
+func (m *GameWithVersions) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *AnalysisDataField) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Name) > 0 {
-		data[i] = 0xa
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.Name)))
-		i += copy(data[i:], m.Name)
-	}
-	if m.Type != 0 {
-		data[i] = 0x10
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Type))
-	}
-	return i, nil
-}
-
-func (m *AnalysisMetadata) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *AnalysisMetadata) MarshalTo(data []byte) (int, error) {
+func (m *GameWithVersions) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if len(m.GameId) > 0 {
-		data[i] = 0xa
+		dAtA[i] = 0xa
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.GameId)))
-		i += copy(data[i:], m.GameId)
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.GameId)))
+		i += copy(dAtA[i:], m.GameId)
 	}
 	if len(m.Versions) > 0 {
 		for _, s := range m.Versions {
-			data[i] = 0x12
+			dAtA[i] = 0x12
 			i++
 			l = len(s)
 			for l >= 1<<7 {
-				data[i] = uint8(uint64(l)&0x7f | 0x80)
+				dAtA[i] = uint8(uint64(l)&0x7f | 0x80)
 				l >>= 7
 				i++
 			}
-			data[i] = uint8(l)
+			dAtA[i] = uint8(l)
 			i++
-			i += copy(data[i:], s)
-		}
-	}
-	if len(m.Event) > 0 {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.Event)))
-		i += copy(data[i:], m.Event)
-	}
-	if len(m.Fields) > 0 {
-		for _, msg := range m.Fields {
-			data[i] = 0x22
-			i++
-			i = encodeVarintAnalysis(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
+			i += copy(dAtA[i:], s)
 		}
 	}
 	return i, nil
 }
 
-func (m *GameWithVersions) Marshal() (data []byte, err error) {
+func (m *PlayedGamesList) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *GameWithVersions) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.GameId) > 0 {
-		data[i] = 0xa
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.GameId)))
-		i += copy(data[i:], m.GameId)
-	}
-	if len(m.Versions) > 0 {
-		for _, s := range m.Versions {
-			data[i] = 0x12
-			i++
-			l = len(s)
-			for l >= 1<<7 {
-				data[i] = uint8(uint64(l)&0x7f | 0x80)
-				l >>= 7
-				i++
-			}
-			data[i] = uint8(l)
-			i++
-			i += copy(data[i:], s)
-		}
-	}
-	return i, nil
-}
-
-func (m *PlayedGamesList) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *PlayedGamesList) MarshalTo(data []byte) (int, error) {
+func (m *PlayedGamesList) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if len(m.Games) > 0 {
 		for _, msg := range m.Games {
-			data[i] = 0xa
+			dAtA[i] = 0xa
 			i++
-			i = encodeVarintAnalysis(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
+			i = encodeVarintAnalysis(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
 			i += n
 		}
 	}
-	return i, nil
-}
-
-func (m *AvailableAnalysisResult) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *AvailableAnalysisResult) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Analysis) > 0 {
-		for _, msg := range m.Analysis {
-			data[i] = 0xa
-			i++
-			i = encodeVarintAnalysis(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	return i, nil
-}
-
-func (m *QuerySort) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *QuerySort) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.FieldName) > 0 {
-		data[i] = 0xa
+	if len(m.ChildId) > 0 {
+		dAtA[i] = 0x12
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.FieldName)))
-		i += copy(data[i:], m.FieldName)
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.ChildId)))
+		i += copy(dAtA[i:], m.ChildId)
 	}
-	if m.Order != 0 {
-		data[i] = 0x10
+	if m.Range != nil {
+		dAtA[i] = 0x1a
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Order))
-	}
-	return i, nil
-}
-
-func (m *Aggregation) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *Aggregation) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.FieldName) > 0 {
-		data[i] = 0xa
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.FieldName)))
-		i += copy(data[i:], m.FieldName)
-	}
-	if len(m.OutputField) > 0 {
-		data[i] = 0x12
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.OutputField)))
-		i += copy(data[i:], m.OutputField)
-	}
-	if m.Accumulator != 0 {
-		data[i] = 0x18
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Accumulator))
-	}
-	return i, nil
-}
-
-func (m *GroupInterval) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *GroupInterval) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Int != 0 {
-		data[i] = 0x8
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Int))
-	}
-	if m.Real != 0 {
-		data[i] = 0x15
-		i++
-		i = encodeFixed32Analysis(data, i, uint32(math.Float32bits(float32(m.Real))))
-	}
-	if m.Days != 0 {
-		data[i] = 0x18
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Days))
-	}
-	if m.Hours != 0 {
-		data[i] = 0x20
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Hours))
-	}
-	if m.Minutes {
-		data[i] = 0x28
-		i++
-		if m.Minutes {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.Seconds {
-		data[i] = 0x30
-		i++
-		if m.Seconds {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	return i, nil
-}
-
-func (m *QueryGroup) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *QueryGroup) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.FieldName) > 0 {
-		data[i] = 0xa
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.FieldName)))
-		i += copy(data[i:], m.FieldName)
-	}
-	if m.Type != 0 {
-		data[i] = 0x10
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Type))
-	}
-	if m.Interval != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Interval.Size()))
-		n2, err := m.Interval.MarshalTo(data[i:])
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Range.Size()))
+		n2, err := m.Range.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n2
 	}
-	if len(m.OutputField) > 0 {
-		data[i] = 0x22
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.OutputField)))
-		i += copy(data[i:], m.OutputField)
-	}
 	return i, nil
 }
 
-func (m *Query) Marshal() (data []byte, err error) {
+func (m *QuerySort) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *Query) MarshalTo(data []byte) (int, error) {
+func (m *QuerySort) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	if len(m.Event) > 0 {
-		data[i] = 0xa
+	if len(m.FieldName) > 0 {
+		dAtA[i] = 0xa
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.Event)))
-		i += copy(data[i:], m.Event)
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.FieldName)))
+		i += copy(dAtA[i:], m.FieldName)
 	}
-	if m.Range != nil {
-		data[i] = 0x12
+	if m.Order != 0 {
+		dAtA[i] = 0x10
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Range.Size()))
-		n3, err := m.Range.MarshalTo(data[i:])
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Order))
+	}
+	return i, nil
+}
+
+func (m *Aggregation) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Aggregation) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.FieldName) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.FieldName)))
+		i += copy(dAtA[i:], m.FieldName)
+	}
+	if len(m.OutputField) > 0 {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.OutputField)))
+		i += copy(dAtA[i:], m.OutputField)
+	}
+	if m.Accumulator != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Accumulator))
+	}
+	return i, nil
+}
+
+func (m *GroupInterval) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GroupInterval) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Int != 0 {
+		dAtA[i] = 0x8
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Int))
+	}
+	if m.Real != 0 {
+		dAtA[i] = 0x15
+		i++
+		i = encodeFixed32Analysis(dAtA, i, uint32(math.Float32bits(float32(m.Real))))
+	}
+	if m.Days != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Days))
+	}
+	if m.Hours != 0 {
+		dAtA[i] = 0x20
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Hours))
+	}
+	if m.Minutes {
+		dAtA[i] = 0x28
+		i++
+		if m.Minutes {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i++
+	}
+	if m.Seconds {
+		dAtA[i] = 0x30
+		i++
+		if m.Seconds {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i++
+	}
+	return i, nil
+}
+
+func (m *QueryGroup) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGroup) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.FieldName) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.FieldName)))
+		i += copy(dAtA[i:], m.FieldName)
+	}
+	if m.Type != 0 {
+		dAtA[i] = 0x10
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Type))
+	}
+	if m.Interval != nil {
+		dAtA[i] = 0x1a
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Interval.Size()))
+		n3, err := m.Interval.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n3
 	}
+	if len(m.OutputField) > 0 {
+		dAtA[i] = 0x22
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.OutputField)))
+		i += copy(dAtA[i:], m.OutputField)
+	}
+	return i, nil
+}
+
+func (m *Query) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Query) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Events) > 0 {
+		for _, s := range m.Events {
+			dAtA[i] = 0xa
+			i++
+			l = len(s)
+			for l >= 1<<7 {
+				dAtA[i] = uint8(uint64(l)&0x7f | 0x80)
+				l >>= 7
+				i++
+			}
+			dAtA[i] = uint8(l)
+			i++
+			i += copy(dAtA[i:], s)
+		}
+	}
+	if m.Range != nil {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Range.Size()))
+		n4, err := m.Range.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n4
+	}
 	if len(m.Sort) > 0 {
 		for _, msg := range m.Sort {
-			data[i] = 0x1a
+			dAtA[i] = 0x1a
 			i++
-			i = encodeVarintAnalysis(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
+			i = encodeVarintAnalysis(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
@@ -1373,31 +1452,91 @@ func (m *Query) MarshalTo(data []byte) (int, error) {
 		}
 	}
 	if m.Limit != 0 {
-		data[i] = 0x20
+		dAtA[i] = 0x20
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Limit))
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Limit))
 	}
 	if m.Offset != 0 {
-		data[i] = 0x28
+		dAtA[i] = 0x28
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Offset))
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Offset))
 	}
 	if m.GroupBy != nil {
-		data[i] = 0x32
+		dAtA[i] = 0x32
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.GroupBy.Size()))
-		n4, err := m.GroupBy.MarshalTo(data[i:])
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.GroupBy.Size()))
+		n5, err := m.GroupBy.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n4
+		i += n5
 	}
 	if len(m.Aggregations) > 0 {
 		for _, msg := range m.Aggregations {
-			data[i] = 0x3a
+			dAtA[i] = 0x3a
 			i++
-			i = encodeVarintAnalysis(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
+			i = encodeVarintAnalysis(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if len(m.RawQueries) > 0 {
+		for _, b := range m.RawQueries {
+			dAtA[i] = 0x42
+			i++
+			i = encodeVarintAnalysis(dAtA, i, uint64(len(b)))
+			i += copy(dAtA[i:], b)
+		}
+	}
+	return i, nil
+}
+
+func (m *AnalyzeRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AnalyzeRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.ChildId) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.ChildId)))
+		i += copy(dAtA[i:], m.ChildId)
+	}
+	if len(m.ProfileId) > 0 {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.ProfileId)))
+		i += copy(dAtA[i:], m.ProfileId)
+	}
+	if m.Query != nil {
+		dAtA[i] = 0x32
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Query.Size()))
+		n6, err := m.Query.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n6
+	}
+	if len(m.Games) > 0 {
+		for _, msg := range m.Games {
+			dAtA[i] = 0x3a
+			i++
+			i = encodeVarintAnalysis(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
@@ -1407,293 +1546,476 @@ func (m *Query) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
-func (m *AnalyzeRequest) Marshal() (data []byte, err error) {
+func (m *AnalyzeResult) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *AnalyzeRequest) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.ChildId) > 0 {
-		data[i] = 0xa
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.ChildId)))
-		i += copy(data[i:], m.ChildId)
-	}
-	if len(m.ProfileId) > 0 {
-		data[i] = 0x12
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.ProfileId)))
-		i += copy(data[i:], m.ProfileId)
-	}
-	if len(m.GameId) > 0 {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.GameId)))
-		i += copy(data[i:], m.GameId)
-	}
-	if len(m.GameVersions) > 0 {
-		for _, s := range m.GameVersions {
-			data[i] = 0x22
-			i++
-			l = len(s)
-			for l >= 1<<7 {
-				data[i] = uint8(uint64(l)&0x7f | 0x80)
-				l >>= 7
-				i++
-			}
-			data[i] = uint8(l)
-			i++
-			i += copy(data[i:], s)
-		}
-	}
-	if m.Query != nil {
-		data[i] = 0x32
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Query.Size()))
-		n5, err := m.Query.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n5
-	}
-	return i, nil
-}
-
-func (m *AnalyzeResult) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *AnalyzeResult) MarshalTo(data []byte) (int, error) {
+func (m *AnalyzeResult) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if m.Request != nil {
-		data[i] = 0xa
+		dAtA[i] = 0xa
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Request.Size()))
-		n6, err := m.Request.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n6
-	}
-	if m.Data != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Data.Size()))
-		n7, err := m.Data.MarshalTo(data[i:])
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Request.Size()))
+		n7, err := m.Request.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n7
 	}
-	if m.CreatedAt != 0 {
-		data[i] = 0x18
+	if m.Data != nil {
+		dAtA[i] = 0x12
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.CreatedAt))
-	}
-	return i, nil
-}
-
-func (m *ActiveUsersRequest) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *ActiveUsersRequest) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Type != 0 {
-		data[i] = 0x8
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Type))
-	}
-	if len(m.Dates) > 0 {
-		for _, num := range m.Dates {
-			data[i] = 0x10
-			i++
-			i = encodeVarintAnalysis(data, i, uint64(num))
-		}
-	}
-	if len(m.AppId) > 0 {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.AppId)))
-		i += copy(data[i:], m.AppId)
-	}
-	return i, nil
-}
-
-func (m *ActiveUsersResult) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *ActiveUsersResult) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Request != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Request.Size()))
-		n8, err := m.Request.MarshalTo(data[i:])
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Data.Size()))
+		n8, err := m.Data.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n8
 	}
-	if m.Data != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Data.Size()))
-		n9, err := m.Data.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n9
-	}
 	if m.CreatedAt != 0 {
-		data[i] = 0x18
+		dAtA[i] = 0x18
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.CreatedAt))
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.CreatedAt))
 	}
 	return i, nil
 }
 
-func (m *RetentionRequest) Marshal() (data []byte, err error) {
+func (m *ActiveUsersRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *RetentionRequest) MarshalTo(data []byte) (int, error) {
+func (m *ActiveUsersRequest) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if m.Type != 0 {
-		data[i] = 0x8
+		dAtA[i] = 0x8
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Type))
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Type))
 	}
 	if len(m.Dates) > 0 {
-		for _, num := range m.Dates {
-			data[i] = 0x10
-			i++
-			i = encodeVarintAnalysis(data, i, uint64(num))
+		dAtA10 := make([]byte, len(m.Dates)*10)
+		var j9 int
+		for _, num1 := range m.Dates {
+			num := uint64(num1)
+			for num >= 1<<7 {
+				dAtA10[j9] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j9++
+			}
+			dAtA10[j9] = uint8(num)
+			j9++
 		}
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(j9))
+		i += copy(dAtA[i:], dAtA10[:j9])
 	}
 	if len(m.AppId) > 0 {
-		data[i] = 0x1a
+		dAtA[i] = 0x1a
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(len(m.AppId)))
-		i += copy(data[i:], m.AppId)
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.AppId)))
+		i += copy(dAtA[i:], m.AppId)
 	}
 	return i, nil
 }
 
-func (m *RetentionResult) Marshal() (data []byte, err error) {
+func (m *ActiveUsersResult) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *RetentionResult) MarshalTo(data []byte) (int, error) {
+func (m *ActiveUsersResult) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if m.Request != nil {
-		data[i] = 0xa
+		dAtA[i] = 0xa
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Request.Size()))
-		n10, err := m.Request.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n10
-	}
-	if m.Data != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.Data.Size()))
-		n11, err := m.Data.MarshalTo(data[i:])
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Request.Size()))
+		n11, err := m.Request.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n11
 	}
-	if m.CreatedAt != 0 {
-		data[i] = 0x18
+	if m.Data != nil {
+		dAtA[i] = 0x12
 		i++
-		i = encodeVarintAnalysis(data, i, uint64(m.CreatedAt))
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Data.Size()))
+		n12, err := m.Data.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n12
+	}
+	if m.CreatedAt != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.CreatedAt))
 	}
 	return i, nil
 }
 
-func encodeFixed64Analysis(data []byte, offset int, v uint64) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
-	data[offset+4] = uint8(v >> 32)
-	data[offset+5] = uint8(v >> 40)
-	data[offset+6] = uint8(v >> 48)
-	data[offset+7] = uint8(v >> 56)
+func (m *RetentionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RetentionRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Type != 0 {
+		dAtA[i] = 0x8
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Type))
+	}
+	if len(m.Dates) > 0 {
+		dAtA14 := make([]byte, len(m.Dates)*10)
+		var j13 int
+		for _, num1 := range m.Dates {
+			num := uint64(num1)
+			for num >= 1<<7 {
+				dAtA14[j13] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j13++
+			}
+			dAtA14[j13] = uint8(num)
+			j13++
+		}
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(j13))
+		i += copy(dAtA[i:], dAtA14[:j13])
+	}
+	if len(m.AppId) > 0 {
+		dAtA[i] = 0x1a
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.AppId)))
+		i += copy(dAtA[i:], m.AppId)
+	}
+	return i, nil
+}
+
+func (m *RetentionResult) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RetentionResult) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Request != nil {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Request.Size()))
+		n15, err := m.Request.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n15
+	}
+	if m.Data != nil {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Data.Size()))
+		n16, err := m.Data.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n16
+	}
+	if m.CreatedAt != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.CreatedAt))
+	}
+	return i, nil
+}
+
+func (m *InactiveUsersRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *InactiveUsersRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.AppId) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.AppId)))
+		i += copy(dAtA[i:], m.AppId)
+	}
+	if m.InactiveDuring != nil {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.InactiveDuring.Size()))
+		n17, err := m.InactiveDuring.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n17
+	}
+	if m.ActiveDuring != nil {
+		dAtA[i] = 0x1a
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.ActiveDuring.Size()))
+		n18, err := m.ActiveDuring.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n18
+	}
+	return i, nil
+}
+
+func (m *GetActiveUsersRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetActiveUsersRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.AppId) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.AppId)))
+		i += copy(dAtA[i:], m.AppId)
+	}
+	if m.Period != nil {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Period.Size()))
+		n19, err := m.Period.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n19
+	}
+	return i, nil
+}
+
+func (m *ActiveOnRangeRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ActiveOnRangeRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Range != nil {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Range.Size()))
+		n20, err := m.Range.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n20
+	}
+	if len(m.CountryCodes) > 0 {
+		for _, s := range m.CountryCodes {
+			dAtA[i] = 0x12
+			i++
+			l = len(s)
+			for l >= 1<<7 {
+				dAtA[i] = uint8(uint64(l)&0x7f | 0x80)
+				l >>= 7
+				i++
+			}
+			dAtA[i] = uint8(l)
+			i++
+			i += copy(dAtA[i:], s)
+		}
+	}
+	return i, nil
+}
+
+func (m *GameInfoResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GameInfoResponse) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.GameId) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.GameId)))
+		i += copy(dAtA[i:], m.GameId)
+	}
+	if len(m.Events) > 0 {
+		for _, msg := range m.Events {
+			dAtA[i] = 0x12
+			i++
+			i = encodeVarintAnalysis(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	return i, nil
+}
+
+func (m *GameInfoResponse_FieldInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GameInfoResponse_FieldInfo) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Name) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.Name)))
+		i += copy(dAtA[i:], m.Name)
+	}
+	if m.Type != 0 {
+		dAtA[i] = 0x10
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(m.Type))
+	}
+	return i, nil
+}
+
+func (m *GameInfoResponse_EventInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GameInfoResponse_EventInfo) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Name) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintAnalysis(dAtA, i, uint64(len(m.Name)))
+		i += copy(dAtA[i:], m.Name)
+	}
+	if len(m.Fields) > 0 {
+		for _, msg := range m.Fields {
+			dAtA[i] = 0x12
+			i++
+			i = encodeVarintAnalysis(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	return i, nil
+}
+
+func encodeFixed64Analysis(dAtA []byte, offset int, v uint64) int {
+	dAtA[offset] = uint8(v)
+	dAtA[offset+1] = uint8(v >> 8)
+	dAtA[offset+2] = uint8(v >> 16)
+	dAtA[offset+3] = uint8(v >> 24)
+	dAtA[offset+4] = uint8(v >> 32)
+	dAtA[offset+5] = uint8(v >> 40)
+	dAtA[offset+6] = uint8(v >> 48)
+	dAtA[offset+7] = uint8(v >> 56)
 	return offset + 8
 }
-func encodeFixed32Analysis(data []byte, offset int, v uint32) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
+func encodeFixed32Analysis(dAtA []byte, offset int, v uint32) int {
+	dAtA[offset] = uint8(v)
+	dAtA[offset+1] = uint8(v >> 8)
+	dAtA[offset+2] = uint8(v >> 16)
+	dAtA[offset+3] = uint8(v >> 24)
 	return offset + 4
 }
-func encodeVarintAnalysis(data []byte, offset int, v uint64) int {
+func encodeVarintAnalysis(dAtA []byte, offset int, v uint64) int {
 	for v >= 1<<7 {
-		data[offset] = uint8(v&0x7f | 0x80)
+		dAtA[offset] = uint8(v&0x7f | 0x80)
 		v >>= 7
 		offset++
 	}
-	data[offset] = uint8(v)
+	dAtA[offset] = uint8(v)
 	return offset + 1
 }
 func (m *TimeRange) Size() (n int) {
@@ -1740,45 +2062,6 @@ func (m *ChildAndTimeRange) Size() (n int) {
 	return n
 }
 
-func (m *AnalysisDataField) Size() (n int) {
-	var l int
-	_ = l
-	l = len(m.Name)
-	if l > 0 {
-		n += 1 + l + sovAnalysis(uint64(l))
-	}
-	if m.Type != 0 {
-		n += 1 + sovAnalysis(uint64(m.Type))
-	}
-	return n
-}
-
-func (m *AnalysisMetadata) Size() (n int) {
-	var l int
-	_ = l
-	l = len(m.GameId)
-	if l > 0 {
-		n += 1 + l + sovAnalysis(uint64(l))
-	}
-	if len(m.Versions) > 0 {
-		for _, s := range m.Versions {
-			l = len(s)
-			n += 1 + l + sovAnalysis(uint64(l))
-		}
-	}
-	l = len(m.Event)
-	if l > 0 {
-		n += 1 + l + sovAnalysis(uint64(l))
-	}
-	if len(m.Fields) > 0 {
-		for _, e := range m.Fields {
-			l = e.Size()
-			n += 1 + l + sovAnalysis(uint64(l))
-		}
-	}
-	return n
-}
-
 func (m *GameWithVersions) Size() (n int) {
 	var l int
 	_ = l
@@ -1804,17 +2087,13 @@ func (m *PlayedGamesList) Size() (n int) {
 			n += 1 + l + sovAnalysis(uint64(l))
 		}
 	}
-	return n
-}
-
-func (m *AvailableAnalysisResult) Size() (n int) {
-	var l int
-	_ = l
-	if len(m.Analysis) > 0 {
-		for _, e := range m.Analysis {
-			l = e.Size()
-			n += 1 + l + sovAnalysis(uint64(l))
-		}
+	l = len(m.ChildId)
+	if l > 0 {
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.Range != nil {
+		l = m.Range.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
 	}
 	return n
 }
@@ -1897,9 +2176,11 @@ func (m *QueryGroup) Size() (n int) {
 func (m *Query) Size() (n int) {
 	var l int
 	_ = l
-	l = len(m.Event)
-	if l > 0 {
-		n += 1 + l + sovAnalysis(uint64(l))
+	if len(m.Events) > 0 {
+		for _, s := range m.Events {
+			l = len(s)
+			n += 1 + l + sovAnalysis(uint64(l))
+		}
 	}
 	if m.Range != nil {
 		l = m.Range.Size()
@@ -1927,6 +2208,12 @@ func (m *Query) Size() (n int) {
 			n += 1 + l + sovAnalysis(uint64(l))
 		}
 	}
+	if len(m.RawQueries) > 0 {
+		for _, b := range m.RawQueries {
+			l = len(b)
+			n += 1 + l + sovAnalysis(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -1941,19 +2228,15 @@ func (m *AnalyzeRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovAnalysis(uint64(l))
 	}
-	l = len(m.GameId)
-	if l > 0 {
-		n += 1 + l + sovAnalysis(uint64(l))
-	}
-	if len(m.GameVersions) > 0 {
-		for _, s := range m.GameVersions {
-			l = len(s)
-			n += 1 + l + sovAnalysis(uint64(l))
-		}
-	}
 	if m.Query != nil {
 		l = m.Query.Size()
 		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if len(m.Games) > 0 {
+		for _, e := range m.Games {
+			l = e.Size()
+			n += 1 + l + sovAnalysis(uint64(l))
+		}
 	}
 	return n
 }
@@ -1982,9 +2265,11 @@ func (m *ActiveUsersRequest) Size() (n int) {
 		n += 1 + sovAnalysis(uint64(m.Type))
 	}
 	if len(m.Dates) > 0 {
+		l = 0
 		for _, e := range m.Dates {
-			n += 1 + sovAnalysis(uint64(e))
+			l += sovAnalysis(uint64(e))
 		}
+		n += 1 + sovAnalysis(uint64(l)) + l
 	}
 	l = len(m.AppId)
 	if l > 0 {
@@ -2017,9 +2302,11 @@ func (m *RetentionRequest) Size() (n int) {
 		n += 1 + sovAnalysis(uint64(m.Type))
 	}
 	if len(m.Dates) > 0 {
+		l = 0
 		for _, e := range m.Dates {
-			n += 1 + sovAnalysis(uint64(e))
+			l += sovAnalysis(uint64(e))
 		}
+		n += 1 + sovAnalysis(uint64(l)) + l
 	}
 	l = len(m.AppId)
 	if l > 0 {
@@ -2045,6 +2332,99 @@ func (m *RetentionResult) Size() (n int) {
 	return n
 }
 
+func (m *InactiveUsersRequest) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.AppId)
+	if l > 0 {
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.InactiveDuring != nil {
+		l = m.InactiveDuring.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.ActiveDuring != nil {
+		l = m.ActiveDuring.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	return n
+}
+
+func (m *GetActiveUsersRequest) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.AppId)
+	if l > 0 {
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.Period != nil {
+		l = m.Period.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	return n
+}
+
+func (m *ActiveOnRangeRequest) Size() (n int) {
+	var l int
+	_ = l
+	if m.Range != nil {
+		l = m.Range.Size()
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if len(m.CountryCodes) > 0 {
+		for _, s := range m.CountryCodes {
+			l = len(s)
+			n += 1 + l + sovAnalysis(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *GameInfoResponse) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.GameId)
+	if l > 0 {
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if len(m.Events) > 0 {
+		for _, e := range m.Events {
+			l = e.Size()
+			n += 1 + l + sovAnalysis(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *GameInfoResponse_FieldInfo) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if m.Type != 0 {
+		n += 1 + sovAnalysis(uint64(m.Type))
+	}
+	return n
+}
+
+func (m *GameInfoResponse_EventInfo) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovAnalysis(uint64(l))
+	}
+	if len(m.Fields) > 0 {
+		for _, e := range m.Fields {
+			l = e.Size()
+			n += 1 + l + sovAnalysis(uint64(l))
+		}
+	}
+	return n
+}
+
 func sovAnalysis(x uint64) (n int) {
 	for {
 		n++
@@ -2058,8 +2438,8 @@ func sovAnalysis(x uint64) (n int) {
 func sozAnalysis(x uint64) (n int) {
 	return sovAnalysis(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *TimeRange) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *TimeRange) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -2071,7 +2451,7 @@ func (m *TimeRange) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -2099,7 +2479,7 @@ func (m *TimeRange) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.From |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2118,7 +2498,7 @@ func (m *TimeRange) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.To |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2127,7 +2507,7 @@ func (m *TimeRange) Unmarshal(data []byte) error {
 			}
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -2146,8 +2526,8 @@ func (m *TimeRange) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *ChildAndProfileIds) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *ChildAndProfileIds) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -2159,7 +2539,7 @@ func (m *ChildAndProfileIds) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -2187,7 +2567,7 @@ func (m *ChildAndProfileIds) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2202,7 +2582,7 @@ func (m *ChildAndProfileIds) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ChildId = string(data[iNdEx:postIndex])
+			m.ChildId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -2216,7 +2596,7 @@ func (m *ChildAndProfileIds) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2231,11 +2611,11 @@ func (m *ChildAndProfileIds) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ProfileId = string(data[iNdEx:postIndex])
+			m.ProfileId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -2254,8 +2634,8 @@ func (m *ChildAndProfileIds) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *ChildAndTimeRange) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *ChildAndTimeRange) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -2267,7 +2647,7 @@ func (m *ChildAndTimeRange) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -2295,7 +2675,7 @@ func (m *ChildAndTimeRange) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2310,7 +2690,7 @@ func (m *ChildAndTimeRange) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ChildId = string(data[iNdEx:postIndex])
+			m.ChildId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -2324,7 +2704,7 @@ func (m *ChildAndTimeRange) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2339,7 +2719,7 @@ func (m *ChildAndTimeRange) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ProfileId = string(data[iNdEx:postIndex])
+			m.ProfileId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -2353,7 +2733,7 @@ func (m *ChildAndTimeRange) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2370,13 +2750,13 @@ func (m *ChildAndTimeRange) Unmarshal(data []byte) error {
 			if m.Range == nil {
 				m.Range = &TimeRange{}
 			}
-			if err := m.Range.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Range.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -2395,8 +2775,8 @@ func (m *ChildAndTimeRange) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *AnalysisDataField) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *GameWithVersions) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -2408,273 +2788,7 @@ func (m *AnalysisDataField) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AnalysisDataField: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AnalysisDataField: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAnalysis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthAnalysis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Name = string(data[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
-			}
-			m.Type = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAnalysis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				m.Type |= (AnalysisDataField_Type(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthAnalysis
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AnalysisMetadata) Unmarshal(data []byte) error {
-	l := len(data)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowAnalysis
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AnalysisMetadata: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AnalysisMetadata: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GameId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAnalysis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthAnalysis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.GameId = string(data[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Versions", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAnalysis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthAnalysis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Versions = append(m.Versions, string(data[iNdEx:postIndex]))
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Event", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAnalysis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthAnalysis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Event = string(data[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Fields", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAnalysis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthAnalysis
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Fields = append(m.Fields, &AnalysisDataField{})
-			if err := m.Fields[len(m.Fields)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthAnalysis
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *GameWithVersions) Unmarshal(data []byte) error {
-	l := len(data)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowAnalysis
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -2702,7 +2816,7 @@ func (m *GameWithVersions) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2717,7 +2831,7 @@ func (m *GameWithVersions) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GameId = string(data[iNdEx:postIndex])
+			m.GameId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -2731,7 +2845,7 @@ func (m *GameWithVersions) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2746,11 +2860,11 @@ func (m *GameWithVersions) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Versions = append(m.Versions, string(data[iNdEx:postIndex]))
+			m.Versions = append(m.Versions, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -2769,8 +2883,8 @@ func (m *GameWithVersions) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *PlayedGamesList) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *PlayedGamesList) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -2782,7 +2896,7 @@ func (m *PlayedGamesList) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -2810,7 +2924,7 @@ func (m *PlayedGamesList) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2825,63 +2939,42 @@ func (m *PlayedGamesList) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Games = append(m.Games, &GameWithVersions{})
-			if err := m.Games[len(m.Games)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Games[len(m.Games)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
-			if err != nil {
-				return err
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChildId", wireType)
 			}
-			if skippy < 0 {
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthAnalysis
 			}
-			if (iNdEx + skippy) > l {
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AvailableAnalysisResult) Unmarshal(data []byte) error {
-	l := len(data)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowAnalysis
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AvailableAnalysisResult: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AvailableAnalysisResult: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
+			m.ChildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Analysis", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2891,7 +2984,7 @@ func (m *AvailableAnalysisResult) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2905,14 +2998,16 @@ func (m *AvailableAnalysisResult) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Analysis = append(m.Analysis, &AnalysisMetadata{})
-			if err := m.Analysis[len(m.Analysis)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if m.Range == nil {
+				m.Range = &TimeRange{}
+			}
+			if err := m.Range.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -2931,8 +3026,8 @@ func (m *AvailableAnalysisResult) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *QuerySort) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *QuerySort) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -2944,7 +3039,7 @@ func (m *QuerySort) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -2972,7 +3067,7 @@ func (m *QuerySort) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -2987,7 +3082,7 @@ func (m *QuerySort) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.FieldName = string(data[iNdEx:postIndex])
+			m.FieldName = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -3001,7 +3096,7 @@ func (m *QuerySort) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Order |= (QuerySort_SortOrder(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3010,7 +3105,7 @@ func (m *QuerySort) Unmarshal(data []byte) error {
 			}
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -3029,8 +3124,8 @@ func (m *QuerySort) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *Aggregation) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *Aggregation) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -3042,7 +3137,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -3070,7 +3165,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3085,7 +3180,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.FieldName = string(data[iNdEx:postIndex])
+			m.FieldName = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -3099,7 +3194,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3114,7 +3209,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.OutputField = string(data[iNdEx:postIndex])
+			m.OutputField = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
@@ -3128,7 +3223,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Accumulator |= (Aggregation_Accumulator(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3137,7 +3232,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 			}
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -3156,8 +3251,8 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *GroupInterval) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *GroupInterval) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -3169,7 +3264,7 @@ func (m *GroupInterval) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -3197,7 +3292,7 @@ func (m *GroupInterval) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Int |= (int32(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3213,10 +3308,10 @@ func (m *GroupInterval) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			iNdEx += 4
-			v = uint32(data[iNdEx-4])
-			v |= uint32(data[iNdEx-3]) << 8
-			v |= uint32(data[iNdEx-2]) << 16
-			v |= uint32(data[iNdEx-1]) << 24
+			v = uint32(dAtA[iNdEx-4])
+			v |= uint32(dAtA[iNdEx-3]) << 8
+			v |= uint32(dAtA[iNdEx-2]) << 16
+			v |= uint32(dAtA[iNdEx-1]) << 24
 			m.Real = float32(math.Float32frombits(v))
 		case 3:
 			if wireType != 0 {
@@ -3230,7 +3325,7 @@ func (m *GroupInterval) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Days |= (int32(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3249,7 +3344,7 @@ func (m *GroupInterval) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Hours |= (int32(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3268,7 +3363,7 @@ func (m *GroupInterval) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				v |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3288,7 +3383,7 @@ func (m *GroupInterval) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				v |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3298,7 +3393,7 @@ func (m *GroupInterval) Unmarshal(data []byte) error {
 			m.Seconds = bool(v != 0)
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -3317,8 +3412,8 @@ func (m *GroupInterval) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *QueryGroup) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *QueryGroup) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -3330,7 +3425,7 @@ func (m *QueryGroup) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -3358,7 +3453,7 @@ func (m *QueryGroup) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3373,7 +3468,7 @@ func (m *QueryGroup) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.FieldName = string(data[iNdEx:postIndex])
+			m.FieldName = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -3387,7 +3482,7 @@ func (m *QueryGroup) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Type |= (QueryGroup_GroupType(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3406,7 +3501,7 @@ func (m *QueryGroup) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3423,7 +3518,7 @@ func (m *QueryGroup) Unmarshal(data []byte) error {
 			if m.Interval == nil {
 				m.Interval = &GroupInterval{}
 			}
-			if err := m.Interval.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Interval.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3439,7 +3534,7 @@ func (m *QueryGroup) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3454,11 +3549,11 @@ func (m *QueryGroup) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.OutputField = string(data[iNdEx:postIndex])
+			m.OutputField = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -3477,8 +3572,8 @@ func (m *QueryGroup) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *Query) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *Query) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -3490,7 +3585,7 @@ func (m *Query) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -3508,7 +3603,7 @@ func (m *Query) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Event", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Events", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3518,7 +3613,7 @@ func (m *Query) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3533,7 +3628,7 @@ func (m *Query) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Event = string(data[iNdEx:postIndex])
+			m.Events = append(m.Events, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -3547,7 +3642,7 @@ func (m *Query) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3564,7 +3659,7 @@ func (m *Query) Unmarshal(data []byte) error {
 			if m.Range == nil {
 				m.Range = &TimeRange{}
 			}
-			if err := m.Range.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Range.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3580,7 +3675,7 @@ func (m *Query) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3595,7 +3690,7 @@ func (m *Query) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Sort = append(m.Sort, &QuerySort{})
-			if err := m.Sort[len(m.Sort)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Sort[len(m.Sort)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3611,7 +3706,7 @@ func (m *Query) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Limit |= (int32(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3630,7 +3725,7 @@ func (m *Query) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Offset |= (int32(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3649,7 +3744,7 @@ func (m *Query) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3666,7 +3761,7 @@ func (m *Query) Unmarshal(data []byte) error {
 			if m.GroupBy == nil {
 				m.GroupBy = &QueryGroup{}
 			}
-			if err := m.GroupBy.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.GroupBy.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3682,7 +3777,7 @@ func (m *Query) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3697,13 +3792,42 @@ func (m *Query) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Aggregations = append(m.Aggregations, &Aggregation{})
-			if err := m.Aggregations[len(m.Aggregations)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Aggregations[len(m.Aggregations)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RawQueries", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RawQueries = append(m.RawQueries, make([]byte, postIndex-iNdEx))
+			copy(m.RawQueries[len(m.RawQueries)-1], dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -3722,8 +3846,8 @@ func (m *Query) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *AnalyzeRequest) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *AnalyzeRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -3735,7 +3859,7 @@ func (m *AnalyzeRequest) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -3763,7 +3887,7 @@ func (m *AnalyzeRequest) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3778,7 +3902,7 @@ func (m *AnalyzeRequest) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ChildId = string(data[iNdEx:postIndex])
+			m.ChildId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -3792,7 +3916,7 @@ func (m *AnalyzeRequest) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3807,65 +3931,7 @@ func (m *AnalyzeRequest) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ProfileId = string(data[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GameId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAnalysis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthAnalysis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.GameId = string(data[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GameVersions", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAnalysis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthAnalysis
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.GameVersions = append(m.GameVersions, string(data[iNdEx:postIndex]))
+			m.ProfileId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
@@ -3879,7 +3945,7 @@ func (m *AnalyzeRequest) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3896,13 +3962,44 @@ func (m *AnalyzeRequest) Unmarshal(data []byte) error {
 			if m.Query == nil {
 				m.Query = &Query{}
 			}
-			if err := m.Query.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Query.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Games", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Games = append(m.Games, &GameWithVersions{})
+			if err := m.Games[len(m.Games)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -3921,8 +4018,8 @@ func (m *AnalyzeRequest) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *AnalyzeResult) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *AnalyzeResult) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -3934,7 +4031,7 @@ func (m *AnalyzeResult) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -3962,7 +4059,7 @@ func (m *AnalyzeResult) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -3979,7 +4076,7 @@ func (m *AnalyzeResult) Unmarshal(data []byte) error {
 			if m.Request == nil {
 				m.Request = &AnalyzeRequest{}
 			}
-			if err := m.Request.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Request.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3995,7 +4092,7 @@ func (m *AnalyzeResult) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4012,7 +4109,7 @@ func (m *AnalyzeResult) Unmarshal(data []byte) error {
 			if m.Data == nil {
 				m.Data = &DataSet{}
 			}
-			if err := m.Data.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Data.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4028,7 +4125,7 @@ func (m *AnalyzeResult) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.CreatedAt |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4037,7 +4134,7 @@ func (m *AnalyzeResult) Unmarshal(data []byte) error {
 			}
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -4056,8 +4153,8 @@ func (m *AnalyzeResult) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *ActiveUsersRequest) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *ActiveUsersRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -4069,7 +4166,7 @@ func (m *ActiveUsersRequest) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -4097,7 +4194,7 @@ func (m *ActiveUsersRequest) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Type |= (ActiveUsersRequest_Type(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4105,25 +4202,67 @@ func (m *ActiveUsersRequest) Unmarshal(data []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Dates", wireType)
-			}
-			var v int64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAnalysis
+			if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAnalysis
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= (int(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
 				}
-				if iNdEx >= l {
+				if packedLen < 0 {
+					return ErrInvalidLengthAnalysis
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex > l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
-				iNdEx++
-				v |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
+				for iNdEx < postIndex {
+					var v int64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAnalysis
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= (int64(b) & 0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.Dates = append(m.Dates, v)
 				}
+			} else if wireType == 0 {
+				var v int64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAnalysis
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= (int64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.Dates = append(m.Dates, v)
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field Dates", wireType)
 			}
-			m.Dates = append(m.Dates, v)
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
@@ -4136,7 +4275,7 @@ func (m *ActiveUsersRequest) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4151,11 +4290,11 @@ func (m *ActiveUsersRequest) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.AppId = string(data[iNdEx:postIndex])
+			m.AppId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -4174,8 +4313,8 @@ func (m *ActiveUsersRequest) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *ActiveUsersResult) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *ActiveUsersResult) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -4187,7 +4326,7 @@ func (m *ActiveUsersResult) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -4215,7 +4354,7 @@ func (m *ActiveUsersResult) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4232,7 +4371,7 @@ func (m *ActiveUsersResult) Unmarshal(data []byte) error {
 			if m.Request == nil {
 				m.Request = &ActiveUsersRequest{}
 			}
-			if err := m.Request.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Request.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4248,7 +4387,7 @@ func (m *ActiveUsersResult) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4265,7 +4404,7 @@ func (m *ActiveUsersResult) Unmarshal(data []byte) error {
 			if m.Data == nil {
 				m.Data = &DataSet{}
 			}
-			if err := m.Data.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Data.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4281,7 +4420,7 @@ func (m *ActiveUsersResult) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.CreatedAt |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4290,7 +4429,7 @@ func (m *ActiveUsersResult) Unmarshal(data []byte) error {
 			}
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -4309,8 +4448,8 @@ func (m *ActiveUsersResult) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *RetentionRequest) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *RetentionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -4322,7 +4461,7 @@ func (m *RetentionRequest) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -4350,7 +4489,7 @@ func (m *RetentionRequest) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Type |= (RetentionRequest_Type(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4358,25 +4497,67 @@ func (m *RetentionRequest) Unmarshal(data []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Dates", wireType)
-			}
-			var v int64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAnalysis
+			if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAnalysis
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= (int(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
 				}
-				if iNdEx >= l {
+				if packedLen < 0 {
+					return ErrInvalidLengthAnalysis
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex > l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
-				iNdEx++
-				v |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
+				for iNdEx < postIndex {
+					var v int64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAnalysis
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= (int64(b) & 0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.Dates = append(m.Dates, v)
 				}
+			} else if wireType == 0 {
+				var v int64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAnalysis
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= (int64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.Dates = append(m.Dates, v)
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field Dates", wireType)
 			}
-			m.Dates = append(m.Dates, v)
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
@@ -4389,7 +4570,7 @@ func (m *RetentionRequest) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4404,11 +4585,11 @@ func (m *RetentionRequest) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.AppId = string(data[iNdEx:postIndex])
+			m.AppId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -4427,8 +4608,8 @@ func (m *RetentionRequest) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *RetentionResult) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *RetentionResult) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -4440,7 +4621,7 @@ func (m *RetentionResult) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -4468,7 +4649,7 @@ func (m *RetentionResult) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4485,7 +4666,7 @@ func (m *RetentionResult) Unmarshal(data []byte) error {
 			if m.Request == nil {
 				m.Request = &RetentionRequest{}
 			}
-			if err := m.Request.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Request.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4501,7 +4682,7 @@ func (m *RetentionResult) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4518,7 +4699,7 @@ func (m *RetentionResult) Unmarshal(data []byte) error {
 			if m.Data == nil {
 				m.Data = &DataSet{}
 			}
-			if err := m.Data.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Data.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4534,7 +4715,7 @@ func (m *RetentionResult) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.CreatedAt |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4543,7 +4724,7 @@ func (m *RetentionResult) Unmarshal(data []byte) error {
 			}
 		default:
 			iNdEx = preIndex
-			skippy, err := skipAnalysis(data[iNdEx:])
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -4562,8 +4743,695 @@ func (m *RetentionResult) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func skipAnalysis(data []byte) (n int, err error) {
-	l := len(data)
+func (m *InactiveUsersRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: InactiveUsersRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: InactiveUsersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AppId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InactiveDuring", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.InactiveDuring == nil {
+				m.InactiveDuring = &TimeRange{}
+			}
+			if err := m.InactiveDuring.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ActiveDuring", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ActiveDuring == nil {
+				m.ActiveDuring = &TimeRange{}
+			}
+			if err := m.ActiveDuring.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetActiveUsersRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetActiveUsersRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetActiveUsersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AppId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Period", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Period == nil {
+				m.Period = &TimeRange{}
+			}
+			if err := m.Period.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ActiveOnRangeRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ActiveOnRangeRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ActiveOnRangeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Range == nil {
+				m.Range = &TimeRange{}
+			}
+			if err := m.Range.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CountryCodes", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CountryCodes = append(m.CountryCodes, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GameInfoResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GameInfoResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GameInfoResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GameId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GameId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Events", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Events = append(m.Events, &GameInfoResponse_EventInfo{})
+			if err := m.Events[len(m.Events)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GameInfoResponse_FieldInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: FieldInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: FieldInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+			}
+			m.Type = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Type |= (GameInfoResponse_FieldType(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GameInfoResponse_EventInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAnalysis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Fields", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAnalysis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Fields = append(m.Fields, &GameInfoResponse_FieldInfo{})
+			if err := m.Fields[len(m.Fields)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAnalysis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAnalysis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipAnalysis(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		var wire uint64
@@ -4574,7 +5442,7 @@ func skipAnalysis(data []byte) (n int, err error) {
 			if iNdEx >= l {
 				return 0, io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -4592,7 +5460,7 @@ func skipAnalysis(data []byte) (n int, err error) {
 					return 0, io.ErrUnexpectedEOF
 				}
 				iNdEx++
-				if data[iNdEx-1] < 0x80 {
+				if dAtA[iNdEx-1] < 0x80 {
 					break
 				}
 			}
@@ -4609,7 +5477,7 @@ func skipAnalysis(data []byte) (n int, err error) {
 				if iNdEx >= l {
 					return 0, io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				length |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -4632,7 +5500,7 @@ func skipAnalysis(data []byte) (n int, err error) {
 					if iNdEx >= l {
 						return 0, io.ErrUnexpectedEOF
 					}
-					b := data[iNdEx]
+					b := dAtA[iNdEx]
 					iNdEx++
 					innerWire |= (uint64(b) & 0x7F) << shift
 					if b < 0x80 {
@@ -4643,7 +5511,7 @@ func skipAnalysis(data []byte) (n int, err error) {
 				if innerWireType == 4 {
 					break
 				}
-				next, err := skipAnalysis(data[start:])
+				next, err := skipAnalysis(dAtA[start:])
 				if err != nil {
 					return 0, err
 				}
@@ -4667,90 +5535,103 @@ var (
 	ErrIntOverflowAnalysis   = fmt.Errorf("proto: integer overflow")
 )
 
+func init() { proto.RegisterFile("analysis.proto", fileDescriptorAnalysis) }
+
 var fileDescriptorAnalysis = []byte{
-	// 1342 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xac, 0x57, 0x4b, 0x8f, 0x1b, 0x45,
-	0x10, 0xce, 0x78, 0x3c, 0x7e, 0x94, 0xf7, 0x31, 0x69, 0x25, 0x59, 0xc7, 0x90, 0x15, 0x0c, 0x28,
-	0xe2, 0x40, 0xbc, 0xbb, 0x0e, 0xca, 0x09, 0x41, 0xbc, 0xd9, 0x8d, 0xb1, 0xb4, 0x6b, 0x87, 0xb6,
-	0x93, 0x10, 0x2e, 0xab, 0xb1, 0xdd, 0x76, 0x46, 0xb2, 0x3d, 0x93, 0x99, 0xf6, 0x4a, 0x86, 0x23,
-	0x07, 0x24, 0x38, 0x10, 0x89, 0x13, 0xfc, 0x02, 0x0e, 0xfc, 0x90, 0x1c, 0xb9, 0x72, 0xe3, 0xf1,
-	0x43, 0xa0, 0xba, 0xe6, 0xe1, 0x59, 0x3b, 0x26, 0x52, 0xc8, 0xc1, 0x56, 0x57, 0x57, 0x75, 0x75,
-	0xd5, 0x57, 0x5f, 0x57, 0xf7, 0xc0, 0x96, 0x3d, 0xb5, 0xc7, 0xf3, 0xc0, 0x09, 0xaa, 0x9e, 0xef,
-	0x4a, 0x97, 0x19, 0xb6, 0xe7, 0x78, 0xbd, 0xca, 0xad, 0x91, 0x23, 0x9f, 0xce, 0x7a, 0xd5, 0xbe,
-	0x3b, 0xd9, 0x1b, 0xb9, 0x23, 0x77, 0x8f, 0xb4, 0xbd, 0xd9, 0x90, 0x24, 0x12, 0x68, 0x14, 0xae,
-	0xaa, 0x6c, 0x0e, 0x6c, 0x69, 0x07, 0x42, 0x86, 0xa2, 0xb5, 0x07, 0xc5, 0xae, 0x33, 0x11, 0xdc,
-	0x9e, 0x8e, 0x04, 0x63, 0x90, 0x1d, 0xfa, 0xee, 0xa4, 0xac, 0xbd, 0xa3, 0x7d, 0xa0, 0x73, 0x1a,
-	0xb3, 0x2d, 0xc8, 0x48, 0xb7, 0x9c, 0xa1, 0x19, 0x1c, 0x59, 0x2d, 0x60, 0xf7, 0x9e, 0x3a, 0xe3,
-	0x41, 0x7d, 0x3a, 0x78, 0xe0, 0xbb, 0x43, 0x67, 0x2c, 0x9a, 0x83, 0x80, 0x5d, 0x87, 0x42, 0x5f,
-	0xcd, 0x9e, 0x39, 0x03, 0x5a, 0x5d, 0xe4, 0x79, 0x92, 0x9b, 0x03, 0x76, 0x03, 0xc0, 0x0b, 0x0d,
-	0x95, 0x32, 0x43, 0xca, 0xa2, 0x17, 0x2f, 0xb5, 0x66, 0x70, 0x39, 0xf6, 0xb7, 0x08, 0xe4, 0xb5,
-	0xdd, 0xb1, 0x9b, 0x60, 0xf8, 0xca, 0x45, 0x59, 0x47, 0x4d, 0xa9, 0x66, 0x56, 0x09, 0xa4, 0x6a,
-	0xe2, 0x9a, 0x87, 0x6a, 0xeb, 0xb9, 0x06, 0x97, 0xeb, 0x11, 0x9e, 0x47, 0x88, 0xc8, 0x7d, 0x47,
-	0x8c, 0x07, 0x0a, 0x80, 0xa9, 0x3d, 0x11, 0xd1, 0x9e, 0x34, 0x66, 0x07, 0x90, 0x95, 0x73, 0x4f,
-	0xd0, 0x56, 0x5b, 0xb5, 0x1b, 0x91, 0xc3, 0x95, 0xb5, 0xd5, 0x2e, 0x1a, 0x71, 0x32, 0xb5, 0x3e,
-	0x82, 0xac, 0x92, 0x18, 0x40, 0xae, 0xd3, 0xe5, 0xcd, 0x56, 0xc3, 0xbc, 0xc4, 0x4a, 0x90, 0x6f,
-	0xb6, 0xba, 0xc7, 0x8d, 0x63, 0x6e, 0x6a, 0xac, 0x08, 0xc6, 0xfd, 0x93, 0x76, 0xbd, 0x6b, 0x66,
-	0x58, 0x01, 0xb2, 0x87, 0xed, 0xf6, 0x89, 0xa9, 0x5b, 0x3f, 0x68, 0x60, 0xc6, 0x6e, 0x4f, 0x85,
-	0xb4, 0x55, 0xa1, 0xd8, 0x0e, 0xe4, 0x47, 0x18, 0xc5, 0x02, 0x88, 0x9c, 0x12, 0x31, 0xd1, 0x0a,
-	0x14, 0xce, 0x85, 0x1f, 0x38, 0xee, 0x34, 0xc0, 0xd0, 0x74, 0xd4, 0x24, 0x32, 0xbb, 0x02, 0x86,
-	0x38, 0x17, 0x53, 0x49, 0x20, 0x14, 0x79, 0x28, 0xb0, 0x7d, 0xc8, 0x0d, 0x55, 0xa4, 0x41, 0x39,
-	0x8b, 0xf6, 0xa5, 0x5a, 0x79, 0x5d, 0x2a, 0x3c, 0xb2, 0xb3, 0x1a, 0x60, 0x36, 0x70, 0xb7, 0xc7,
-	0x48, 0xb0, 0x47, 0xb1, 0xef, 0xd7, 0x09, 0xc8, 0xba, 0x0b, 0xdb, 0x0f, 0xc6, 0xf6, 0x5c, 0x0c,
-	0x94, 0xbb, 0xe0, 0xc4, 0x09, 0x24, 0xbb, 0x05, 0x86, 0x5a, 0x18, 0xa0, 0x17, 0x15, 0xcc, 0x4e,
-	0x14, 0xcc, 0xf2, 0x7e, 0x3c, 0xb4, 0x42, 0xda, 0xed, 0xd4, 0xcf, 0x6d, 0x67, 0x6c, 0xf7, 0xc6,
-	0x22, 0x0e, 0x98, 0x8b, 0x60, 0x36, 0x96, 0xec, 0x36, 0x14, 0xe2, 0x93, 0xb1, 0xe4, 0x6c, 0x19,
-	0x4d, 0x9e, 0x18, 0x5a, 0x5f, 0x43, 0xf1, 0xf3, 0x99, 0xf0, 0xe7, 0x1d, 0xd7, 0x97, 0x8a, 0x53,
-	0x94, 0xf1, 0x59, 0xaa, 0xf8, 0x45, 0x9a, 0x69, 0x29, 0x06, 0xec, 0x83, 0xe1, 0xfa, 0x03, 0xe1,
-	0x47, 0x14, 0xa8, 0x44, 0xde, 0x93, 0xf5, 0x55, 0xf5, 0xd7, 0x56, 0x16, 0x3c, 0x34, 0xb4, 0x6e,
-	0x40, 0x31, 0x99, 0x63, 0x79, 0xd0, 0xeb, 0x9d, 0x7b, 0x48, 0x01, 0x1c, 0x1c, 0xe1, 0x40, 0xb3,
-	0x7e, 0xd7, 0xa0, 0x54, 0x1f, 0x8d, 0x7c, 0x31, 0xb2, 0x25, 0x26, 0xf9, 0xaa, 0xfd, 0xdf, 0x85,
-	0x0d, 0x77, 0x26, 0xbd, 0x99, 0x3c, 0xa3, 0xb9, 0x88, 0xf4, 0xa5, 0x70, 0x2e, 0x24, 0xee, 0x5d,
-	0x28, 0xd9, 0xfd, 0xfe, 0x6c, 0x32, 0x1b, 0xdb, 0xd2, 0xf5, 0xa9, 0xee, 0x5b, 0xb5, 0xdd, 0x18,
-	0x86, 0xc5, 0x56, 0xd5, 0xfa, 0xc2, 0x8a, 0xa7, 0x97, 0x58, 0xf7, 0x31, 0xa4, 0x85, 0xa8, 0x68,
-	0xd9, 0x6a, 0xb7, 0x8e, 0x31, 0x6a, 0xe4, 0xea, 0xbd, 0xf6, 0xc3, 0x56, 0x17, 0x69, 0x8b, 0x09,
-	0x74, 0x1e, 0x9e, 0x22, 0x69, 0x71, 0x70, 0x5a, 0xff, 0xc2, 0xd4, 0x69, 0xd0, 0x6c, 0x99, 0x59,
-	0x4a, 0xf2, 0x51, 0xc3, 0x34, 0xac, 0x1f, 0x35, 0xd8, 0x6c, 0xf8, 0xee, 0xcc, 0x6b, 0x4e, 0xa5,
-	0xf0, 0xcf, 0xed, 0x31, 0x33, 0x41, 0x77, 0x90, 0x8b, 0x2a, 0x2d, 0x83, 0xab, 0xa1, 0x3a, 0x66,
-	0xbe, 0xb0, 0xc7, 0x94, 0x48, 0x86, 0xd3, 0x58, 0xcd, 0x0d, 0xec, 0x79, 0x40, 0xa1, 0x1b, 0x9c,
-	0xc6, 0x8a, 0xc7, 0x4f, 0xdd, 0x99, 0xaf, 0x08, 0xab, 0x26, 0x43, 0x81, 0x95, 0x21, 0x3f, 0x71,
-	0xa6, 0x33, 0x89, 0xdc, 0x31, 0x70, 0xbe, 0xc0, 0x63, 0x51, 0x69, 0x02, 0xd1, 0x77, 0xa7, 0x48,
-	0xf1, 0x5c, 0xa8, 0x89, 0x44, 0xeb, 0xbb, 0x0c, 0x00, 0xd5, 0x8b, 0x42, 0x7b, 0x15, 0xe0, 0x7b,
-	0x17, 0x8e, 0xfc, 0x5b, 0xe9, 0x7a, 0xd3, 0xfa, 0x2a, 0xfd, 0x2f, 0x0e, 0x3c, 0x32, 0xa4, 0xe0,
-	0x44, 0xe9, 0x46, 0x8d, 0xe7, 0x4a, 0xcc, 0xe7, 0x34, 0x14, 0x3c, 0xb1, 0x5a, 0xa9, 0x69, 0x76,
-	0xa5, 0xa6, 0xd6, 0x63, 0x28, 0x26, 0xfb, 0xa8, 0x7a, 0xe0, 0xf9, 0x14, 0x58, 0x8f, 0x0d, 0x28,
-	0xa8, 0x91, 0xc4, 0x8e, 0x86, 0x25, 0xd9, 0x0c, 0xfb, 0x77, 0x7b, 0x78, 0x64, 0xcf, 0xb1, 0x30,
-	0x4a, 0xe9, 0x04, 0x7d, 0x5f, 0xa0, 0xa9, 0xce, 0xae, 0x62, 0x6f, 0x75, 0xa7, 0x12, 0xd1, 0x11,
-	0x41, 0x1c, 0x83, 0x99, 0xb5, 0xfe, 0xd1, 0xc0, 0xa0, 0x64, 0x16, 0x8d, 0x42, 0x4b, 0x37, 0x8a,
-	0xa4, 0x87, 0x66, 0xfe, 0xb3, 0x87, 0xb2, 0xf7, 0x21, 0x1b, 0x20, 0xcb, 0x31, 0x63, 0x3d, 0x65,
-	0x96, 0x1c, 0x0b, 0x4e, 0x5a, 0xb5, 0xc7, 0xd8, 0x99, 0x38, 0x32, 0x2e, 0x22, 0x09, 0xec, 0x1a,
-	0xe4, 0xdc, 0xe1, 0x10, 0xef, 0x21, 0xaa, 0xa1, 0xc1, 0x23, 0x89, 0x7d, 0x08, 0x85, 0x91, 0x4a,
-	0xfa, 0xac, 0x37, 0xa7, 0x1a, 0x96, 0x6a, 0x97, 0x57, 0xe0, 0xe7, 0x79, 0x32, 0x39, 0x9c, 0xb3,
-	0x3b, 0xb0, 0x61, 0x2f, 0xc8, 0x1d, 0x94, 0xf3, 0x14, 0x09, 0x5b, 0xe5, 0x3d, 0xbf, 0x60, 0x67,
-	0xfd, 0xaa, 0xc1, 0x16, 0x35, 0x87, 0xaf, 0x04, 0x17, 0xcf, 0x10, 0x1d, 0xf9, 0x3f, 0xae, 0x9c,
-	0x54, 0x47, 0xd4, 0x2f, 0x74, 0xc4, 0xf7, 0x60, 0x93, 0x14, 0x49, 0x5b, 0xcc, 0x52, 0x5b, 0xdc,
-	0x50, 0x93, 0x49, 0x3f, 0xb5, 0xc0, 0x78, 0xa6, 0x32, 0x8b, 0xb2, 0xdd, 0x48, 0x67, 0xcb, 0x43,
-	0x95, 0xf5, 0x0d, 0x9e, 0xa9, 0x24, 0x5c, 0xea, 0x79, 0x7b, 0x90, 0xf7, 0xc3, 0xc0, 0x29, 0xd8,
-	0x52, 0xed, 0x6a, 0xba, 0xe5, 0x25, 0x59, 0xf1, 0xd8, 0x0a, 0xb7, 0xc9, 0xaa, 0x0e, 0x18, 0x95,
-	0x74, 0x2b, 0xb2, 0x56, 0x2d, 0xbf, 0x23, 0x24, 0x27, 0x9d, 0xca, 0x13, 0x99, 0x83, 0xdc, 0x1a,
-	0x9c, 0xd9, 0xe1, 0xdd, 0xa1, 0xf3, 0x62, 0x34, 0x53, 0x97, 0xd6, 0x2f, 0x1a, 0xb0, 0x7a, 0x5f,
-	0x3a, 0xe7, 0xe2, 0x61, 0x80, 0xd1, 0xc7, 0xc0, 0xd5, 0xa2, 0xc3, 0xa2, 0x5d, 0xec, 0x39, 0x2b,
-	0x86, 0xa9, 0x0b, 0x52, 0x71, 0x02, 0x77, 0x14, 0xe1, 0x45, 0xa1, 0xf3, 0x50, 0x40, 0xba, 0xe6,
-	0x6c, 0xcf, 0x5b, 0xe0, 0x88, 0x0f, 0x1c, 0x0f, 0x5f, 0x08, 0x07, 0x8b, 0xdb, 0xf4, 0xb4, 0xdd,
-	0xea, 0x9e, 0x3c, 0x09, 0x9b, 0xd2, 0x51, 0xbd, 0x89, 0x43, 0x6a, 0x4a, 0xad, 0xe3, 0xc7, 0xc8,
-	0x7d, 0x9c, 0xeb, 0xb6, 0xbb, 0x75, 0x75, 0x95, 0x7e, 0xaf, 0x6e, 0xf7, 0x74, 0x04, 0xd1, 0x45,
-	0xb1, 0x04, 0xda, 0xf5, 0xb5, 0xc1, 0xbe, 0x51, 0xe0, 0x7e, 0xc2, 0x8b, 0x9d, 0xe3, 0x89, 0x9c,
-	0x12, 0x13, 0x23, 0xbf, 0xfb, 0x17, 0x60, 0x7b, 0x3b, 0xf2, 0xbb, 0x6c, 0xf6, 0xda, 0xa0, 0xdd,
-	0x8c, 0x40, 0x43, 0x74, 0x92, 0x36, 0xde, 0x39, 0x7e, 0x74, 0xdc, 0x42, 0xc4, 0x10, 0xc8, 0xee,
-	0x67, 0x4d, 0xde, 0x7d, 0x62, 0x66, 0xac, 0x6f, 0x35, 0xd8, 0x4e, 0x6d, 0x4a, 0x38, 0x1d, 0x2c,
-	0xe3, 0xb4, 0xb3, 0x26, 0xba, 0x37, 0x89, 0x52, 0xed, 0x67, 0x1d, 0xb6, 0xe3, 0x0b, 0xbb, 0x83,
-	0xad, 0xca, 0xe9, 0x0b, 0xf6, 0x09, 0xf2, 0x9e, 0x6a, 0xd3, 0x9e, 0x86, 0x0f, 0xc3, 0x95, 0x5e,
-	0x54, 0x89, 0x6b, 0xb8, 0xfa, 0x28, 0xdd, 0xd7, 0xd8, 0xa7, 0x50, 0x4a, 0xbd, 0x3b, 0x58, 0x79,
-	0xc9, 0x76, 0xe1, 0xe5, 0x5a, 0xa4, 0x59, 0x7e, 0xa5, 0x9c, 0x20, 0x8f, 0x96, 0x9f, 0x1d, 0x6c,
-	0xdd, 0x5b, 0xa5, 0x92, 0x90, 0x7f, 0xcd, 0x4b, 0xe5, 0x0e, 0xe4, 0xa3, 0xf3, 0xc9, 0x5e, 0x7e,
-	0x5e, 0x2b, 0x57, 0x96, 0xa7, 0x69, 0xdd, 0xa1, 0xba, 0x9b, 0x13, 0x8a, 0xb2, 0xf5, 0xb4, 0xad,
-	0x94, 0x5f, 0xa6, 0x22, 0x1f, 0x1f, 0x43, 0x31, 0x29, 0x1f, 0x5b, 0x57, 0xd0, 0x04, 0x87, 0x25,
-	0x4a, 0x1c, 0x1e, 0xbc, 0xf8, 0x73, 0xf7, 0xd2, 0x8b, 0xbf, 0x76, 0xb5, 0xdf, 0xf0, 0xf7, 0x07,
-	0xfe, 0x9e, 0xff, 0xbd, 0x7b, 0x09, 0xb6, 0xf1, 0x9b, 0xa3, 0xea, 0xca, 0xc0, 0x99, 0xb8, 0xd5,
-	0x91, 0xef, 0xf5, 0x1f, 0x68, 0x5f, 0x16, 0x42, 0xd1, 0xeb, 0xf5, 0x72, 0xf4, 0x81, 0x71, 0xfb,
-	0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xbc, 0xec, 0x78, 0x71, 0xb7, 0x0c, 0x00, 0x00,
+	// 1510 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x57, 0x49, 0x6f, 0xdb, 0xc6,
+	0x17, 0x37, 0x49, 0x51, 0xcb, 0x93, 0x17, 0x7a, 0xfe, 0x76, 0xac, 0x28, 0xff, 0xb8, 0x0e, 0x5b,
+	0x04, 0x3e, 0x34, 0xb2, 0xa3, 0x20, 0x01, 0x02, 0x04, 0x68, 0xe5, 0xb5, 0x42, 0x1d, 0x29, 0x19,
+	0xc9, 0x76, 0x92, 0x8b, 0x30, 0x16, 0x47, 0x32, 0x01, 0x89, 0x64, 0xc8, 0xa1, 0x03, 0xb5, 0xc7,
+	0x1e, 0x0a, 0xb4, 0x97, 0x02, 0xbd, 0xb4, 0x87, 0xa2, 0x45, 0x4f, 0xfd, 0x28, 0x39, 0xf6, 0xda,
+	0x5b, 0xeb, 0x7c, 0x91, 0x62, 0x86, 0x43, 0x6a, 0xb1, 0xe5, 0x04, 0x69, 0x2e, 0xc4, 0xbc, 0x65,
+	0xde, 0xbc, 0x65, 0xde, 0xef, 0x0d, 0x61, 0x9e, 0x38, 0xa4, 0x37, 0x08, 0xec, 0xa0, 0xe4, 0xf9,
+	0x2e, 0x73, 0x91, 0x4e, 0x3c, 0xdb, 0x3b, 0x29, 0xde, 0xe9, 0xda, 0xec, 0x34, 0x3c, 0x29, 0xb5,
+	0xdd, 0xfe, 0x46, 0xd7, 0xed, 0xba, 0x1b, 0x42, 0x7a, 0x12, 0x76, 0x04, 0x25, 0x08, 0xb1, 0x8a,
+	0x76, 0x15, 0xff, 0x67, 0x11, 0x46, 0x02, 0xca, 0xfa, 0xae, 0x45, 0x7b, 0xd2, 0x94, 0xb9, 0x01,
+	0xb9, 0xa6, 0xdd, 0xa7, 0x98, 0x38, 0x5d, 0x8a, 0x10, 0xa4, 0x3a, 0xbe, 0xdb, 0x2f, 0x28, 0x6b,
+	0xca, 0xba, 0x86, 0xc5, 0x1a, 0xcd, 0x83, 0xca, 0xdc, 0x82, 0x2a, 0x38, 0x2a, 0x73, 0xcd, 0x1a,
+	0xa0, 0xed, 0x53, 0xbb, 0x67, 0x55, 0x1c, 0xeb, 0x89, 0xef, 0x76, 0xec, 0x1e, 0xad, 0x5a, 0x01,
+	0xba, 0x0e, 0xd9, 0x36, 0xe7, 0xb6, 0x6c, 0x4b, 0xec, 0xce, 0xe1, 0x8c, 0xa0, 0xab, 0x16, 0xba,
+	0x09, 0xe0, 0x45, 0x8a, 0x5c, 0xa8, 0x0a, 0x61, 0xce, 0x8b, 0xb7, 0x9a, 0x21, 0x2c, 0xc6, 0xf6,
+	0x86, 0x8e, 0xbc, 0xb7, 0x39, 0x74, 0x1b, 0x74, 0x9f, 0x9b, 0x28, 0x68, 0x6b, 0xca, 0x7a, 0xbe,
+	0x6c, 0x94, 0x44, 0xaa, 0x4a, 0x89, 0x69, 0x1c, 0x89, 0xcd, 0x7d, 0x30, 0xf6, 0x49, 0x9f, 0x1e,
+	0xdb, 0xec, 0xf4, 0x88, 0xfa, 0x81, 0xed, 0x3a, 0x01, 0x5a, 0x81, 0x4c, 0x97, 0xf4, 0xe9, 0xf0,
+	0xd0, 0x34, 0x27, 0xab, 0x16, 0x2a, 0x42, 0xf6, 0x4c, 0x2a, 0x15, 0xd4, 0x35, 0x6d, 0x3d, 0x87,
+	0x13, 0xda, 0xfc, 0x46, 0x81, 0x85, 0x27, 0x3d, 0x32, 0xa0, 0x16, 0xb7, 0x17, 0x1c, 0xd8, 0x01,
+	0x43, 0x77, 0x40, 0xe7, 0x3b, 0x83, 0x82, 0xb2, 0xa6, 0xad, 0xe7, 0xcb, 0x2b, 0xd2, 0x89, 0xc9,
+	0x03, 0x71, 0xa4, 0x35, 0x16, 0xad, 0x3a, 0x1e, 0xed, 0xbb, 0x86, 0xf3, 0x35, 0xe4, 0x9e, 0x86,
+	0xd4, 0x1f, 0x34, 0x5c, 0x9f, 0xf1, 0x14, 0x75, 0x6c, 0xda, 0xb3, 0x5a, 0x0e, 0xe9, 0x53, 0x19,
+	0x4a, 0x4e, 0x70, 0x6a, 0xa4, 0x4f, 0xd1, 0x26, 0xe8, 0xae, 0x6f, 0x51, 0x5f, 0x9c, 0x35, 0x5f,
+	0x2e, 0x4a, 0x9b, 0xc9, 0xfe, 0x12, 0xff, 0xd4, 0xb9, 0x06, 0x8e, 0x14, 0xcd, 0x9b, 0x90, 0x4b,
+	0x78, 0x28, 0x03, 0x5a, 0xa5, 0xb1, 0x6d, 0xcc, 0xf0, 0xc5, 0x4e, 0x63, 0xdb, 0x50, 0xcc, 0xbf,
+	0x14, 0xc8, 0x57, 0xba, 0x5d, 0x9f, 0x76, 0x09, 0xb3, 0x5d, 0xe7, 0x6d, 0xe7, 0xdf, 0x82, 0x59,
+	0x37, 0x64, 0x5e, 0xc8, 0x5a, 0x82, 0x27, 0x43, 0xce, 0x47, 0xbc, 0x3d, 0xce, 0x42, 0x9f, 0x43,
+	0x9e, 0xb4, 0xdb, 0x61, 0x3f, 0xec, 0x11, 0xe6, 0xfa, 0x22, 0xf8, 0xf9, 0xf2, 0xaa, 0x74, 0x74,
+	0xe4, 0xa8, 0x52, 0x65, 0xa8, 0x85, 0x47, 0xb7, 0x98, 0x7b, 0x90, 0x1f, 0x91, 0xa1, 0x2c, 0xa4,
+	0x6a, 0xf5, 0xda, 0xae, 0x31, 0x83, 0x72, 0xa0, 0x6f, 0xd7, 0x0f, 0x6b, 0x4d, 0x43, 0xe1, 0x01,
+	0x34, 0x0e, 0x1f, 0x1b, 0x2a, 0x5f, 0x3c, 0xae, 0x3c, 0x33, 0x34, 0xb1, 0xa8, 0xd6, 0x8c, 0x94,
+	0x08, 0xf2, 0x68, 0xdf, 0xd0, 0xcd, 0x1f, 0x15, 0x98, 0xdb, 0xf7, 0xdd, 0xd0, 0xab, 0x3a, 0x8c,
+	0xfa, 0x67, 0xa4, 0x87, 0x0c, 0xd0, 0x6c, 0x87, 0x89, 0xb0, 0x74, 0xcc, 0x97, 0xbc, 0x6d, 0x7c,
+	0x4a, 0x7a, 0x22, 0x10, 0x15, 0x8b, 0x35, 0xe7, 0x59, 0x64, 0x10, 0x08, 0xd7, 0x75, 0x2c, 0xd6,
+	0x68, 0x09, 0xf4, 0x53, 0x37, 0xf4, 0x83, 0x42, 0x4a, 0x30, 0x23, 0x02, 0x15, 0x20, 0xd3, 0xb7,
+	0x9d, 0x90, 0xd1, 0xa0, 0xa0, 0xaf, 0x29, 0xeb, 0x59, 0x1c, 0x93, 0x5c, 0x12, 0xd0, 0xb6, 0xeb,
+	0x58, 0x41, 0x21, 0x1d, 0x49, 0x24, 0x69, 0x7e, 0xa7, 0x02, 0x88, 0x7a, 0x09, 0xd7, 0xde, 0x96,
+	0xf0, 0x0d, 0x48, 0xb1, 0x81, 0x47, 0x65, 0xbd, 0x6f, 0x8c, 0xd6, 0x5b, 0xec, 0x2f, 0x89, 0x6f,
+	0x73, 0xe0, 0x51, 0x2c, 0x14, 0xd1, 0x26, 0x64, 0x6d, 0x19, 0xae, 0xbc, 0x78, 0x4b, 0xf1, 0x15,
+	0x1e, 0x4d, 0x05, 0x4e, 0xb4, 0x2e, 0xd4, 0x34, 0x75, 0xa1, 0xa6, 0xe6, 0x31, 0xe4, 0x92, 0x73,
+	0x78, 0x3d, 0x76, 0x08, 0xa3, 0xc6, 0x0c, 0x9a, 0x85, 0x2c, 0x5f, 0x31, 0xbb, 0x4f, 0x0d, 0x05,
+	0xcd, 0x45, 0x70, 0x54, 0xef, 0xec, 0x90, 0x81, 0xa1, 0x0a, 0xa1, 0x1d, 0xb4, 0x7d, 0xca, 0xa8,
+	0xa1, 0xa1, 0x65, 0x58, 0xdc, 0x76, 0x1d, 0x66, 0x3b, 0x21, 0x0d, 0x62, 0x1f, 0x8c, 0x94, 0xf9,
+	0xbb, 0x0a, 0xba, 0x08, 0x06, 0x5d, 0x83, 0x34, 0x3d, 0xa3, 0x0e, 0x8b, 0x1a, 0x2f, 0x87, 0x25,
+	0x35, 0xec, 0x22, 0xf5, 0xca, 0x2e, 0x42, 0x9f, 0x40, 0x2a, 0x70, 0x7d, 0x56, 0xd0, 0x44, 0xdb,
+	0x1a, 0x93, 0x8d, 0x81, 0x85, 0x94, 0x97, 0xb1, 0x67, 0xf7, 0x6d, 0x16, 0x97, 0x51, 0x10, 0xfc,
+	0x6c, 0xb7, 0xd3, 0x09, 0x28, 0x13, 0x55, 0xd4, 0xb1, 0xa4, 0xd0, 0xa7, 0x90, 0xed, 0xf2, 0xb0,
+	0x5b, 0x27, 0x03, 0x51, 0xc5, 0x7c, 0x79, 0xf1, 0x42, 0x01, 0x70, 0x46, 0xa8, 0x6c, 0x0d, 0xd0,
+	0x03, 0x98, 0x25, 0xc3, 0xeb, 0x1d, 0x14, 0x32, 0xc2, 0x13, 0x74, 0xf1, 0xe6, 0xe3, 0x31, 0x3d,
+	0xf4, 0x11, 0xe4, 0x7d, 0xf2, 0xaa, 0xf5, 0x32, 0xa4, 0xbe, 0x4d, 0x83, 0x42, 0x76, 0x4d, 0x5b,
+	0x9f, 0xc5, 0xe0, 0x93, 0x57, 0x4f, 0x23, 0x8e, 0xf9, 0x8b, 0x02, 0xf3, 0x15, 0x3e, 0x45, 0xbe,
+	0xa2, 0x98, 0xbe, 0x0c, 0x69, 0xc0, 0xfe, 0x03, 0xc8, 0x9a, 0xa0, 0xf3, 0x93, 0xe2, 0x80, 0x66,
+	0x47, 0x03, 0xc2, 0x91, 0x68, 0x88, 0x81, 0x99, 0x77, 0xc1, 0x40, 0x0e, 0xa3, 0x73, 0x89, 0x7f,
+	0x41, 0xd8, 0x63, 0x68, 0x03, 0x32, 0x7e, 0xe4, 0xa9, 0xf0, 0x2e, 0x5f, 0x5e, 0x8e, 0xb3, 0x30,
+	0x16, 0x06, 0x8e, 0xb5, 0x90, 0xc9, 0x5b, 0x8e, 0x11, 0x59, 0xe4, 0x79, 0xa9, 0xbd, 0x43, 0x18,
+	0x69, 0x50, 0x86, 0x85, 0x8c, 0x07, 0xd6, 0xf6, 0x29, 0x61, 0xd4, 0x6a, 0x11, 0x26, 0xee, 0xb6,
+	0x86, 0x73, 0x92, 0x53, 0x61, 0xe6, 0x1f, 0x0a, 0xa0, 0x4a, 0x9b, 0xd9, 0x67, 0xf4, 0x30, 0xa0,
+	0x7e, 0x10, 0x67, 0xaa, 0x2c, 0x1b, 0x48, 0x19, 0xc7, 0xa1, 0x0b, 0x8a, 0xa5, 0x91, 0x1e, 0x5a,
+	0x02, 0xdd, 0x22, 0xbc, 0xa9, 0xf9, 0xc0, 0xd0, 0x70, 0x44, 0xa0, 0x65, 0x48, 0x13, 0xcf, 0xe3,
+	0x49, 0xd5, 0x44, 0x52, 0x75, 0xe2, 0x79, 0x55, 0xcb, 0xbc, 0x0b, 0x29, 0xd1, 0x16, 0x00, 0xe9,
+	0xc7, 0xf5, 0x5a, 0xf3, 0xe0, 0x79, 0x04, 0x54, 0x3b, 0x95, 0xea, 0xc1, 0xf3, 0x08, 0xa8, 0x6a,
+	0xbb, 0xc7, 0x86, 0xca, 0x79, 0xcd, 0x7a, 0xb3, 0x72, 0x60, 0x68, 0xe6, 0xf7, 0x0a, 0x2c, 0x8e,
+	0x79, 0x20, 0x92, 0x76, 0x6f, 0x32, 0x69, 0xd7, 0xa7, 0x3a, 0xfb, 0x41, 0x13, 0xf7, 0xb3, 0x02,
+	0x06, 0xa6, 0x8c, 0x3a, 0xe2, 0x6e, 0x4a, 0xbb, 0x9b, 0x63, 0x69, 0xfb, 0xbf, 0xb4, 0x3b, 0xa9,
+	0xf6, 0xde, 0x49, 0xbb, 0x2d, 0x93, 0x96, 0x01, 0x2d, 0x81, 0xf6, 0xc6, 0xee, 0xd1, 0x6e, 0xcd,
+	0x50, 0x78, 0x22, 0x9b, 0x5f, 0x54, 0x71, 0xf3, 0xb9, 0xa1, 0x9a, 0xdf, 0x2a, 0xb0, 0x30, 0x72,
+	0xa8, 0xc8, 0xd3, 0xdd, 0xc9, 0x3c, 0xad, 0x4c, 0xf1, 0xee, 0x83, 0x66, 0xe9, 0x57, 0x05, 0x96,
+	0xaa, 0x0e, 0xb9, 0x78, 0xc1, 0x86, 0x11, 0x2a, 0x23, 0x11, 0xa2, 0x87, 0xb0, 0x60, 0x4b, 0xf5,
+	0x96, 0x15, 0xfa, 0xb6, 0xd3, 0x9d, 0x8a, 0x60, 0xf3, 0xb1, 0xe2, 0x8e, 0xd0, 0x43, 0xf7, 0x61,
+	0x6e, 0x7c, 0xe3, 0xb4, 0x07, 0xc4, 0xec, 0xe8, 0x36, 0xf3, 0x19, 0x2c, 0xef, 0x53, 0x56, 0x79,
+	0x67, 0x0f, 0xd7, 0x21, 0xed, 0x51, 0xdf, 0x76, 0xad, 0xa9, 0x8e, 0x49, 0xb9, 0xd9, 0x86, 0xa5,
+	0xc8, 0x6c, 0xdd, 0x89, 0x04, 0xd2, 0x70, 0x82, 0xcd, 0xca, 0xd5, 0xd8, 0xfc, 0x31, 0xcc, 0xb5,
+	0xdd, 0xd0, 0x61, 0xfe, 0xa0, 0xd5, 0x76, 0x2d, 0x1a, 0x3f, 0xc4, 0x66, 0x25, 0x73, 0x9b, 0xf3,
+	0xcc, 0x73, 0x35, 0x7a, 0xd6, 0x55, 0x9d, 0x8e, 0x8b, 0x69, 0xe0, 0xb9, 0x4e, 0x40, 0xa7, 0x3f,
+	0xeb, 0x1e, 0x26, 0xe3, 0x42, 0x15, 0x18, 0x75, 0x6b, 0x04, 0xa3, 0x46, 0x2d, 0x94, 0x76, 0xb9,
+	0x96, 0xe0, 0xc8, 0x0d, 0xc5, 0x23, 0xc8, 0x89, 0xa9, 0xc6, 0x99, 0x7c, 0xd6, 0x8f, 0x0c, 0x5e,
+	0xb1, 0x46, 0xf7, 0xc7, 0x66, 0xee, 0x54, 0xcb, 0xc2, 0xc8, 0xb0, 0x01, 0x8a, 0x2f, 0x20, 0x97,
+	0x1c, 0x76, 0xa9, 0xdd, 0x87, 0x90, 0x16, 0x13, 0xf6, 0xad, 0x3e, 0x27, 0xee, 0x61, 0xb9, 0xc1,
+	0xdc, 0x93, 0x3e, 0x8b, 0xa6, 0xc9, 0x43, 0xe6, 0xb0, 0xf6, 0x65, 0xad, 0x7e, 0x5c, 0x33, 0x66,
+	0x78, 0xb7, 0x34, 0x9a, 0xb8, 0x5a, 0xdb, 0x37, 0x14, 0x2e, 0xa8, 0xd6, 0x9a, 0xbb, 0xfb, 0xbb,
+	0x38, 0xc2, 0x9b, 0xbd, 0x83, 0x7a, 0xa5, 0x69, 0x68, 0x7c, 0x62, 0x6f, 0xd5, 0xeb, 0x07, 0x46,
+	0xaa, 0xfc, 0x5b, 0x0a, 0x16, 0x2a, 0xf2, 0x87, 0xa4, 0x41, 0xfd, 0x33, 0xbb, 0x4d, 0x51, 0x15,
+	0xe6, 0xc6, 0xaa, 0x8b, 0x6e, 0x8c, 0xe1, 0xce, 0x78, 0xcd, 0x8b, 0x31, 0x28, 0x5d, 0xfc, 0x91,
+	0xd8, 0x54, 0xd0, 0x0e, 0x64, 0xe3, 0x1e, 0x49, 0xac, 0x5c, 0xd6, 0x34, 0x57, 0x5b, 0xd9, 0x86,
+	0x74, 0x74, 0x34, 0x8a, 0x71, 0xe7, 0xd2, 0x7b, 0x7d, 0xb5, 0x91, 0xcf, 0x20, 0x3f, 0xf2, 0xb4,
+	0x47, 0x85, 0x09, 0xdd, 0xe4, 0x8e, 0x16, 0xaf, 0x49, 0xc9, 0xe4, 0x8f, 0xc0, 0x03, 0xc8, 0xc8,
+	0x69, 0x85, 0x2e, 0x9f, 0x5e, 0xc5, 0xa5, 0x49, 0xb6, 0x80, 0xa7, 0x2d, 0xfe, 0x7a, 0x4d, 0x7c,
+	0x45, 0xd3, 0x41, 0xbc, 0x58, 0xb8, 0x4c, 0x24, 0x6c, 0x3c, 0x82, 0x5c, 0x02, 0x66, 0x68, 0x1a,
+	0xbc, 0x25, 0x9e, 0x4f, 0x02, 0xe4, 0x23, 0xc8, 0xc6, 0x57, 0x0a, 0x4d, 0x9b, 0xdd, 0xc5, 0x95,
+	0x29, 0x97, 0x6f, 0xeb, 0xfe, 0xeb, 0x7f, 0x56, 0x67, 0x5e, 0x9f, 0xaf, 0x2a, 0x7f, 0x9e, 0xaf,
+	0x2a, 0x7f, 0x9f, 0xaf, 0x2a, 0x3f, 0xbc, 0x59, 0x9d, 0xf9, 0xe9, 0xcd, 0xea, 0x0c, 0x2c, 0xb4,
+	0xdd, 0x7e, 0xc9, 0x65, 0x81, 0xdd, 0x77, 0x4b, 0x5d, 0xdf, 0x6b, 0x3f, 0x51, 0x5e, 0x64, 0x23,
+	0xd2, 0x3b, 0x39, 0x49, 0x8b, 0x7f, 0xd2, 0x7b, 0xff, 0x06, 0x00, 0x00, 0xff, 0xff, 0xff, 0x6b,
+	0xeb, 0xd7, 0xf0, 0x0e, 0x00, 0x00,
 }

@@ -4,7 +4,7 @@
 
 package otsimopb
 
-import proto "github.com/gogo/protobuf/proto"
+import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
@@ -14,10 +14,40 @@ import (
 	grpc "google.golang.org/grpc"
 )
 
+import io "io"
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+type AllGameReleases struct {
+	GameId   string                         `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
+	Releases []*AllGameReleases_MiniRelease `protobuf:"bytes,2,rep,name=releases" json:"releases,omitempty"`
+}
+
+func (m *AllGameReleases) Reset()                    { *m = AllGameReleases{} }
+func (m *AllGameReleases) String() string            { return proto.CompactTextString(m) }
+func (*AllGameReleases) ProtoMessage()               {}
+func (*AllGameReleases) Descriptor() ([]byte, []int) { return fileDescriptorRegistry, []int{0} }
+
+type AllGameReleases_MiniRelease struct {
+	Version      string       `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	ReleasedAt   int64        `protobuf:"varint,2,opt,name=released_at,json=releasedAt,proto3" json:"released_at,omitempty"`
+	ReleaseState ReleaseState `protobuf:"varint,3,opt,name=release_state,json=releaseState,proto3,enum=apipb.ReleaseState" json:"release_state,omitempty"`
+}
+
+func (m *AllGameReleases_MiniRelease) Reset()         { *m = AllGameReleases_MiniRelease{} }
+func (m *AllGameReleases_MiniRelease) String() string { return proto.CompactTextString(m) }
+func (*AllGameReleases_MiniRelease) ProtoMessage()    {}
+func (*AllGameReleases_MiniRelease) Descriptor() ([]byte, []int) {
+	return fileDescriptorRegistry, []int{0, 0}
+}
+
+func init() {
+	proto.RegisterType((*AllGameReleases)(nil), "apipb.AllGameReleases")
+	proto.RegisterType((*AllGameReleases_MiniRelease)(nil), "apipb.AllGameReleases.MiniRelease")
+}
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
@@ -25,7 +55,7 @@ var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion3
+const _ = grpc.SupportPackageIsVersion4
 
 // Client API for RegistryService service
 
@@ -45,6 +75,8 @@ type RegistryServiceClient interface {
 	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
 	// ListGames returns all games
 	ListGames(ctx context.Context, in *ListGamesRequest, opts ...grpc.CallOption) (RegistryService_ListGamesClient, error)
+	// AllReleases returns all releases of the given game
+	AllReleases(ctx context.Context, in *GetGameRequest, opts ...grpc.CallOption) (*AllGameReleases, error)
 }
 
 type registryServiceClient struct {
@@ -141,6 +173,15 @@ func (x *registryServiceListGamesClient) Recv() (*ListItem, error) {
 	return m, nil
 }
 
+func (c *registryServiceClient) AllReleases(ctx context.Context, in *GetGameRequest, opts ...grpc.CallOption) (*AllGameReleases, error) {
+	out := new(AllGameReleases)
+	err := grpc.Invoke(ctx, "/apipb.RegistryService/AllReleases", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for RegistryService service
 
 type RegistryServiceServer interface {
@@ -159,6 +200,8 @@ type RegistryServiceServer interface {
 	Search(context.Context, *SearchRequest) (*SearchResponse, error)
 	// ListGames returns all games
 	ListGames(*ListGamesRequest, RegistryService_ListGamesServer) error
+	// AllReleases returns all releases of the given game
+	AllReleases(context.Context, *GetGameRequest) (*AllGameReleases, error)
 }
 
 func RegisterRegistryServiceServer(s *grpc.Server, srv RegistryServiceServer) {
@@ -294,6 +337,24 @@ func (x *registryServiceListGamesServer) Send(m *ListItem) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _RegistryService_AllReleases_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServiceServer).AllReleases(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apipb.RegistryService/AllReleases",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServiceServer).AllReleases(ctx, req.(*GetGameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _RegistryService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "apipb.RegistryService",
 	HandlerType: (*RegistryServiceServer)(nil),
@@ -322,6 +383,10 @@ var _RegistryService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "Search",
 			Handler:    _RegistryService_Search_Handler,
 		},
+		{
+			MethodName: "AllReleases",
+			Handler:    _RegistryService_AllReleases_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -330,32 +395,517 @@ var _RegistryService_serviceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: fileDescriptorRegistry,
+	Metadata: "registry.proto",
 }
 
+func (m *AllGameReleases) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AllGameReleases) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.GameId) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintRegistry(dAtA, i, uint64(len(m.GameId)))
+		i += copy(dAtA[i:], m.GameId)
+	}
+	if len(m.Releases) > 0 {
+		for _, msg := range m.Releases {
+			dAtA[i] = 0x12
+			i++
+			i = encodeVarintRegistry(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	return i, nil
+}
+
+func (m *AllGameReleases_MiniRelease) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AllGameReleases_MiniRelease) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Version) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintRegistry(dAtA, i, uint64(len(m.Version)))
+		i += copy(dAtA[i:], m.Version)
+	}
+	if m.ReleasedAt != 0 {
+		dAtA[i] = 0x10
+		i++
+		i = encodeVarintRegistry(dAtA, i, uint64(m.ReleasedAt))
+	}
+	if m.ReleaseState != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintRegistry(dAtA, i, uint64(m.ReleaseState))
+	}
+	return i, nil
+}
+
+func encodeFixed64Registry(dAtA []byte, offset int, v uint64) int {
+	dAtA[offset] = uint8(v)
+	dAtA[offset+1] = uint8(v >> 8)
+	dAtA[offset+2] = uint8(v >> 16)
+	dAtA[offset+3] = uint8(v >> 24)
+	dAtA[offset+4] = uint8(v >> 32)
+	dAtA[offset+5] = uint8(v >> 40)
+	dAtA[offset+6] = uint8(v >> 48)
+	dAtA[offset+7] = uint8(v >> 56)
+	return offset + 8
+}
+func encodeFixed32Registry(dAtA []byte, offset int, v uint32) int {
+	dAtA[offset] = uint8(v)
+	dAtA[offset+1] = uint8(v >> 8)
+	dAtA[offset+2] = uint8(v >> 16)
+	dAtA[offset+3] = uint8(v >> 24)
+	return offset + 4
+}
+func encodeVarintRegistry(dAtA []byte, offset int, v uint64) int {
+	for v >= 1<<7 {
+		dAtA[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	dAtA[offset] = uint8(v)
+	return offset + 1
+}
+func (m *AllGameReleases) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.GameId)
+	if l > 0 {
+		n += 1 + l + sovRegistry(uint64(l))
+	}
+	if len(m.Releases) > 0 {
+		for _, e := range m.Releases {
+			l = e.Size()
+			n += 1 + l + sovRegistry(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *AllGameReleases_MiniRelease) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Version)
+	if l > 0 {
+		n += 1 + l + sovRegistry(uint64(l))
+	}
+	if m.ReleasedAt != 0 {
+		n += 1 + sovRegistry(uint64(m.ReleasedAt))
+	}
+	if m.ReleaseState != 0 {
+		n += 1 + sovRegistry(uint64(m.ReleaseState))
+	}
+	return n
+}
+
+func sovRegistry(x uint64) (n int) {
+	for {
+		n++
+		x >>= 7
+		if x == 0 {
+			break
+		}
+	}
+	return n
+}
+func sozRegistry(x uint64) (n int) {
+	return sovRegistry(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *AllGameReleases) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRegistry
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AllGameReleases: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AllGameReleases: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GameId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GameId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Releases", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Releases = append(m.Releases, &AllGameReleases_MiniRelease{})
+			if err := m.Releases[len(m.Releases)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRegistry(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AllGameReleases_MiniRelease) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRegistry
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MiniRelease: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MiniRelease: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Version = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReleasedAt", wireType)
+			}
+			m.ReleasedAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ReleasedAt |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReleaseState", wireType)
+			}
+			m.ReleaseState = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ReleaseState |= (ReleaseState(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRegistry(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRegistry
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipRegistry(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowRegistry
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if dAtA[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+			return iNdEx, nil
+		case 1:
+			iNdEx += 8
+			return iNdEx, nil
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowRegistry
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			iNdEx += length
+			if length < 0 {
+				return 0, ErrInvalidLengthRegistry
+			}
+			return iNdEx, nil
+		case 3:
+			for {
+				var innerWire uint64
+				var start int = iNdEx
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return 0, ErrIntOverflowRegistry
+					}
+					if iNdEx >= l {
+						return 0, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					innerWire |= (uint64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				innerWireType := int(innerWire & 0x7)
+				if innerWireType == 4 {
+					break
+				}
+				next, err := skipRegistry(dAtA[start:])
+				if err != nil {
+					return 0, err
+				}
+				iNdEx = start + next
+			}
+			return iNdEx, nil
+		case 4:
+			return iNdEx, nil
+		case 5:
+			iNdEx += 4
+			return iNdEx, nil
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+	}
+	panic("unreachable")
+}
+
+var (
+	ErrInvalidLengthRegistry = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowRegistry   = fmt.Errorf("proto: integer overflow")
+)
+
+func init() { proto.RegisterFile("registry.proto", fileDescriptorRegistry) }
+
 var fileDescriptorRegistry = []byte{
-	// 361 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x5c, 0x92, 0x4f, 0x4b, 0xc3, 0x30,
-	0x18, 0xc6, 0x37, 0x87, 0x53, 0xa3, 0x6c, 0x18, 0x9d, 0xc2, 0x94, 0x09, 0xde, 0x3c, 0xd8, 0x89,
-	0x1e, 0xe6, 0x49, 0x41, 0x0f, 0x43, 0x98, 0x38, 0x5a, 0xd9, 0xc1, 0x5b, 0xda, 0xbd, 0x4b, 0x03,
-	0xed, 0x52, 0x93, 0x54, 0xf0, 0x5b, 0xf8, 0x19, 0xfc, 0x20, 0x9e, 0x77, 0xf4, 0x23, 0xf8, 0xe7,
-	0x8b, 0x98, 0xa5, 0xcd, 0x56, 0x7b, 0x08, 0xe4, 0xfd, 0xbd, 0xcf, 0xf3, 0xbc, 0x09, 0x09, 0x6a,
-	0x08, 0xa0, 0x4c, 0x2a, 0xf1, 0xea, 0x24, 0x82, 0x2b, 0x8e, 0x57, 0x49, 0xc2, 0x12, 0xbf, 0xdd,
-	0x88, 0x41, 0x4a, 0x42, 0x41, 0x66, 0xb8, 0xbd, 0x15, 0xf3, 0x31, 0x44, 0xb6, 0x3a, 0xa5, 0x4c,
-	0x85, 0xa9, 0xef, 0x04, 0x3c, 0xee, 0x52, 0x4e, 0x79, 0xd7, 0x60, 0x3f, 0x9d, 0x98, 0xca, 0x14,
-	0x66, 0x97, 0xc9, 0xcf, 0x3f, 0x6a, 0xa8, 0xe9, 0xe6, 0x63, 0x3c, 0x10, 0x2f, 0x2c, 0x00, 0x7c,
-	0x82, 0x6a, 0x7d, 0x50, 0xb8, 0xe5, 0x98, 0x79, 0x8e, 0xde, 0xf7, 0x49, 0x0c, 0x2e, 0x3c, 0xa7,
-	0x20, 0x55, 0x7b, 0xd3, 0x62, 0xcd, 0xf0, 0x15, 0x42, 0xba, 0xed, 0x42, 0x04, 0x44, 0x02, 0x3e,
-	0x2c, 0x3b, 0x0c, 0xb6, 0x46, 0x5c, 0x30, 0x5a, 0xc7, 0x25, 0x5a, 0x1b, 0xa6, 0x7e, 0xc4, 0x64,
-	0x88, 0x77, 0x0a, 0xed, 0x7b, 0x32, 0x65, 0x93, 0xb9, 0x67, 0x2f, 0x87, 0xb9, 0xc8, 0x05, 0x99,
-	0xf0, 0xa9, 0x84, 0xe3, 0x0a, 0xbe, 0x46, 0xf8, 0x36, 0x24, 0x53, 0x6a, 0xa3, 0x3c, 0x45, 0x14,
-	0x60, 0xab, 0x1f, 0x91, 0x88, 0x8d, 0x35, 0xb0, 0xb3, 0x9b, 0x39, 0x2f, 0x04, 0x78, 0x68, 0x5b,
-	0x9f, 0x73, 0xa0, 0x45, 0x52, 0x8d, 0x40, 0x48, 0xa6, 0x39, 0x3e, 0x5a, 0xde, 0xe0, 0x7f, 0xc7,
-	0x06, 0x1d, 0x14, 0x4e, 0xb9, 0xec, 0x2d, 0x42, 0x7b, 0xa8, 0xee, 0x01, 0x11, 0x41, 0x88, 0x77,
-	0x73, 0x61, 0x56, 0x5a, 0x7b, 0xab, 0x44, 0x0b, 0xc6, 0x8d, 0x81, 0x7e, 0x84, 0x79, 0xac, 0xc4,
-	0xfb, 0xb9, 0x6a, 0x41, 0xca, 0xd7, 0x98, 0x37, 0xee, 0x14, 0xc4, 0x67, 0xd5, 0x9b, 0xde, 0xec,
-	0xbb, 0x53, 0x99, 0xfd, 0x74, 0xaa, 0x9f, 0x7a, 0x7d, 0xe9, 0xf5, 0xf6, 0xdb, 0xa9, 0xa0, 0xa6,
-	0x7e, 0x7e, 0x87, 0x2b, 0xc9, 0x62, 0xee, 0x50, 0x91, 0x04, 0xc3, 0xea, 0xd3, 0x7a, 0x56, 0x26,
-	0xfe, 0xfb, 0x4a, 0xed, 0xe1, 0xd1, 0xf3, 0xeb, 0xe6, 0x03, 0x5c, 0xfc, 0x05, 0x00, 0x00, 0xff,
-	0xff, 0x72, 0xc8, 0x6e, 0xee, 0x66, 0x02, 0x00, 0x00,
+	// 497 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x53, 0xbf, 0x6e, 0xd3, 0x40,
+	0x18, 0xef, 0xc5, 0x22, 0x69, 0xbf, 0x94, 0x44, 0x5c, 0x69, 0x6b, 0x05, 0xe4, 0x46, 0x99, 0xc2,
+	0x80, 0x8b, 0xc2, 0xd0, 0x0e, 0xa8, 0x28, 0x30, 0x58, 0x95, 0x5a, 0x51, 0xd9, 0xa8, 0x03, 0x4b,
+	0x74, 0xb6, 0xbf, 0x3a, 0x27, 0xd9, 0x3e, 0xe3, 0xbb, 0x54, 0x62, 0xe5, 0x29, 0x98, 0x79, 0x9a,
+	0x8e, 0x3c, 0x02, 0x84, 0x07, 0xe0, 0x05, 0x18, 0x90, 0xed, 0xb3, 0x6b, 0x22, 0xd8, 0xf2, 0xfb,
+	0xf7, 0xdd, 0xfd, 0xbe, 0x9c, 0x61, 0x90, 0x63, 0xc4, 0xa5, 0xca, 0x3f, 0xd9, 0x59, 0x2e, 0x94,
+	0xa0, 0x0f, 0x58, 0xc6, 0x33, 0x7f, 0x34, 0x48, 0x50, 0x4a, 0x16, 0xa1, 0xac, 0xe8, 0xd1, 0x6e,
+	0x22, 0x42, 0x8c, 0x6b, 0xf4, 0x3c, 0xe2, 0x6a, 0xb9, 0xf2, 0xed, 0x40, 0x24, 0xc7, 0x91, 0x88,
+	0xc4, 0x71, 0x49, 0xfb, 0xab, 0x9b, 0x12, 0x95, 0xa0, 0xfc, 0x55, 0xd9, 0x27, 0xbf, 0x08, 0x0c,
+	0xe7, 0x71, 0xec, 0xb0, 0x04, 0x5d, 0x8c, 0x91, 0x49, 0x94, 0xf4, 0x10, 0x7a, 0x11, 0x4b, 0x70,
+	0xc1, 0x43, 0x93, 0x8c, 0xc9, 0x74, 0xc7, 0xed, 0x16, 0xf0, 0x3c, 0xa4, 0x67, 0xb0, 0x9d, 0x6b,
+	0x93, 0xd9, 0x19, 0x1b, 0xd3, 0xfe, 0x6c, 0x62, 0x97, 0x77, 0xb2, 0x37, 0x46, 0xd8, 0x97, 0x3c,
+	0xe5, 0x1a, 0xb8, 0x4d, 0x66, 0xf4, 0x99, 0x40, 0xbf, 0xa5, 0x50, 0x13, 0x7a, 0xb7, 0x98, 0x4b,
+	0x2e, 0x52, 0x7d, 0x50, 0x0d, 0xe9, 0x11, 0xf4, 0x75, 0x2a, 0x5c, 0x30, 0x65, 0x76, 0xc6, 0x64,
+	0x6a, 0xb8, 0x50, 0x53, 0x73, 0x45, 0x4f, 0xe1, 0xa1, 0x46, 0x0b, 0xa9, 0x98, 0x42, 0xd3, 0x18,
+	0x93, 0xe9, 0x60, 0xb6, 0xa7, 0xef, 0xa3, 0x4f, 0xf0, 0x0a, 0xc9, 0xdd, 0xcd, 0x5b, 0x68, 0xf6,
+	0xdb, 0x80, 0xa1, 0xab, 0x17, 0xeb, 0x61, 0x7e, 0xcb, 0x03, 0xa4, 0xcf, 0xc0, 0x70, 0x50, 0xd1,
+	0x7d, 0x9d, 0x76, 0x50, 0x55, 0x6d, 0x3e, 0xae, 0x50, 0xaa, 0x51, 0xbf, 0xa6, 0x59, 0x82, 0xf4,
+	0x0c, 0xc0, 0x41, 0x55, 0x37, 0x78, 0xba, 0x99, 0xa8, 0x2a, 0xeb, 0x20, 0x6d, 0x05, 0xeb, 0xc4,
+	0x29, 0xf4, 0xae, 0x56, 0x7e, 0xcc, 0xe5, 0x92, 0xee, 0xb5, 0xe4, 0x4b, 0x96, 0xf2, 0x9b, 0x22,
+	0x73, 0xa0, 0x49, 0x6d, 0x72, 0x51, 0x66, 0x22, 0x95, 0x38, 0xd9, 0xa2, 0xaf, 0x81, 0xbe, 0x5d,
+	0xb2, 0x34, 0xc2, 0x76, 0x39, 0x5a, 0xfb, 0xaf, 0x59, 0xcc, 0xc3, 0xa2, 0xad, 0x3e, 0x7b, 0xd8,
+	0x6c, 0xa2, 0x19, 0xe0, 0xc1, 0x23, 0x07, 0xd5, 0x05, 0x53, 0x28, 0xd5, 0x75, 0xb5, 0x68, 0x49,
+	0x8f, 0xee, 0x1b, 0xfc, 0xad, 0xd4, 0x83, 0x9e, 0xb4, 0x6e, 0x79, 0xaf, 0x35, 0x43, 0x4f, 0xa0,
+	0xeb, 0x21, 0xcb, 0x83, 0x25, 0x7d, 0xac, 0x8d, 0x15, 0xac, 0xe3, 0xfb, 0x1b, 0x6c, 0x2b, 0xb8,
+	0x73, 0xc1, 0x65, 0xb9, 0x36, 0x49, 0x0f, 0xb5, 0xab, 0x61, 0x36, 0x6b, 0x14, 0xc2, 0xb9, 0xc2,
+	0xe4, 0x05, 0xa1, 0xaf, 0xa0, 0x3f, 0x8f, 0xe3, 0xe6, 0xb5, 0xfe, 0xe7, 0x4f, 0x3b, 0xf8, 0xf7,
+	0xcb, 0x7c, 0x73, 0x72, 0xf7, 0xc3, 0xda, 0xba, 0x5b, 0x5b, 0xe4, 0xdb, 0xda, 0x22, 0xdf, 0xd7,
+	0x16, 0xf9, 0xf2, 0xd3, 0xda, 0x82, 0x61, 0x20, 0x12, 0x5b, 0x28, 0xc9, 0x13, 0x61, 0x47, 0x79,
+	0x16, 0x5c, 0x91, 0x0f, 0xdb, 0x15, 0xcc, 0xfc, 0xaf, 0x1d, 0xe3, 0xdd, 0x7b, 0xcf, 0xef, 0x96,
+	0x1f, 0xcc, 0xcb, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xdc, 0x77, 0xff, 0x69, 0x96, 0x03, 0x00,
+	0x00,
 }

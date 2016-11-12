@@ -106,6 +106,7 @@ message ListGamesRequest{
     InnerState release_state = 1;
     int32 limit = 2;   
     int32 offset = 3;
+    string language = 4;
 }
 
 message ListItem {

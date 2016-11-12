@@ -78,6 +78,8 @@ message AppEventData{
     string event_id = 7;
     //IsResend is true if client is trying to send a failed event
     bool is_resend = 8;
+    //UserId is profile id or child id 
+    string user_id = 9;
 }
 
 message BatchEventData{
