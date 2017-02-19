@@ -5,12 +5,12 @@ scripts:
 projects:
   - name: content
     type: go
-    root: src/cmd/otsimo-content
+    root: src/bin/otsimo-content
     imageName: gcr.io/otsimocloud/content
     dockerfile: ./Dockerfile
     run: ./content --debug --git-path ./project --host http://127.0.0.1:18871 --git-branch deneme
     golang:
-      package: cmd/otsimo-content
+      package: bin/otsimo-content
       cgoEnabled: false
       ldflags: "-w -X main.Version=${BUILD_VERSION}"
       builder: gb

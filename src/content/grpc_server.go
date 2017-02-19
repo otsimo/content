@@ -98,7 +98,9 @@ func (w *contentGrpcServer) List(_ context.Context, query *apipb.ContentListRequ
 		}
 
 		cp := *c
-		cp.Markdown = []byte{}
+		if query.OnlyHtmlUrl {
+			cp.Markdown = []byte{}
+		}
 		contents = append(contents, &cp)
 	}
 	sorter := &contentSorter{
