@@ -7,6 +7,8 @@ import (
 	"github.com/Sirupsen/logrus"
 	apipb "github.com/otsimo/otsimopb"
 	"golang.org/x/net/context"
+	"time"
+	"fmt"
 )
 
 type contentGrpcServer struct {
@@ -57,6 +59,7 @@ func (w *contentGrpcServer) List(_ context.Context, query *apipb.ContentListRequ
 	if query.Language == "" {
 		query.Language = w.server.Config.DefaultLanguage
 	}
+	now := time.Now().UTC().Unix()
 	for _, c := range w.server.Content.contents {
 		if c.Language != query.Language {
 			continue
@@ -66,6 +69,16 @@ func (w *contentGrpcServer) List(_ context.Context, query *apipb.ContentListRequ
 		}
 		if query.Status == apipb.ContentListRequest_ONLY_DRAFT && !c.Draft {
 			continue
+		}
+		if c.WrittenAt > now {
+			continue
+		}
+		if a, ok := c.Params["available_at"]; ok {
+			if t1, e := time.Parse("2006-01-02", a); e == nil {
+				if t1.Unix() > now {
+					continue
+				}
+			}
 		}
 		if query.Category != "" && query.Category != c.Category {
 			continue
