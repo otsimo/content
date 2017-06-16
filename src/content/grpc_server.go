@@ -8,7 +8,6 @@ import (
 	apipb "github.com/otsimo/otsimopb"
 	"golang.org/x/net/context"
 	"time"
-	"fmt"
 )
 
 type contentGrpcServer struct {
@@ -70,7 +69,7 @@ func (w *contentGrpcServer) List(_ context.Context, query *apipb.ContentListRequ
 		if query.Status == apipb.ContentListRequest_ONLY_DRAFT && !c.Draft {
 			continue
 		}
-		if c.WrittenAt > now {
+		if c.Date > now {
 			continue
 		}
 		if a, ok := c.Params["available_at"]; ok {
