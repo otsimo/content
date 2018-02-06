@@ -1,0 +1,97 @@
+syntax = "proto3";
+package apipb;
+
+import "messages.proto";
+import "models.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+option objc_class_prefix = "OTS";
+option go_package = "otsimopb";
+option java_package = "com.otsimo.grpc";
+option java_multiple_files = true;
+
+message AllGameReleases{
+    message MiniRelease {
+        string version = 1;
+        int64 released_at = 2;
+        ReleaseState release_state = 3;
+    }
+    string game_id = 1;
+    repeated MiniRelease releases = 2; 
+}
+
+message GameCategoryLocale{
+    string language = 1;
+    string title = 2;
+    string image = 3;
+}
+
+message GameCategory{
+    string name = 1;
+    repeated GameCategoryLocale locales = 2;
+    int32 revision = 3;
+    map<string,string>labels = 4;
+}
+
+message CategoryReq{
+    enum Task{
+        ADD = 0;
+        UPDATE = 1;
+        DELETE = 2;
+    }
+    Task task = 1;
+    GameCategory category = 2;
+    int32 known_revision = 3;
+}
+
+message CategoryListReq{
+}
+
+message CategoryList{
+    repeated GameCategory categories = 1;
+}
+
+message GetAllGamesReq{
+    // Games that user wants the data of, if it is empty returns all games
+    repeated GameAndVersion games = 1;
+    // Language filters games. If language field is empty than returns games with all languages.
+    string language = 2;
+}
+
+message GetAllGamesRes{
+    repeated GameRelease games = 1;
+}
+
+// Registry Service
+service RegistryService {
+    // Get returns game
+    rpc Get(GetGameRequest) returns (Game);
+    // GetRelease returns GameRelease by given game id and version
+    rpc GetRelease(GetGameReleaseRequest) returns (GameRelease);
+    // Publish tries to create a new GameRelease by given manifest
+    rpc Publish(GameManifest) returns (PublishResponse){}
+    // ChangeReleaseState changes state of a release, If user is admin than s/he can change 
+    // from WAITING to REJECTED or VALIDATED, developers can change to any except VALIDATED
+    rpc ChangeReleaseState(ValidateRequest) returns (Response){}
+    //GetLatestVersions returns latest versions of given game ids
+    rpc GetLatestVersions(GetLatestVersionsRequest) returns (GameVersionsResponse){}
+    //Search does search 
+    rpc Search(SearchRequest) returns (SearchResponse){}     
+    //ListGames returns all games with normal versions
+    rpc ListGames(ListGamesRequest) returns (stream ListItem);
+    //ListGames returns all games with testing versions    
+    rpc ListGamesWithTests(ListGamesRequest) returns (stream ListItemWithTests);
+    // AllReleases returns all releases of the given game
+    rpc AllReleases(GetGameRequest) returns (AllGameReleases);
+    // Category adds, updates and removes a game category 
+    rpc Category(CategoryReq)returns(GameCategory);
+    // ListCategories returns all the categories
+    rpc ListCategories(CategoryListReq)returns(CategoryList);
+    // GetAllGames returns all Game Releases with production state
+    rpc GetAllGames(GetAllGamesReq)returns(GetAllGamesRes);
+}

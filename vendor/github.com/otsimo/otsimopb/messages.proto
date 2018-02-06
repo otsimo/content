@@ -1,0 +1,222 @@
+syntax = "proto3";
+package apipb;
+
+import "models.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+option objc_class_prefix = "OTS";
+option go_package = "otsimopb";
+option java_package = "com.otsimo.grpc";
+option java_multiple_files = true;
+
+// Request and Responses
+
+enum RequestReleaseState{
+    PRODUCTION_STATE = 0;
+    ALL_STATES = 1;    
+}
+
+message GetProfileRequest{
+    string id = 1;
+    string email = 2;
+}
+
+message GetChildRequest{
+    string child_id = 1;
+}
+
+message GetChildrenFromProfileRequest{
+    string profile_id = 1;
+}
+
+message ChangeChildActivationRequest{
+    string child_id = 1;
+    bool active = 2;
+}
+
+message GetChildrenFromProfileResponse{
+    repeated Child children = 1;
+}
+
+message GetGameReleaseRequest{
+    string game_id = 1;
+    string version = 2;             //whether version or state must be entered
+    RequestReleaseState state = 3;  //default value is production 
+}
+
+message SoundEnableRequest{
+    string child_id = 1;
+    string profile_id = 2;
+    bool enable = 3;
+}
+
+message GameEntryRequest{
+    enum RequestType{
+        ADD = 0;
+        ACTIVATE = 1;
+        DEACTIVATE = 2;
+        SETTINGS = 3;
+        INDEX = 4;
+        LOCALSETTINGS = 5;
+    }
+    string child_id = 1;
+    string game_id = 2;
+    RequestType type = 3;
+    bytes settings = 4;
+    int32 index = 5;
+}
+
+message PublishResponse{
+    int32 type = 1;
+    string message = 2;
+    UploadToken token = 3;
+}
+
+message ValidateRequest{
+    string game_id = 1;
+    string game_version = 2;
+    ReleaseState new_state = 3; //only admins can change to validated state, and only developers can change to others
+}
+
+message UpdateIndecesRequest {
+    string profile_id = 1;
+    string child_id = 2;
+    repeated string game_ids = 3;    
+}
+
+//Get game by game_id or unique_name
+message GetGameRequest{
+    string unique_name = 1;
+    string game_id = 2;
+}
+
+message ListGamesRequest{
+    enum InnerState{
+        ANY = 0;
+        CREATED = 1;
+        DEVELOPMENT = 2;
+        WAITING = 3;
+        REJECTED = 4;
+        VALIDATED = 5;
+        PRODUCTION = 6;    
+    }
+    InnerState release_state = 1;
+    int32 limit = 2;   
+    int32 offset = 3;
+    string language = 4;
+}
+
+message ListItem {
+    string game_id = 1;
+    string unique_name = 2;
+    string latest_version = 3;
+    ReleaseState latest_state = 4;
+    string production_version = 5;
+    string storage = 6;           
+    string archive_format = 7;   
+    int64 released_at = 8;
+    repeated string languages = 9;
+}
+
+message ListItemWithTests {
+    message TestGroup{
+        string name = 1; 
+        int32 weight = 2;
+        string latest_version = 3;
+        ReleaseState latest_state = 4;
+        string production_version = 5;
+        string storage = 6;
+        string archive_format = 7;   
+        int64 released_at = 8;
+        repeated string languages = 9;
+    }
+    string game_id = 1;
+    string unique_name = 2;
+    int32 testing_version = 3;
+    repeated TestGroup groups = 4;
+}
+
+message GetLatestVersionsRequest{
+    RequestReleaseState state = 1; //Default State is PRODUCTION
+    repeated string game_ids = 2;
+    // Device Capabilities
+    repeated string capabilities = 3; 
+}
+
+message GameAndVersion{
+    string game_id = 1;
+    string version = 2;
+    string tarball_url = 3;
+}
+
+message GameVersionsResponse{
+    repeated GameAndVersion results = 1;
+}
+
+//Search Service
+message IndexRequest{
+}
+
+message SearchResult{
+    string game_id = 1;
+    double score = 2;
+}
+
+
+message SearchRequest{
+    string query = 1;
+    RequestReleaseState state = 2; //Default State is PRODUCTION    
+}
+
+message SearchResponse{
+    int32 type = 1;    
+    repeated SearchResult results = 2;
+}
+
+// Common
+message Response{
+    int32 type = 1;
+    string message = 2;
+}
+
+// A label selector operator is the set of operators that can be used in
+// a label selector requirement.
+enum LabelSelectorOperator{
+    In           =0;
+    NotIn        =1;
+    Exists       =2;
+    DoesNotExist =3;
+    Gt           =4;
+    Lt           =5;
+}
+// A label selector requirement is a selector that contains values, a key, and an operator
+// that relates the key and values.
+message LabelSelectorRequirement{
+    // key is the label key that the selector applies to.
+    string key = 1;
+    // operator represents a key's relationship to a set of values.
+    // Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+    LabelSelectorOperator operator = 2;
+    // values is an array of string values. If the operator is In or NotIn,
+    // the values array must be non-empty. If the operator is Exists or DoesNotExist,
+    // the values array must be empty. If the operator is Gt or Lt, the values
+    // array must have a single element, which will be interpreted as an integer.
+    repeated string values = 3;
+}
+// An empty label selector term matches all objects. A null label selector term
+// matches no objects.
+message LabelSelectorTerm{
+    // expressions is a list of label selector requirements. The requirements are ANDed.
+    repeated LabelSelectorRequirement expressions = 1;
+}
+// A label selector represents the union of the results of one or more label queries
+// over a set of labels; that is, it represents the OR of the selectors represented
+// by the labelSelectorTerms.
+message LabelSelector{
+    // terms is a list of label selector terms. The terms are ORed.
+    repeated LabelSelectorTerm terms = 1;
+}

@@ -1,0 +1,70 @@
+syntax = "proto3";
+package otsimo;
+
+import "messages.proto";
+import "google/api/annotations.proto";
+
+option go_package = "otsimopb";
+option java_package = "com.otsimo.grpc";
+option java_multiple_files = true;
+option java_outer_classname= "FileProto";
+
+service File {
+    rpc StoreSmall(StoreSmallReq) returns (StoreRes);
+    rpc RequestStoreBig(UploadReq) returns (UploadRes){
+        option (google.api.http) = {
+			post: "/api/v1/file/big"
+            body: "*"
+		};
+    }
+    rpc Lookup(LookupReq) returns (LookupRes){
+        option (google.api.http) = {
+			post: "/api/v1/file/lookup"
+            body: "*"
+		};
+    }
+}
+
+message FileMetadata{
+    // Key is the unique name of the file in collection
+    string key = 1;
+    // Collection of the file, value can be asset, gameid or userid
+    string collection = 2; 
+    // Labels of the file. Label fields cannot be "key", "collection" and "type"
+    map<string, string> labels = 3;
+    // Type is Mime Type of the file
+    string type = 4;
+    // Checksum is MD5 of the file
+    string checksum = 5;
+    // Owner of the file, if the value is empty means that its open to everyone
+    string owner = 6;
+    // Url is the stored file url
+    string url = 7;
+}
+
+message UploadReq{
+    // Metadata list of upload files, keys have to be unique in the list
+    repeated FileMetadata metadata = 1;
+}
+
+message UploadRes{
+    map<string, string> upload_urls = 1;
+}
+
+message StoreSmallReq{
+    FileMetadata metadata = 1;
+    bytes data = 2;
+}
+
+message StoreRes{
+    FileMetadata metadata = 1;
+}
+
+message LookupReq{
+    // Selector the files. "key", "collection" and "type" also part of labels 
+    apipb.LabelSelector selector = 1;
+}
+
+message LookupRes{
+    repeated FileMetadata metadata = 1;    
+}
