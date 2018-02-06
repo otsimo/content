@@ -52,8 +52,7 @@ func parseMarkdownFile(filep string, cm *ContentManager, tpl *template.Template)
 
 	content.Date = t1.Unix()
 	content.Markdown = page.Content()
-	out := blackfriday.MarkdownCommon(content.Markdown)
-
+	out := blackfriday.Run(content.Markdown, blackfriday.WithExtensions(blackfriday.CommonExtensions))
 	data := struct {
 		Title   string
 		Content string
