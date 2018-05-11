@@ -110,7 +110,7 @@ func (s *Server) listenGRPC() error {
 		grpc_prometheus.Register(grpcServer)
 		reflection.Register(grpcServer)
 		grpc_health_v1.RegisterHealthServer(grpcServer, h)
-
+		log.Infof("binding :%d for grpc", port)
 		//Listen
 		lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 		if err != nil {
