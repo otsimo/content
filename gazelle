@@ -3,4 +3,4 @@
 rm -f $(find ./vendor -name BUILD)
 rm -f $(find ./vendor -name BUILD.bazel)
 
-gazelle update -go_prefix github.com/otsimo/listener -proto=disable -external=vendored
+gazelle update -go_prefix github.com/otsimo/content -proto=disable -external=vendored

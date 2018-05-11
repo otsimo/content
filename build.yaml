@@ -25,3 +25,10 @@ projects:
         - /opt/wiki
         - --host
         - http://192.168.64.8:18859
+    bazel:
+      flagSets:
+        - golang
+      docker: //contentd:docker_push
+      binary: //contentd:contentd
+      deployOn:
+        - //contentd:contentd

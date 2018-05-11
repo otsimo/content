@@ -8,22 +8,23 @@ const (
 )
 
 type Config struct {
-	Debug           bool
-	GrpcPort        int
-	HttpPort        int
-	TlsCertFile     string
-	TlsKeyFile      string
-	NoRedis         bool
-	GitUrl          string
-	GitBranch       string
-	GitFolder       string
-	RedisAddr       string
-	RedisPassword   string
-	RedisDB         int64
-	PublicDir       string
-	Host            string
-	Secret          string
-	DefaultLanguage string
+	Debug            bool
+	GrpcPort         int
+	InsecureGrpcPort int
+	HttpPort         int
+	TlsCertFile      string
+	TlsKeyFile       string
+	NoRedis          bool
+	GitUrl           string
+	GitBranch        string
+	GitFolder        string
+	RedisAddr        string
+	RedisPassword    string
+	RedisDB          int64
+	PublicDir        string
+	Host             string
+	Secret           string
+	DefaultLanguage  string
 }
 
 func (c *Config) GetGrpcPortString() string {
@@ -35,5 +36,5 @@ func (c *Config) GetHttpPortString() string {
 }
 
 func NewConfig() *Config {
-	return &Config{GrpcPort: DefaultGrpcPort, HttpPort: DefaultHttpPort}
+	return &Config{GrpcPort: DefaultGrpcPort, HttpPort: DefaultHttpPort, InsecureGrpcPort: 0}
 }

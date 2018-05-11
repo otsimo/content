@@ -1,14 +1,21 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
-
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_push",
+)
 go_library(
     name = "go_default_library",
     srcs = ["main.go"],
-    importpath = "github.com/otsimo/listener/contentd",
+    importpath = "github.com/otsimo/content/contentd",
     visibility = ["//visibility:private"],
+    x_defs = {
+        "main.Version": "{BUILD_VERSION}",
+    },
     deps = [
+        "//:go_default_library",
         "//vendor/github.com/Sirupsen/logrus:go_default_library",
         "//vendor/github.com/codegangsta/cli:go_default_library",
-        "//vendor/github.com/otsimo/content:go_default_library",
     ],
 )
 
@@ -16,4 +23,19 @@ go_binary(
     name = "contentd",
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
+)
+
+go_image(
+    name = "docker",
+    embed = [":go_default_library"],
+)
+
+container_push(
+    name = "docker_push",
+    format = "Docker",
+    image = ":docker",
+    registry = "gcr.io",
+    repository = "otsimocloud/content",
+    stamp = True,
+    tag = "{OBM_IMAGE_TAG}",
 )

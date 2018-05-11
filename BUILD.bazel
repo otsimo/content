@@ -16,7 +16,7 @@ go_library(
         "tls.go",
         "webhook.go",
     ],
-    importpath = "github.com/otsimo/listener",
+    importpath = "github.com/otsimo/content",
     visibility = ["//visibility:public"],
     deps = [
         "//vendor/github.com/BurntSushi/toml:go_default_library",
