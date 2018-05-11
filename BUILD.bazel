@@ -1,0 +1,52 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "config.go",
+        "content.go",
+        "git.go",
+        "grpc_server.go",
+        "http_server.go",
+        "logger.go",
+        "page.go",
+        "parser.go",
+        "redis.go",
+        "server.go",
+        "tls.go",
+        "webhook.go",
+    ],
+    importpath = "github.com/otsimo/listener",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/BurntSushi/toml:go_default_library",
+        "//vendor/github.com/Sirupsen/logrus:go_default_library",
+        "//vendor/github.com/bmatsuo/go-jsontree:go_default_library",
+        "//vendor/github.com/fsnotify/fsnotify:go_default_library",
+        "//vendor/github.com/grpc-ecosystem/go-grpc-prometheus:go_default_library",
+        "//vendor/github.com/labstack/echo:go_default_library",
+        "//vendor/github.com/labstack/echo/engine/standard:go_default_library",
+        "//vendor/github.com/labstack/echo/middleware:go_default_library",
+        "//vendor/github.com/labstack/gommon/color:go_default_library",
+        "//vendor/github.com/mattn/go-isatty:go_default_library",
+        "//vendor/github.com/otsimo/health:go_default_library",
+        "//vendor/github.com/otsimo/otsimopb:go_default_library",
+        "//vendor/github.com/prometheus/client_golang/prometheus:go_default_library",
+        "//vendor/github.com/russross/blackfriday:go_default_library",
+        "//vendor/github.com/valyala/fasttemplate:go_default_library",
+        "//vendor/golang.org/x/net/context:go_default_library",
+        "//vendor/google.golang.org/grpc:go_default_library",
+        "//vendor/google.golang.org/grpc/credentials:go_default_library",
+        "//vendor/google.golang.org/grpc/grpclog:go_default_library",
+        "//vendor/google.golang.org/grpc/health/grpc_health_v1:go_default_library",
+        "//vendor/google.golang.org/grpc/reflection:go_default_library",
+        "//vendor/gopkg.in/redis.v3:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["sort_test.go"],
+    embed = [":go_default_library"],
+    deps = ["//vendor/github.com/otsimo/otsimopb:go_default_library"],
+)

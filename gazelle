@@ -1,0 +1,6 @@
+#/bin/bash
+
+rm -f $(find ./vendor -name BUILD)
+rm -f $(find ./vendor -name BUILD.bazel)
+
+gazelle update -go_prefix github.com/otsimo/listener -proto=disable -external=vendored

@@ -1,0 +1,32 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "cluster.go",
+        "cluster_pipeline.go",
+        "command.go",
+        "commands.go",
+        "doc.go",
+        "error.go",
+        "multi.go",
+        "options.go",
+        "parser.go",
+        "pipeline.go",
+        "pubsub.go",
+        "redis.go",
+        "ring.go",
+        "script.go",
+        "sentinel.go",
+        "unsafe.go",
+    ],
+    importmap = "vendor/gopkg.in/redis.v3",
+    importpath = "gopkg.in/redis.v3",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/gopkg.in/redis.v3/internal:go_default_library",
+        "//vendor/gopkg.in/redis.v3/internal/consistenthash:go_default_library",
+        "//vendor/gopkg.in/redis.v3/internal/hashtag:go_default_library",
+        "//vendor/gopkg.in/redis.v3/internal/pool:go_default_library",
+    ],
+)

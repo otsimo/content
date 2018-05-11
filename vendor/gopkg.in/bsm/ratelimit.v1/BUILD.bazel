@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["ratelimit.go"],
+    importmap = "vendor/gopkg.in/bsm/ratelimit.v1",
+    importpath = "gopkg.in/bsm/ratelimit.v1",
+    visibility = ["//visibility:public"],
+)

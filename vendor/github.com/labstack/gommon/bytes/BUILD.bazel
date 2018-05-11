@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["bytes.go"],
+    importmap = "vendor/github.com/labstack/gommon/bytes",
+    importpath = "github.com/labstack/gommon/bytes",
+    visibility = ["//visibility:public"],
+)

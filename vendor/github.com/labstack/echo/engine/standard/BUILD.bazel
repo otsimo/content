@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "cookie.go",
+        "header.go",
+        "request.go",
+        "response.go",
+        "server.go",
+        "url.go",
+    ],
+    importmap = "vendor/github.com/labstack/echo/engine/standard",
+    importpath = "github.com/labstack/echo/engine/standard",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/labstack/echo:go_default_library",
+        "//vendor/github.com/labstack/echo/engine:go_default_library",
+        "//vendor/github.com/labstack/echo/log:go_default_library",
+        "//vendor/github.com/labstack/gommon/log:go_default_library",
+    ],
+)

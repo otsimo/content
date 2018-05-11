@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["jsontree.go"],
+    importmap = "vendor/github.com/bmatsuo/go-jsontree",
+    importpath = "github.com/bmatsuo/go-jsontree",
+    visibility = ["//visibility:public"],
+)
